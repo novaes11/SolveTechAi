@@ -70,6 +70,134 @@ document.addEventListener('DOMContentLoaded', function() {
         renderDashboardCards();
     }
 
+    // =============================================
+    // US03 - Lista de Pacientes
+    // =============================================
+
+    // Array de objetos JSON com os dados dos pacientes (US03 - item 1)
+    const patientsData = [
+        {
+            id: 'maria-silva',
+            name: 'Maria Silva',
+            age: '45 anos | Feminino',
+            avatar: 'avatar/premium_photo-1688572454849-4348982edf7d.jpg',
+            status: 'alto-risco',
+            statusText: 'Alto Risco',
+            systolic: 140,
+            glucose: 95,
+            riskFactors: ['Obesidade', 'Sedentarismo', 'Histórico Familiar'],
+            aiSummary: 'Hipertensão Grau 1 - Pressão arterial elevada com múltiplos fatores de risco. Recomenda-se monitoramento contínuo e ajuste de medicação.',
+            aiConfidence: '94%',
+            risks: [
+                { disease: 'Hipertensão', percentage: 85 },
+                { disease: 'Diabetes', percentage: 45 },
+                { disease: 'Doença Cardíaca', percentage: 30 },
+                { disease: 'AVC', percentage: 15 }
+            ]
+        },
+        {
+            id: 'joao-santos',
+            name: 'João Santos',
+            age: '58 anos | Masculino',
+            avatar: 'avatar/premium_photo-1689568126014-06fea9d5d341.jpg',
+            status: 'critico',
+            statusText: 'Crítico',
+            systolic: 160,
+            glucose: 180,
+            riskFactors: ['Diabetes Tipo 2', 'Tabagismo', 'Estresse'],
+            aiSummary: 'Diabetes Tipo 2 + Hipertensão - Comorbidade grave com risco cardiovascular alto. Necessita intervenção imediata e ajuste de medicação.',
+            aiConfidence: '97%',
+            risks: [
+                { disease: 'Diabetes', percentage: 95 },
+                { disease: 'Hipertensão', percentage: 90 },
+                { disease: 'Doença Cardíaca', percentage: 75 },
+                { disease: 'Insuficiência Renal', percentage: 40 }
+            ]
+        },
+        {
+            id: 'ana-pereira',
+            name: 'Ana Pereira',
+            age: '52 anos | Feminino',
+            avatar: 'avatar/1708135913769.jpg',
+            status: 'moderado',
+            statusText: 'Moderado',
+            systolic: 135,
+            glucose: 110,
+            riskFactors: ['Pré-Diabetes', 'Sedentarismo', 'Dieta Rica em Sódio'],
+            aiSummary: 'Pré-Diabetes + Pré-Hipertensão - Estado pré-mórbido com alto risco de progressão. Recomenda-se mudanças no estilo de vida e monitoramento preventivo.',
+            aiConfidence: '89%',
+            risks: [
+                { disease: 'Diabetes', percentage: 65 },
+                { disease: 'Hipertensão', percentage: 60 },
+                { disease: 'Doença Cardíaca', percentage: 25 },
+                { disease: 'AVC', percentage: 15 }
+            ]
+        },
+        {
+            id: 'carlos-pinto',
+            name: 'Carlos Pinto',
+            age: '65 anos | Masculino',
+            avatar: 'avatar/download.jpg',
+            status: 'critico',
+            statusText: 'Crítico',
+            systolic: 175,
+            glucose: 220,
+            riskFactors: ['Diabetes Tipo 2', 'Hipertensão Grave', 'Obesidade'],
+            aiSummary: 'Síndrome Metabólica Grave - Hipertensão descontrolada + Diabetes descompensado. Risco cardiovascular extremamente alto. Intervenção urgente necessária.',
+            aiConfidence: '99%',
+            risks: [
+                { disease: 'Diabetes', percentage: 98 },
+                { disease: 'Hipertensão', percentage: 95 },
+                { disease: 'Doença Cardíaca', percentage: 85 },
+                { disease: 'Insuficiência Renal', percentage: 60 }
+            ]
+        }
+    ];
+
+    // Renderiza os cards de pacientes dinamicamente via forEach (US03 - item 2)
+    function renderPatientCards() {
+        const grid = document.getElementById('patients-grid');
+        if (!grid) return;
+
+        grid.innerHTML = '';
+
+        patientsData.forEach(patient => {
+            const tagsHTML = patient.riskFactors
+                .map(tag => `<span class="tag">${tag}</span>`)
+                .join('');
+
+            const card = document.createElement('div');
+            card.className = 'fan-card';
+            card.onclick = () => openPatientDetails(patient.id);
+
+            card.innerHTML = `
+                <div class="fan-header">
+                    <img src="${patient.avatar}" alt="Avatar" class="fan-avatar">
+                    <div class="fan-info">
+                        <h3>${patient.name}</h3>
+                        <p class="fan-location">${patient.age}</p>
+                    </div>
+                </div>
+                <div class="fan-stats">
+                    <div class="stat">
+                        <span class="label">Pressão Sistólica</span>
+                        <span class="value">${patient.systolic} mmHg</span>
+                    </div>
+                    <div class="stat">
+                        <span class="label">Glicemia</span>
+                        <span class="value">${patient.glucose} mg/dL</span>
+                    </div>
+                </div>
+                <div class="fan-interests">
+                    <h4>Fatores de Risco</h4>
+                    <div class="tags">${tagsHTML}</div>
+                </div>
+            `;
+
+            grid.appendChild(card);
+        });
+    }
+
     // Navegação entre abas
     function navigateToSection(sectionId) {
         // Remove active de todas as seções
@@ -362,13 +490,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     }
 
-    // Adiciona interatividade aos cards de pacientes
-    document.querySelectorAll('.fan-card').forEach(card => {
-        card.addEventListener('click', () => {
-            card.classList.toggle('expanded');
-        });
-    });
-
     // Adiciona interatividade aos cards de diagnóstico
     document.querySelectorAll('.campaign-card').forEach(card => {
         card.addEventListener('click', () => {
@@ -391,31 +512,31 @@ document.addEventListener('DOMContentLoaded', function() {
     // Executa animação das barras de progresso quando a seção de diagnóstico estiver visível
     const diagnosisSection = document.querySelector('#diagnostico');
     if (diagnosisSection) {
-    const diagnosisObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                animateProgressBars();
-                diagnosisObserver.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.5 });
+        const diagnosisObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateProgressBars();
+                    diagnosisObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
 
-    diagnosisObserver.observe(diagnosisSection);
+        diagnosisObserver.observe(diagnosisSection);
     }
 
     // Executa animação das barras de progresso quando a seção de correlações estiver visível
     const correlationsSection = document.querySelector('#correlacoes');
     if (correlationsSection) {
-    const correlationsObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                animateProgressBars();
-                correlationsObserver.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.5 });
+        const correlationsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateProgressBars();
+                    correlationsObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
 
-    correlationsObserver.observe(correlationsSection);
+        correlationsObserver.observe(correlationsSection);
     }
 
     // Simulação de correlações em tempo real
@@ -437,6 +558,9 @@ document.addEventListener('DOMContentLoaded', function() {
     renderDashboardCards();
     setInterval(updateDashboardNumbers, 10000);
 
+    // US03 - Renderiza os cards de pacientes via forEach
+    renderPatientCards();
+
     // Inicializa com a seção dashboard ativa
     navigateToSection('dashboard');
 
@@ -447,91 +571,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Dados dos pacientes
-    const patientsData = {
-        'maria-silva': {
-            name: 'Maria Silva',
-            age: '45 anos | Feminino',
-            avatar: 'https://via.placeholder.com/80x80/FF4655/ffffff?text=MS',
-            status: 'alto-risco',
-            statusText: 'Alto Risco',
-            aiSummary: 'Hipertensão Grau 1 - Pressão arterial elevada com múltiplos fatores de risco. Recomenda-se monitoramento contínuo e ajuste de medicação.',
-            aiConfidence: '94%',
-            risks: [
-                { disease: 'Hipertensão', percentage: 85 },
-                { disease: 'Diabetes', percentage: 45 },
-                { disease: 'Doença Cardíaca', percentage: 30 },
-                { disease: 'AVC', percentage: 15 }
-            ]
-        },
-        'joao-santos': {
-            name: 'João Santos',
-            age: '58 anos | Masculino',
-            avatar: 'https://via.placeholder.com/80x80/0F1923/ffffff?text=JS',
-            status: 'critico',
-            statusText: 'Crítico',
-            aiSummary: 'Diabetes Tipo 2 + Hipertensão - Comorbidade grave com risco cardiovascular alto. Necessita intervenção imediata e ajuste de medicação.',
-            aiConfidence: '97%',
-            risks: [
-                { disease: 'Diabetes', percentage: 95 },
-                { disease: 'Hipertensão', percentage: 90 },
-                { disease: 'Doença Cardíaca', percentage: 75 },
-                { disease: 'Insuficiência Renal', percentage: 40 }
-            ]
-        },
-        'ana-pereira': {
-            name: 'Ana Pereira',
-            age: '52 anos | Feminino',
-            avatar: 'https://via.placeholder.com/80x80/7B2CBF/ffffff?text=AP',
-            status: 'moderado',
-            statusText: 'Moderado',
-            aiSummary: 'Pré-Diabetes + Pré-Hipertensão - Estado pré-mórbido com alto risco de progressão. Recomenda-se mudanças no estilo de vida e monitoramento preventivo.',
-            aiConfidence: '89%',
-            risks: [
-                { disease: 'Diabetes', percentage: 65 },
-                { disease: 'Hipertensão', percentage: 60 },
-                { disease: 'Doença Cardíaca', percentage: 25 },
-                { disease: 'AVC', percentage: 15 }
-            ]
-        },
-        'carlos-pinto': {
-            name: 'Carlos Pinto',
-            age: '65 anos | Masculino',
-            avatar: 'https://via.placeholder.com/80x80/28a745/ffffff?text=CP',
-            status: 'critico',
-            statusText: 'Crítico',
-            aiSummary: 'Síndrome Metabólica Grave - Hipertensão descontrolada + Diabetes descompensado. Risco cardiovascular extremamente alto. Intervenção urgente necessária.',
-            aiConfidence: '99%',
-            risks: [
-                { disease: 'Diabetes', percentage: 98 },
-                { disease: 'Hipertensão', percentage: 95 },
-                { disease: 'Doença Cardíaca', percentage: 85 },
-                { disease: 'Insuficiência Renal', percentage: 60 }
-            ]
-        }
-    };
-
     // Função para abrir detalhes do paciente
     window.openPatientDetails = function(patientId) {
-        const patient = patientsData[patientId];
+        // US03: busca o paciente no array pelo id
+        const patient = patientsData.find(p => p.id === patientId);
         if (!patient) return;
 
-        // Tenta obter o avatar diretamente da lista de pacientes (caso tenha sido personalizado pelo usuário)
-        let avatarSrcFromList = null;
-        try {
-            const cards = document.querySelectorAll('.fan-card');
-            for (const card of cards) {
-                const nameEl = card.querySelector('.fan-info h3');
-                const imgEl = card.querySelector('.fan-avatar');
-                if (nameEl && imgEl && nameEl.textContent.trim() === patient.name) {
-                    avatarSrcFromList = imgEl.getAttribute('src');
-                    break;
-                }
-            }
-        } catch (e) {}
-
         // Atualiza informações do paciente
-        document.getElementById('patient-avatar').src = avatarSrcFromList || patient.avatar;
+        document.getElementById('patient-avatar').src = patient.avatar;
         document.getElementById('patient-name').textContent = patient.name;
         document.getElementById('patient-age').textContent = patient.age;
         document.getElementById('patient-status').textContent = patient.statusText;
@@ -544,7 +591,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Atualiza riscos de doenças
         const riskContainer = document.getElementById('ai-risk-percentages');
         riskContainer.innerHTML = '';
-        
+
         patient.risks.forEach(risk => {
             const riskItem = document.createElement('div');
             riskItem.className = 'risk-item';
@@ -567,12 +614,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Navega para a página de detalhes
         navigateToSection('patient-details');
-        
+
         // Atualiza o título da página
         document.getElementById('pageTitle').textContent = patient.name;
 
         // Cria os gráficos específicos do paciente
-        // Aguarda layout e tenta com retries até os canvases terem tamanho
         createPatientChartsWithRetry(patientId, 0);
 
         // Armazena paciente atual para o modal de exame
@@ -586,10 +632,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Função para criar gráficos específicos do paciente
     function createPatientCharts(patientId) {
-        const patient = patientsData[patientId];
+        const patient = patientsData.find(p => p.id === patientId);
         if (!patient) return;
 
-        // Gera séries temporais fictícias por paciente (8 pontos)
         const labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago'];
         function generateSeries(start, trendPerStep, noiseRange, min, max, len = 8) {
             const series = [];
@@ -639,16 +684,16 @@ document.addEventListener('DOMContentLoaded', function() {
         let systolicSeries, diastolicSeries, fastingSeries, postSeries;
 
         if (fixedData[patientId]) {
-            labelsLocal    = fixedData[patientId].labels;
-            systolicSeries = fixedData[patientId].systolic;
-            diastolicSeries= fixedData[patientId].diastolic;
-            fastingSeries  = fixedData[patientId].fasting;
-            postSeries     = fixedData[patientId].post;
+            labelsLocal     = fixedData[patientId].labels;
+            systolicSeries  = fixedData[patientId].systolic;
+            diastolicSeries = fixedData[patientId].diastolic;
+            fastingSeries   = fixedData[patientId].fasting;
+            postSeries      = fixedData[patientId].post;
         } else {
-            systolicSeries = generateSeries(base.systolic, base.trends.sys, 3, 90, 220, labels.length);
-            diastolicSeries= generateSeries(base.diastolic, base.trends.dia, 2, 60, 140, labels.length);
-            fastingSeries  = generateSeries(base.fasting, base.trends.fast, 5, 70, 260, labels.length);
-            postSeries     = generateSeries(base.post, base.trends.post, 6, 90, 320, labels.length);
+            systolicSeries  = generateSeries(base.systolic, base.trends.sys, 3, 90, 220, labels.length);
+            diastolicSeries = generateSeries(base.diastolic, base.trends.dia, 2, 60, 140, labels.length);
+            fastingSeries   = generateSeries(base.fasting, base.trends.fast, 5, 70, 260, labels.length);
+            postSeries      = generateSeries(base.post, base.trends.post, 6, 90, 320, labels.length);
         }
 
         // Gráfico de Pressão Arterial do Paciente
@@ -766,8 +811,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const diagnosisText = document.getElementById('diagnosis-text');
         const patientName = document.getElementById('patient-name').textContent;
         const aiSummary = document.getElementById('ai-summary-text').textContent;
-        
-        // Simula geração de diagnóstico com IA
+
         const aiDiagnosis = `# DIAGNÓSTICO MÉDICO COMPLETO - ${patientName}
 
 ## DADOS DO PACIENTE
@@ -805,11 +849,7 @@ Este diagnóstico foi gerado com auxílio de inteligência artificial e deve ser
     window.saveDiagnosis = function() {
         const diagnosisText = document.getElementById('diagnosis-text').value;
         const patientName = document.getElementById('patient-name').textContent;
-        
-        // Simula salvamento
         alert(`Diagnóstico de ${patientName} salvo com sucesso!`);
-        
-        // Aqui você pode implementar o salvamento real
         console.log('Diagnóstico salvo:', diagnosisText);
     };
 
@@ -817,8 +857,6 @@ Este diagnóstico foi gerado com auxílio de inteligência artificial e deve ser
     window.printDiagnosis = function() {
         const diagnosisText = document.getElementById('diagnosis-text').value;
         const patientName = document.getElementById('patient-name').textContent;
-        
-        // Cria uma nova janela para impressão
         const printWindow = window.open('', '_blank');
         printWindow.document.write(`
             <html>
@@ -841,7 +879,6 @@ Este diagnóstico foi gerado com auxílio de inteligência artificial e deve ser
     };
 
     // Funções do Modal de Exame
-    // Base do arquivo (sem extensão). Vamos tentar extensões comuns (.jpg, .jpeg, .png, .webp)
     const examBaseByPatient = {
         default: 'images/resultado-do-exame-de-sangue-v0-0wk34izw0f1d1'
     };
@@ -851,7 +888,6 @@ Este diagnóstico foi gerado com auxílio de inteligência artificial e deve ser
         let idx = 0;
         function tryNext() {
             if (idx >= exts.length) {
-                // fallback final: placeholder
                 imgEl.src = 'https://via.placeholder.com/900x600?text=Laudo+nao+encontrado';
                 if (onDone) onDone(false);
                 return;
@@ -863,16 +899,16 @@ Este diagnóstico foi gerado com auxílio de inteligência artificial e deve ser
         }
         tryNext();
     }
- 
+
     window.openExamImage = function() {
         const modal = document.getElementById('examModal');
         const img = document.getElementById('examImage');
         const caption = document.getElementById('examCaption');
         const patientId = window.currentPatientId;
         const base = (examBaseByPatient[patientId] || examBaseByPatient.default);
-        // Carrega tentando .jpg primeiro e caindo para outros formatos
         loadExamImageWithFallback(img, base);
-        caption.textContent = patientId ? `Exame médico de ${patientsData[patientId].name}` : 'Exame médico';
+        const patient = patientsData.find(p => p.id === patientId);
+        caption.textContent = patient ? `Exame médico de ${patient.name}` : 'Exame médico';
         modal.classList.add('open');
     };
 

@@ -162,124 +162,9 @@
                     <h2>Perfis de Pacientes</h2>
                     <p>Gerenciamento e visualização de dados dos pacientes</p>
                 </div>
-                
-                <div class="fans-grid">
-                    <!-- Card de Paciente 1 - Hipertensão -->
-                    <div class="fan-card" onclick="openPatientDetails('maria-silva')">
-                        <div class="fan-header">
-                            <img src="avatar/premium_photo-1688572454849-4348982edf7d.jpg" alt="Avatar" class="fan-avatar">
-                            <div class="fan-info">
-                                <h3>Maria Silva</h3>
-                                <p class="fan-location">45 anos | Feminino</p>
-                            </div>
-                        </div>
-                        <div class="fan-stats">
-                            <div class="stat">
-                                <span class="label">Pressão Sistólica</span>
-                                <span class="value">140 mmHg</span>
-                            </div>
-                            <div class="stat">
-                                <span class="label">Glicemia</span>
-                                <span class="value">95 mg/dL</span>
-                            </div>
-                        </div>
-                        <div class="fan-interests">
-                            <h4>Fatores de Risco</h4>
-                            <div class="tags">
-                                <span class="tag">Obesidade</span>
-                                <span class="tag">Sedentarismo</span>
-                                <span class="tag">Histórico Familiar</span>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Card de Paciente 2 - Diabetes -->
-                    <div class="fan-card" onclick="openPatientDetails('joao-santos')">
-                        <div class="fan-header">
-                            <img src="avatar/premium_photo-1689568126014-06fea9d5d341.jpg" alt="Avatar" class="fan-avatar">
-                            <div class="fan-info">
-                                <h3>João Santos</h3>
-                                <p class="fan-location">58 anos | Masculino</p>
-                            </div>
-                        </div>
-                        <div class="fan-stats">
-                            <div class="stat">
-                                <span class="label">Pressão Sistólica</span>
-                                <span class="value">160 mmHg</span>
-                            </div>
-                            <div class="stat">
-                                <span class="label">Glicemia</span>
-                                <span class="value">180 mg/dL</span>
-                            </div>
-                        </div>
-                        <div class="fan-interests">
-                            <h4>Fatores de Risco</h4>
-                            <div class="tags">
-                                <span class="tag">Diabetes Tipo 2</span>
-                                <span class="tag">Tabagismo</span>
-                                <span class="tag">Estresse</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Card de Paciente 3 - Pré-Diabetes -->
-                    <div class="fan-card" onclick="openPatientDetails('ana-pereira')">
-                        <div class="fan-header">
-                            <img src="avatar/1708135913769.jpg" alt="Avatar" class="fan-avatar">
-                            <div class="fan-info">
-                                <h3>Ana Pereira</h3>
-                                <p class="fan-location">52 anos | Feminino</p>
-                            </div>
-                        </div>
-                        <div class="fan-stats">
-                            <div class="stat">
-                                <span class="label">Pressão Sistólica</span>
-                                <span class="value">135 mmHg</span>
-                            </div>
-                            <div class="stat">
-                                <span class="label">Glicemia</span>
-                                <span class="value">110 mg/dL</span>
-                            </div>
-                        </div>
-                        <div class="fan-interests">
-                            <h4>Fatores de Risco</h4>
-                            <div class="tags">
-                                <span class="tag">Pré-Diabetes</span>
-                                <span class="tag">Sedentarismo</span>
-                                <span class="tag">Dieta Rica em Sódio</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Card de Paciente 4 - Comorbidade -->
-                    <div class="fan-card" onclick="openPatientDetails('carlos-pinto')">
-                        <div class="fan-header">
-                            <img src="avatar/download.jpg" alt="Avatar" class="fan-avatar">
-                            <div class="fan-info">
-                                <h3>Carlos Pinto</h3>
-                                <p class="fan-location">65 anos | Masculino</p>
-                            </div>
-                        </div>
-                        <div class="fan-stats">
-                            <div class="stat">
-                                <span class="label">Pressão Sistólica</span>
-                                <span class="value">175 mmHg</span>
-                            </div>
-                            <div class="stat">
-                                <span class="label">Glicemia</span>
-                                <span class="value">220 mg/dL</span>
-                            </div>
-                        </div>
-                        <div class="fan-interests">
-                            <h4>Fatores de Risco</h4>
-                            <div class="tags">
-                                <span class="tag">Diabetes Tipo 2</span>
-                                <span class="tag">Hipertensão Grave</span>
-                                <span class="tag">Obesidade</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- US03: cards gerados dinamicamente via forEach no script.js -->
+                <div class="fans-grid" id="patients-grid"></div>
 
                 <!-- Estatísticas Gerais -->
                 <div class="section-header" style="margin-top: 3rem;">
@@ -313,8 +198,6 @@
                     </div>
                 </div>
             </section>
-
-
 
             <!-- Correlações Section -->
             <section id="correlacoes" class="section">
@@ -634,4 +517,4 @@
 
     <script src="script.js"></script>
 </body>
-</html> 
+</html>
