@@ -1089,3 +1089,55 @@ canvas {
     font-size: 0.9rem;
     text-align: center;
 } 
+
+/* =============================================
+   US01 - Estados de Alerta nos Cards (Dashboard)
+   ============================================= */
+
+/* Card em estado de alerta crítico */
+.card--alert {
+    border-left: 4px solid var(--danger-color);
+    background: linear-gradient(
+        135deg,
+        var(--card-background) 80%,
+        rgba(217, 59, 59, 0.06) 100%
+    );
+}
+
+.card--alert .card-icon {
+    color: var(--danger-color);
+}
+
+.card--alert .number {
+    color: var(--danger-color);
+}
+
+/* Pulso animado no ícone de cards críticos */
+.card--alert .card-icon i {
+    animation: pulse-alert 1.8s ease-in-out infinite;
+}
+
+@keyframes pulse-alert {
+    0%, 100% { transform: scale(1);    opacity: 1;    }
+    50%       { transform: scale(1.15); opacity: 0.75; }
+}
+
+/* Badge "CRÍTICO" que aparece no canto do card */
+.card--alert::after {
+    content: 'CRÍTICO';
+    position: absolute;
+    top: 0.5rem;
+    right: 0.75rem;
+    background-color: var(--danger-color);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 0.15rem 0.5rem;
+    border-radius: 20px;
+}
+
+/* O card já tem position: relative? Garante aqui */
+.dashboard-grid .card {
+    position: relative;
+}

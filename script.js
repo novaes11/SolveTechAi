@@ -20,6 +20,56 @@ document.addEventListener('DOMContentLoaded', function() {
         postprandial: [140, 150, 160, 170, 180, 190, 200, 210]
     };
 
+    // =============================================
+    // US01 - Dashboard de Indicadores
+    // =============================================
+
+    // Dados clínicos centralizados do dashboard
+    const dashboardData = {
+        totalPacientes:  { value: 2156, trend: '+45 este mês',           alert: false },
+        hipertensao:     { value: 456,  trend: '21.2% da população',     alert: false },
+        diabetes:        { value: 312,  trend: '14.5% da população',     alert: false },
+        diagnosticosIA:  { value: 234,  trend: '96% precisão',           alert: false },
+        comorbidades:    { value: 89,   trend: 'Hipertensão + Diabetes', alert: true  },
+        alertasCriticos: { value: 18,   trend: 'Requerem atenção',       alert: true  }
+    };
+
+    // Injeta os valores nos cards do dashboard via JS (US01 - item 1)
+    function renderDashboardCards() {
+        const cards = document.querySelectorAll('#dashboard .card');
+        const keys  = Object.keys(dashboardData);
+
+        cards.forEach((card, index) => {
+            const key = keys[index];
+            if (!key) return;
+
+            const data     = dashboardData[key];
+            const numberEl = card.querySelector('.number');
+            const trendEl  = card.querySelector('.trend');
+
+            if (numberEl) numberEl.textContent = data.value.toLocaleString('pt-BR');
+            if (trendEl)  trendEl.textContent  = data.trend;
+
+            // Aplica estado de alerta visual (US01 - item 2)
+            if (data.alert) {
+                card.classList.add('card--alert');
+            } else {
+                card.classList.remove('card--alert');
+            }
+        });
+    }
+
+    // Atualiza apenas os cards do dashboard com novos dados simulados (US01)
+    function updateDashboardNumbers() {
+        dashboardData.totalPacientes.value  += Math.floor(Math.random() * 3);
+        dashboardData.alertasCriticos.value += Math.floor(Math.random() * 2);
+
+        // Marca como crítico dinamicamente se alertas ultrapassar 20
+        dashboardData.alertasCriticos.alert = dashboardData.alertasCriticos.value > 20;
+
+        renderDashboardCards();
+    }
+
     // Navegação entre abas
     function navigateToSection(sectionId) {
         // Remove active de todas as seções
@@ -281,8 +331,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     }
 
-
-
     // Gráfico de Comorbidades
     const comorbiditiesCtx = document.getElementById('comorbiditiesChart');
     if (comorbiditiesCtx) {
@@ -313,19 +361,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     }
-
-    // Simulação de dados em tempo real para dados médicos
-    function updateMedicalNumbers() {
-        const numbers = document.querySelectorAll('.number');
-        numbers.forEach(number => {
-            const currentValue = parseInt(number.textContent.replace(/,/g, ''));
-            const newValue = currentValue + Math.floor(Math.random() * 5);
-            number.textContent = newValue.toLocaleString();
-        });
-    }
-
-    // Atualiza os números a cada 10 segundos
-    setInterval(updateMedicalNumbers, 10000);
 
     // Adiciona interatividade aos cards de pacientes
     document.querySelectorAll('.fan-card').forEach(card => {
@@ -383,25 +418,6 @@ document.addEventListener('DOMContentLoaded', function() {
     correlationsObserver.observe(correlationsSection);
     }
 
-    // Simulação de alertas médicos em tempo real
-    function simulateMedicalAlerts() {
-        const alertCard = document.querySelector('.card:last-child .number');
-        if (alertCard) {
-            const currentAlerts = parseInt(alertCard.textContent);
-            const newAlerts = currentAlerts + Math.floor(Math.random() * 3);
-            alertCard.textContent = newAlerts;
-            
-            // Adiciona efeito visual para novos alertas
-            alertCard.style.color = '#dc3545';
-            setTimeout(() => {
-                alertCard.style.color = '';
-            }, 2000);
-        }
-    }
-
-    // Simula alertas médicos a cada 15 segundos
-    setInterval(simulateMedicalAlerts, 15000);
-
     // Simulação de correlações em tempo real
     function simulateCorrelations() {
         const correlationValues = document.querySelectorAll('#correlacoes .value');
@@ -416,6 +432,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Simula atualizações de correlações a cada 20 segundos
     setInterval(simulateCorrelations, 20000);
+
+    // US01 - Inicializa dashboard com dados e agenda atualização periódica
+    renderDashboardCards();
+    setInterval(updateDashboardNumbers, 10000);
 
     // Inicializa com a seção dashboard ativa
     navigateToSection('dashboard');
@@ -868,4 +888,4 @@ Este diagnóstico foi gerado com auxílio de inteligência artificial e deve ser
             window.closeExamModal();
         }
     };
-}); 
+});
