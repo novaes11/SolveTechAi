@@ -1141,3 +1141,87 @@ canvas {
 .dashboard-grid .card {
     position: relative;
 }
+
+/* =============================================
+   US09 - Impressão de Laudos (@media print)
+   ============================================= */
+
+@media print {
+    /* Controla o tamanho da página e as margens diretamente no papel.
+      Isso ajuda a evitar que quebre para a página 2 por causa de margens gigantes.
+    */
+    @page {
+        size: A4;
+        margin: 1.5cm; 
+    }
+
+    /* Oculta tudo que não é o diagnóstico */
+    .sidebar,
+    .top-bar,
+    .menu-toggle,
+    .btn-back,
+    .btn-exam,
+    .editor-toolbar,
+    .patient-charts,
+    .ai-diagnosis,
+    #dashboard,
+    #pacientes,
+    #correlacoes {
+        display: none !important;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        background: white;
+        color: black;
+        font-family: 'Arial', sans-serif;
+    }
+
+    .main-content {
+        margin-left: 0 !important;
+    }
+
+    .content-area {
+        padding: 0 !important;
+    }
+
+    #patient-details {
+        display: block !important;
+    }
+
+    .patient-content {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* OCULTA O TEXTAREA NA IMPRESSÃO */
+    #diagnosis-text {
+        display: none !important;
+    }
+
+    /* ESTILIZA A NOVA DIV TEMPORÁRIA DE IMPRESSÃO */
+    #print-content-div {
+        display: block !important;
+        width: 100%;
+        font-family: 'Arial', sans-serif;
+        font-size: 12pt;
+        line-height: 1.6;
+        text-align: justify; /* Deixa o texto alinhado nas bordas, com cara de laudo médico */
+    }
+
+    /* Cabeçalho do paciente mais compacto para economizar espaço na folha */
+    .patient-header {
+        border-bottom: 2px solid #333;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .patient-avatar {
+        width: 60px;
+        height: 60px;
+    }
+
+    .complete-diagnosis {
+        page-break-inside: avoid;
+    }
+}

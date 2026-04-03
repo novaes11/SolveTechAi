@@ -806,34 +806,81 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-// US05 - Gerador de IA
-// Subtask 1: função com template string
-// Subtask 2: lógica para captar o nome e dados do paciente atual
+// US05 - Gerador de IA Melhorado (Laudo Realista e Dinâmico)
 window.generateAIDiagnosis = function() {
     const diagnosisText = document.getElementById('diagnosis-text');
 
-    // Subtask 2: capta o paciente atual pelo id armazenado ao abrir os detalhes
-    const patientId = window.currentPatientId;
-    const patient   = patientsData.find(p => p.id === patientId);
+    // 1. Tenta pegar o paciente pelo ID global que foi salvo ao abrir a tela
+    let patient = null;
+    if (window.currentPatientId) {
+        patient = patientsData.find(p => p.id === window.currentPatientId);
+    }
 
-    // Fallback caso seja chamada sem paciente selecionado
+    // 2. PLANO B (Fallback Salvador): Se a variável global se perdeu, 
+    // procuramos o paciente pelo nome que está aparecendo no HTML da tela!
     if (!patient) {
-        alert('Nenhum paciente selecionado.');
+        const patientNameEl = document.getElementById('patient-name');
+        if (patientNameEl) {
+            const nomeNaTela = patientNameEl.textContent.trim();
+            patient = patientsData.find(p => p.name === nomeNaTela);
+            
+            // Restaura o ID global para consertar o erro para as próximas ações (como abrir exames)
+            if (patient) {
+                window.currentPatientId = patient.id;
+            }
+        }
+    }
+
+    // Se mesmo com o Plano B não achar ninguém, aí sim barramos a execução
+    if (!patient) {
+        alert('Erro: Não foi possível identificar o paciente aberto na tela. Tente voltar e abrir o paciente novamente.');
         return;
     }
 
-    // Monta os riscos formatados para o laudo
-    const risksFormatted = patient.risks
-        .map(r => `  - ${r.disease}: ${r.percentage}%`)
-        .join('\n');
+    // =========================================================
+    // 🧠 MOTOR DE IA SIMULADA: GERANDO TEXTOS CLÍNICOS REAIS
+    // =========================================================
 
-    // Monta os fatores de risco formatados
-    const riskFactorsFormatted = patient.riskFactors
-        .map(f => `  - ${f}`)
-        .join('\n');
+    // 1. Queixa Principal baseada na condição real do paciente
+    let queixa = "Consulta de rotina para acompanhamento de quadro metabólico e cardiovascular.";
+    if (patient.glucose > 150) {
+        queixa = "Paciente relata episódios de fadiga intensa, poliúria (aumento do volume da urina) e polidipsia (sede excessiva) nas últimas semanas, sugestivo de descompensação glicêmica.";
+    } else if (patient.systolic >= 150) {
+        queixa = "Paciente queixa-se de cefaleia (dor de cabeça) occipital esporádica e episódios de tontura, principalmente no período da manhã.";
+    } else if (patient.status === 'moderado') {
+        queixa = "Paciente assintomático(a) no momento, comparece para reavaliação de exames de rotina e acompanhamento preventivo.";
+    }
 
-    // Subtask 1: template string com todos os dados do paciente
-    const aiDiagnosis = `# DIAGNÓSTICO MÉDICO COMPLETO - ${patient.name}
+    // 2. Histórico Médico puxando os Fatores de Risco
+    const historico = patient.riskFactors.length > 0 
+        ? `Paciente apresenta histórico prévio significativo para: ${patient.riskFactors.join(', ')}.` 
+        : `Paciente nega comorbidades prévias além das diagnosticadas no quadro atual.`;
+
+    // 3. Exame Físico simulado (calcula uma diastólica coerente para ficar real)
+    const diastolicaCalculada = Math.round(patient.systolic * 0.6); 
+    const exameFisico = `Bom estado geral (BEG), corado(a), hidratado(a), acianótico(a) e anictérico(a).\n- Pressão Arterial aferida: ${patient.systolic} x ${diastolicaCalculada} mmHg.\n- Ritmo Cardíaco Regular em 2 tempos (RCR 2T), bulhas normofonéticas sem sopros.\n- Murmúrio vesicular presente (MVP), sem ruídos adventícios.`;
+
+    // 4. Exames Complementares (dando direcionamento de acordo com o caso)
+    const exames = `Glicemia capilar aferida no consultório: ${patient.glucose} mg/dL.\nSugere-se solicitar para a próxima consulta: Hemograma Completo, Hemoglobina Glicada (HbA1c), Perfil Lipídico (Colesterol Total e Frações), Ureia, Creatinina e EAS.`;
+
+    // 5. Plano Terapêutico dinâmico avaliando o Risco
+    let plano = "";
+    if (patient.status === 'critico') {
+        plano = "1. Ajuste imediato do protocolo medicamentoso (avaliar introdução/aumento de anti-hipertensivos e hipoglicemiantes).\n2. Encaminhamento de urgência para cardiologia e endocrinologia.\n3. Retorno obrigatório em 15 dias com novos exames laboratoriais.";
+    } else if (patient.status === 'alto-risco') {
+        plano = "1. Otimização terapêutica das medicações em uso.\n2. Início de intervenção nutricional focada em reeducação alimentar.\n3. Prescrição de rotina de exercícios físicos leves sob supervisão.\n4. Retorno em 30 dias para acompanhamento.";
+    } else {
+        plano = "1. Conduta conservadora com foco em Mudança de Estilo de Vida (MEV).\n2. Orientação para dieta hipossódica e restrição de carboidratos simples.\n3. Manutenção das medicações atuais (se houver).\n4. Retorno de rotina em 3 meses.";
+    }
+
+    // =========================================================
+
+    // Monta listas formatadas
+    const risksFormatted = patient.risks.map(r => `  - ${r.disease}: ${r.percentage}%`).join('\n');
+    const riskFactorsFormatted = patient.riskFactors.map(f => `  - ${f}`).join('\n');
+
+    // String template final aplicando a formatação Markdown que a função de impressão lê
+    const aiDiagnosis = `# DIAGNÓSTICO MÉDICO COMPLETO
 
 ## DADOS DO PACIENTE
 - Nome: ${patient.name}
@@ -845,36 +892,34 @@ window.generateAIDiagnosis = function() {
 - Pressão Sistólica: ${patient.systolic} mmHg
 - Glicemia: ${patient.glucose} mg/dL
 
-## ANÁLISE IA (Confiança: ${patient.aiConfidence})
+## ANÁLISE IA E DIAGNÓSTICO BASE (Confiança: ${patient.aiConfidence})
 ${patient.aiSummary}
 
-## PROBABILIDADE DE DOENÇAS
+## QUEIXA PRINCIPAL
+${queixa}
+
+## HISTÓRICO MÉDICO
+${historico}
+
+## EXAME FÍSICO
+${exameFisico}
+
+## EXAMES COMPLEMENTARES
+${exames}
+
+## PLANO TERAPÊUTICO CONDUTA
+${plano}
+
+## PROBABILIDADE DE DOENÇAS FUTURAS (IA)
 ${risksFormatted}
 
 ## FATORES DE RISCO IDENTIFICADOS
 ${riskFactorsFormatted}
 
-## QUEIXA PRINCIPAL
-Paciente apresenta alterações nos parâmetros clínicos que indicam necessidade de monitoramento contínuo.
-
-## HISTÓRICO MÉDICO
-Baseado na análise de dados clínicos e histórico do paciente.
-
-## EXAME FÍSICO
-A ser realizado pelo médico durante a consulta.
-
-## EXAMES COMPLEMENTARES
-Resultados de exames laboratoriais e de imagem devem ser analisados em conjunto.
-
-## DIAGNÓSTICO
-Diagnóstico baseado na análise de IA e dados clínicos disponíveis.
-
-## PLANO TERAPÊUTICO
-Tratamento deve ser prescrito pelo médico responsável.
-
 ## OBSERVAÇÕES
-Este diagnóstico foi gerado com auxílio de inteligência artificial e deve ser revisado pelo médico.`;
+Este laudo foi gerado e pré-preenchido com auxílio de Inteligência Artificial para otimizar o tempo de consulta. O médico responsável deve revisar, alterar (se necessário) e validar as informações contidas acima antes da emissão final e assinatura.`;
 
+    // Injeta o laudo montado no textarea
     diagnosisText.value = aiDiagnosis;
 };
 
@@ -886,31 +931,156 @@ Este diagnóstico foi gerado com auxílio de inteligência artificial e deve ser
         console.log('Diagnóstico salvo:', diagnosisText);
     };
 
-    // Função para imprimir diagnóstico
-    window.printDiagnosis = function() {
-        const diagnosisText = document.getElementById('diagnosis-text').value;
-        const patientName = document.getElementById('patient-name').textContent;
-        const printWindow = window.open('', '_blank');
-        printWindow.document.write(`
-            <html>
-                <head>
-                    <title>Diagnóstico - ${patientName}</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; margin: 20px; }
-                        pre { white-space: pre-wrap; font-family: 'Courier New', monospace; }
-                    </style>
-                </head>
-                <body>
-                    <h1>Diagnóstico Médico</h1>
-                    <h2>Paciente: ${patientName}</h2>
-                    <pre>${diagnosisText}</pre>
-                </body>
-            </html>
-        `);
-        printWindow.document.close();
-        printWindow.print();
-    };
+window.printDiagnosis = function() {
+    const diagnosisText = document.getElementById('diagnosis-text').value;
+    const patientName = document.getElementById('patient-name').textContent || 'Paciente';
 
+    // 1. "Limpando" e formatando o texto (Converte o Markdown para HTML)
+    // Isso remove os símbolos # e cria títulos bonitos, além de respeitar as quebras de linha
+    let formattedText = diagnosisText
+        .replace(/^# (.*$)/gim, '<h2 class="main-title">$1</h2>')         // Transforma '# Titulo' em <h2>
+        .replace(/^## (.*$)/gim, '<h3 class="section-title">$1</h3>')     // Transforma '## Subtitulo' em <h3>
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')                 // Transforma '**negrito**' em <strong>
+        .replace(/\n/g, '<br>');                                          // Troca quebras de linha reais por <br>
+
+    // 2. Pegando a data de hoje para o laudo
+    const today = new Date().toLocaleDateString('pt-BR');
+
+    // 3. Montando a janela de impressão
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html lang="pt-BR">
+            <head>
+                <meta charset="UTF-8">
+                <title>Laudo Médico - ${patientName}</title>
+                <style>
+                    /* Define o tamanho da folha A4 e zera margens de sistema */
+                    @page { 
+                        size: A4; 
+                        margin: 2cm; 
+                    }
+                    
+                    /* Estilo base com fonte mais profissional (semelhante ao Word) */
+                    body { 
+                        font-family: 'Segoe UI', Arial, sans-serif; 
+                        color: #111; 
+                        line-height: 1.6; 
+                        margin: 0; 
+                        padding: 0;
+                    }
+
+                    /* Cabeçalho do Laudo */
+                    .document-header {
+                        text-align: center;
+                        border-bottom: 2px solid #2c3e50;
+                        padding-bottom: 10px;
+                        margin-bottom: 20px;
+                    }
+                    .document-header h1 {
+                        margin: 0;
+                        color: #2c3e50;
+                        font-size: 24px;
+                        text-transform: uppercase;
+                        letter-spacing: 1px;
+                    }
+                    .document-header p {
+                        margin: 5px 0 0 0;
+                        color: #555;
+                        font-size: 14px;
+                    }
+
+                    /* Caixinha de informações do paciente */
+                    .patient-info {
+                        background-color: #f8f9fa;
+                        border: 1px solid #e9ecef;
+                        border-radius: 6px;
+                        padding: 15px;
+                        margin-bottom: 30px;
+                        display: flex;
+                        justify-content: space-between;
+                        font-size: 14px;
+                    }
+                    .patient-info p { 
+                        margin: 0; 
+                    }
+
+                    /* Área principal do conteúdo */
+                    .content {
+                        font-size: 12pt; /* Tamanho ideal para leitura em papel */
+                        text-align: justify;
+                    }
+
+                    /* Estilização dos títulos que vieram do Markdown */
+                    .main-title {
+                        text-align: center;
+                        font-size: 16pt;
+                        margin-top: 0;
+                        margin-bottom: 20px;
+                        display: none; /* Ocultamos o "# DIAGNÓSTICO MÉDICO COMPLETO" original porque já temos o cabeçalho novo */
+                    }
+                    .section-title {
+                        color: #2c3e50;
+                        border-bottom: 1px solid #eee;
+                        padding-bottom: 5px;
+                        margin-top: 30px;
+                        margin-bottom: 15px;
+                        font-size: 14pt;
+                        text-transform: uppercase;
+                    }
+
+                    /* Área de Assinatura ao final do documento */
+                    .signature-area {
+                        margin-top: 60px;
+                        text-align: center;
+                        page-break-inside: avoid; /* Evita que a linha de assinatura fique separada na folha seguinte */
+                    }
+                    .signature-area hr {
+                        width: 50%;
+                        border: none;
+                        border-top: 1px solid #000;
+                        margin-bottom: 8px;
+                    }
+                    .signature-area p {
+                        margin: 0;
+                        font-size: 14px;
+                        color: #333;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="document-header">
+                    <h1>Clínica Médica</h1>
+                    <p>Laudo e Avaliação Clínica</p>
+                </div>
+
+                <div class="patient-info">
+                    <div>
+                        <p><strong>Paciente:</strong> ${patientName}</p>
+                    </div>
+                    <div>
+                        <p><strong>Data da Emissão:</strong> ${today}</p>
+                    </div>
+                </div>
+
+                <div class="content">
+                    ${formattedText}
+                </div>
+
+                <div class="signature-area">
+                    <hr>
+                    <p>Assinatura e Carimbo do(a) Médico(a)</p>
+                </div>
+            </body>
+        </html>
+    `);
+    printWindow.document.close();
+    
+    // Pequeno delay para garantir que o navegador renderize o HTML antes de chamar a caixa de impressão
+    setTimeout(() => {
+        printWindow.print();
+    }, 250);
+};
     // Funções do Modal de Exame
     const examBaseByPatient = {
         default: 'images/resultado-do-exame-de-sangue-v0-0wk34izw0f1d1'
