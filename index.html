@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IA Diagnóstico - Hipertensão & Diabetes</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-heartbeat"></i>
+                <h1>IA Diagnóstico</h1>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <ul>
+                <li>
+                    <a href="#dashboard" class="nav-item active" data-section="dashboard">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#pacientes" class="nav-item" data-section="pacientes">
+                        <i class="fas fa-users"></i>
+                        <span>Pacientes</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#correlacoes" class="nav-item" data-section="correlacoes">
+                        <i class="fas fa-link"></i>
+                        <span>Correlações</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <i class="fas fa-user-md"></i>
+                <span>Dr. Silva</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="top-bar-content">
+                <h2 id="pageTitle">Dashboard</h2>
+                <div class="top-bar-actions">
+                    <button class="btn-notification">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+                    <button class="btn-profile">
+                        <i class="fas fa-user-circle"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="section active">
+                <div class="section-header">
+                    <h2>Dashboard Médico</h2>
+                    <p>Visão geral dos dados clínicos e diagnósticos</p>
+                </div>
+                
+                <div class="dashboard-grid">
+                    <!-- Card de Total de Pacientes -->
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Total de Pacientes</h3>
+                            <p class="number">2,156</p>
+                            <p class="trend positive">+45 este mês</p>
+                        </div>
+                    </div>
+
+                    <!-- Card de Casos de Hipertensão -->
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Casos de Hipertensão</h3>
+                            <p class="number">456</p>
+                            <p class="trend positive">21.2% da população</p>
+                        </div>
+                    </div>
+
+                    <!-- Card de Casos de Diabetes -->
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-tint"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Casos de Diabetes</h3>
+                            <p class="number">312</p>
+                            <p class="trend positive">14.5% da população</p>
+                        </div>
+                    </div>
+
+                    <!-- Card de Diagnósticos IA -->
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Diagnósticos IA</h3>
+                            <p class="number">234</p>
+                            <p class="trend positive">96% precisão</p>
+                        </div>
+                    </div>
+
+                    <!-- Card de Comorbidades -->
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-link"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Comorbidades</h3>
+                            <p class="number">89</p>
+                            <p class="trend">Hipertensão + Diabetes</p>
+                        </div>
+                    </div>
+
+                    <!-- Card de Alertas -->
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Alertas Críticos</h3>
+                            <p class="number">18</p>
+                            <p class="trend">Requerem atenção</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pacientes Section -->
+            <section id="pacientes" class="section">
+                <div class="section-header">
+                    <h2>Perfis de Pacientes</h2>
+                    <p>Gerenciamento e visualização de dados dos pacientes</p>
+                </div>
+                
+                <div class="fans-grid">
+                    <!-- Card de Paciente 1 - Hipertensão -->
+                    <div class="fan-card" onclick="openPatientDetails('maria-silva')">
+                        <div class="fan-header">
+                            <img src="avatar/premium_photo-1688572454849-4348982edf7d.jpg" alt="Avatar" class="fan-avatar">
+                            <div class="fan-info">
+                                <h3>Maria Silva</h3>
+                                <p class="fan-location">45 anos | Feminino</p>
+                            </div>
+                        </div>
+                        <div class="fan-stats">
+                            <div class="stat">
+                                <span class="label">Pressão Sistólica</span>
+                                <span class="value">140 mmHg</span>
+                            </div>
+                            <div class="stat">
+                                <span class="label">Glicemia</span>
+                                <span class="value">95 mg/dL</span>
+                            </div>
+                        </div>
+                        <div class="fan-interests">
+                            <h4>Fatores de Risco</h4>
+                            <div class="tags">
+                                <span class="tag">Obesidade</span>
+                                <span class="tag">Sedentarismo</span>
+                                <span class="tag">Histórico Familiar</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card de Paciente 2 - Diabetes -->
+                    <div class="fan-card" onclick="openPatientDetails('joao-santos')">
+                        <div class="fan-header">
+                            <img src="avatar/premium_photo-1689568126014-06fea9d5d341.jpg" alt="Avatar" class="fan-avatar">
+                            <div class="fan-info">
+                                <h3>João Santos</h3>
+                                <p class="fan-location">58 anos | Masculino</p>
+                            </div>
+                        </div>
+                        <div class="fan-stats">
+                            <div class="stat">
+                                <span class="label">Pressão Sistólica</span>
+                                <span class="value">160 mmHg</span>
+                            </div>
+                            <div class="stat">
+                                <span class="label">Glicemia</span>
+                                <span class="value">180 mg/dL</span>
+                            </div>
+                        </div>
+                        <div class="fan-interests">
+                            <h4>Fatores de Risco</h4>
+                            <div class="tags">
+                                <span class="tag">Diabetes Tipo 2</span>
+                                <span class="tag">Tabagismo</span>
+                                <span class="tag">Estresse</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card de Paciente 3 - Pré-Diabetes -->
+                    <div class="fan-card" onclick="openPatientDetails('ana-pereira')">
+                        <div class="fan-header">
+                            <img src="avatar/1708135913769.jpg" alt="Avatar" class="fan-avatar">
+                            <div class="fan-info">
+                                <h3>Ana Pereira</h3>
+                                <p class="fan-location">52 anos | Feminino</p>
+                            </div>
+                        </div>
+                        <div class="fan-stats">
+                            <div class="stat">
+                                <span class="label">Pressão Sistólica</span>
+                                <span class="value">135 mmHg</span>
+                            </div>
+                            <div class="stat">
+                                <span class="label">Glicemia</span>
+                                <span class="value">110 mg/dL</span>
+                            </div>
+                        </div>
+                        <div class="fan-interests">
+                            <h4>Fatores de Risco</h4>
+                            <div class="tags">
+                                <span class="tag">Pré-Diabetes</span>
+                                <span class="tag">Sedentarismo</span>
+                                <span class="tag">Dieta Rica em Sódio</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card de Paciente 4 - Comorbidade -->
+                    <div class="fan-card" onclick="openPatientDetails('carlos-pinto')">
+                        <div class="fan-header">
+                            <img src="avatar/download.jpg" alt="Avatar" class="fan-avatar">
+                            <div class="fan-info">
+                                <h3>Carlos Pinto</h3>
+                                <p class="fan-location">65 anos | Masculino</p>
+                            </div>
+                        </div>
+                        <div class="fan-stats">
+                            <div class="stat">
+                                <span class="label">Pressão Sistólica</span>
+                                <span class="value">175 mmHg</span>
+                            </div>
+                            <div class="stat">
+                                <span class="label">Glicemia</span>
+                                <span class="value">220 mg/dL</span>
+                            </div>
+                        </div>
+                        <div class="fan-interests">
+                            <h4>Fatores de Risco</h4>
+                            <div class="tags">
+                                <span class="tag">Diabetes Tipo 2</span>
+                                <span class="tag">Hipertensão Grave</span>
+                                <span class="tag">Obesidade</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estatísticas Gerais -->
+                <div class="section-header" style="margin-top: 3rem;">
+                    <h3>Estatísticas Gerais dos Pacientes</h3>
+                    <p>Análise clínica e evolução dos dados médicos</p>
+                </div>
+                
+                <div class="analytics-grid">
+                    <!-- Gráfico de Fatores de Risco -->
+                    <div class="chart-card">
+                        <h3>Distribuição de Fatores de Risco</h3>
+                        <div class="chart">
+                            <canvas id="riskFactorsChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Gráfico de Medicações -->
+                    <div class="chart-card">
+                        <h3>Medicações Prescritas</h3>
+                        <div class="chart">
+                            <canvas id="medicationsChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Gráfico de Comorbidades -->
+                    <div class="chart-card">
+                        <h3>Prevalência de Comorbidades</h3>
+                        <div class="chart">
+                            <canvas id="comorbiditiesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+
+            <!-- Correlações Section -->
+            <section id="correlacoes" class="section">
+                <div class="section-header">
+                    <h2>Análise de Correlações</h2>
+                    <p>Estudo das relações entre diferentes condições médicas</p>
+                </div>
+                
+                <div class="campaigns-grid">
+                    <!-- Card de Correlação 1 -->
+                    <div class="campaign-card">
+                        <div class="campaign-header">
+                            <h3>Hipertensão → Diabetes</h3>
+                            <span class="status correlacao">Correlação Forte</span>
+                        </div>
+                        <div class="campaign-content">
+                            <div class="diagnosis-content">
+                                <h4>Análise IA:</h4>
+                                <p><strong>Risco de Progressão:</strong> Pacientes com hipertensão têm 2.5x mais chances de desenvolver diabetes. Mecanismo: resistência à insulina e disfunção endotelial.</p>
+                                
+                                <div class="risk-percentage">
+                                    <h4>Fatores de Risco Compartilhados:</h4>
+                                    <div class="disease-risk">
+                                        <div class="risk-item">
+                                            <span>Obesidade: 85%</span>
+                                            <div class="progress-bar">
+                                                <div class="progress" style="width: 85%"></div>
+                                            </div>
+                                        </div>
+                                        <div class="risk-item">
+                                            <span>Sedentarismo: 75%</span>
+                                            <div class="progress-bar">
+                                                <div class="progress" style="width: 75%"></div>
+                                            </div>
+                                        </div>
+                                        <div class="risk-item">
+                                            <span>Dieta Rica em Sódio: 70%</span>
+                                            <div class="progress-bar">
+                                                <div class="progress" style="width: 70%"></div>
+                                            </div>
+                                        </div>
+                                        <div class="risk-item">
+                                            <span>Estresse: 60%</span>
+                                            <div class="progress-bar">
+                                                <div class="progress" style="width: 60%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="campaign-stats">
+                                <div class="stat">
+                                    <span class="label">Correlação</span>
+                                    <span class="value">0.78</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="label">Confiança</span>
+                                    <span class="value">95%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card de Correlação 2 -->
+                    <div class="campaign-card">
+                        <div class="campaign-header">
+                            <h3>Diabetes → Hipertensão</h3>
+                            <span class="status correlacao">Correlação Forte</span>
+                        </div>
+                        <div class="campaign-content">
+                            <div class="diagnosis-content">
+                                <h4>Análise IA:</h4>
+                                <p><strong>Risco de Progressão:</strong> Pacientes com diabetes têm 3.2x mais chances de desenvolver hipertensão. Mecanismo: nefropatia diabética e disfunção autonômica.</p>
+                                
+                                <div class="risk-percentage">
+                                    <h4>Complicações Associadas:</h4>
+                                    <div class="disease-risk">
+                                        <div class="risk-item">
+                                            <span>Nefropatia: 40%</span>
+                                            <div class="progress-bar">
+                                                <div class="progress" style="width: 40%"></div>
+                                            </div>
+                                        </div>
+                                        <div class="risk-item">
+                                            <span>Retinopatia: 35%</span>
+                                            <div class="progress-bar">
+                                                <div class="progress" style="width: 35%"></div>
+                                            </div>
+                                        </div>
+                                        <div class="risk-item">
+                                            <span>Neuropatia: 30%</span>
+                                            <div class="progress-bar">
+                                                <div class="progress" style="width: 30%"></div>
+                                            </div>
+                                        </div>
+                                        <div class="risk-item">
+                                            <span>Doença Cardíaca: 65%</span>
+                                            <div class="progress-bar">
+                                                <div class="progress" style="width: 65%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="campaign-stats">
+                                <div class="stat">
+                                    <span class="label">Correlação</span>
+                                    <span class="value">0.82</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="label">Confiança</span>
+                                    <span class="value">97%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card de Correlação 3 -->
+                    <div class="campaign-card">
+                        <div class="campaign-header">
+                            <h3>Síndrome Metabólica</h3>
+                            <span class="status alto-risco">Alto Risco</span>
+                        </div>
+                        <div class="campaign-content">
+                            <div class="diagnosis-content">
+                                <h4>Análise IA:</h4>
+                                <p><strong>Cluster de Doenças:</strong> 67% dos pacientes com hipertensão + diabetes apresentam síndrome metabólica completa. Risco cardiovascular extremamente elevado.</p>
+                                
+                                <div class="risk-percentage">
+                                    <h4>Componentes da Síndrome:</h4>
+                                    <div class="disease-risk">
+                                        <div class="risk-item">
+                                            <span>Hipertensão: 95%</span>
+                                            <div class="progress-bar">
+                                                <div class="progress" style="width: 95%"></div>
+                                            </div>
+                                        </div>
+                                        <div class="risk-item">
+                                            <span>Diabetes: 90%</span>
+                                            <div class="progress-bar">
+                                                <div class="progress" style="width: 90%"></div>
+                                            </div>
+                                        </div>
+                                        <div class="risk-item">
+                                            <span>Dislipidemia: 85%</span>
+                                            <div class="progress-bar">
+                                                <div class="progress" style="width: 85%"></div>
+                                            </div>
+                                        </div>
+                                        <div class="risk-item">
+                                            <span>Obesidade Central: 80%</span>
+                                            <div class="progress-bar">
+                                                <div class="progress" style="width: 80%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="campaign-stats">
+                                <div class="stat">
+                                    <span class="label">Prevalência</span>
+                                    <span class="value">67%</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="label">Mortalidade</span>
+                                    <span class="value">+300%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Página de Detalhes do Paciente -->
+            <section id="patient-details" class="section">
+                <div class="patient-details-container">
+                    <!-- Header do Paciente -->
+                    <div class="patient-header">
+                        <button class="btn-back" onclick="closePatientDetails()">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                        <div class="patient-info">
+                            <button class="btn-exam" title="Mostrar laudo diagnosticado" onclick="openExamImage()">
+                                mostrar laudo diagnosticado
+                            </button>
+                            <img id="patient-avatar" src="" alt="Avatar" class="patient-avatar">
+                            <div class="patient-details">
+                                <h2 id="patient-name">Nome do Paciente</h2>
+                                <p id="patient-age">Idade | Gênero</p>
+                                <span id="patient-status" class="status">Status</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Conteúdo Principal -->
+                    <div class="patient-content">
+                        <!-- Diagnóstico IA (Lado Esquerdo) -->
+                        <div class="ai-diagnosis">
+                            <h3>Diagnóstico Inteligente</h3>
+                            <div class="ai-content">
+                                <div class="ai-summary">
+                                    <h4>Resumo IA</h4>
+                                    <p id="ai-summary-text">Análise de risco baseada em dados clínicos...</p>
+                                </div>
+                                
+                                <div class="risk-percentage">
+                                    <h4>Probabilidade de Doenças:</h4>
+                                    <div class="disease-risk" id="ai-risk-percentages">
+                                        <!-- Risco será preenchido via JavaScript -->
+                                    </div>
+                                </div>
+
+                                <div class="ai-stats">
+                                    <div class="stat">
+                                        <span class="label">Confiança IA</span>
+                                        <span class="value" id="ai-confidence">0%</span>
+                                    </div>
+                                    <div class="stat">
+                                        <span class="label">Última Atualização</span>
+                                        <span class="value">Hoje</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Área de Diagnóstico Completo (Lado Direito) -->
+                        <div class="complete-diagnosis">
+                            <h3>Diagnóstico Médico Completo</h3>
+                            <div class="diagnosis-editor">
+                                <div class="editor-toolbar">
+                                    <button class="btn-tool" onclick="generateAIDiagnosis()">
+                                        <i class="fas fa-robot"></i>
+                                        Gerar com IA
+                                    </button>
+                                    <button class="btn-tool" onclick="saveDiagnosis()">
+                                        <i class="fas fa-save"></i>
+                                        Salvar
+                                    </button>
+                                    <button class="btn-tool" onclick="printDiagnosis()">
+                                        <i class="fas fa-print"></i>
+                                        Imprimir
+                                    </button>
+                                </div>
+                                <div class="editor-content">
+                                    <textarea id="diagnosis-text" placeholder="Digite ou gere o diagnóstico completo do paciente aqui...">
+# DIAGNÓSTICO MÉDICO COMPLETO
+
+## DADOS DO PACIENTE
+- Nome: [Nome do Paciente]
+- Idade: [Idade] anos
+- Gênero: [Gênero]
+- Data da Consulta: [Data Atual]
+
+## QUEIXA PRINCIPAL
+[Descrever a queixa principal do paciente]
+
+## HISTÓRICO MÉDICO
+[Histórico médico relevante]
+
+## EXAME FÍSICO
+[Resultados do exame físico]
+
+## EXAMES COMPLEMENTARES
+[Resultados de exames laboratoriais e de imagem]
+
+## DIAGNÓSTICO
+[Diagnóstico principal e secundários]
+
+## PLANO TERAPÊUTICO
+[Tratamento prescrito]
+
+## OBSERVAÇÕES
+[Observações adicionais]
+                                    </textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gráficos do Paciente -->
+                    <div class="patient-charts">
+                        <h3>Evolução Clínica do Paciente</h3>
+                        <div class="charts-grid">
+                            <!-- Gráfico de Evolução da Pressão -->
+                            <div class="chart-card">
+                                <h4>Evolução da Pressão Arterial</h4>
+                                <div class="chart">
+                                    <canvas id="patientPressureChart"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Gráfico de Evolução da Glicemia -->
+                            <div class="chart-card">
+                                <h4>Evolução da Glicemia</h4>
+                                <div class="chart">
+                                    <canvas id="patientGlucoseChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal de Exame -->
+    <div id="examModal" class="exam-modal" onclick="handleExamBackdropClick(event)">
+        <div class="exam-modal-content">
+            <button class="exam-modal-close" onclick="closeExamModal()" aria-label="Fechar">
+                <i class="fas fa-times"></i>
+            </button>
+            <img id="examImage" alt="Imagem do exame do paciente" />
+            <div class="exam-caption" id="examCaption"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
