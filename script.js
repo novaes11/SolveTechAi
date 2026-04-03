@@ -806,20 +806,53 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Função para gerar diagnóstico com IA
-    window.generateAIDiagnosis = function() {
-        const diagnosisText = document.getElementById('diagnosis-text');
-        const patientName = document.getElementById('patient-name').textContent;
-        const aiSummary = document.getElementById('ai-summary-text').textContent;
+// US05 - Gerador de IA
+// Subtask 1: função com template string
+// Subtask 2: lógica para captar o nome e dados do paciente atual
+window.generateAIDiagnosis = function() {
+    const diagnosisText = document.getElementById('diagnosis-text');
 
-        const aiDiagnosis = `# DIAGNÓSTICO MÉDICO COMPLETO - ${patientName}
+    // Subtask 2: capta o paciente atual pelo id armazenado ao abrir os detalhes
+    const patientId = window.currentPatientId;
+    const patient   = patientsData.find(p => p.id === patientId);
+
+    // Fallback caso seja chamada sem paciente selecionado
+    if (!patient) {
+        alert('Nenhum paciente selecionado.');
+        return;
+    }
+
+    // Monta os riscos formatados para o laudo
+    const risksFormatted = patient.risks
+        .map(r => `  - ${r.disease}: ${r.percentage}%`)
+        .join('\n');
+
+    // Monta os fatores de risco formatados
+    const riskFactorsFormatted = patient.riskFactors
+        .map(f => `  - ${f}`)
+        .join('\n');
+
+    // Subtask 1: template string com todos os dados do paciente
+    const aiDiagnosis = `# DIAGNÓSTICO MÉDICO COMPLETO - ${patient.name}
 
 ## DADOS DO PACIENTE
-- Nome: ${patientName}
+- Nome: ${patient.name}
+- Idade/Gênero: ${patient.age}
+- Status Clínico: ${patient.statusText}
 - Data da Consulta: ${new Date().toLocaleDateString('pt-BR')}
 
-## ANÁLISE IA
-${aiSummary}
+## PARÂMETROS CLÍNICOS ATUAIS
+- Pressão Sistólica: ${patient.systolic} mmHg
+- Glicemia: ${patient.glucose} mg/dL
+
+## ANÁLISE IA (Confiança: ${patient.aiConfidence})
+${patient.aiSummary}
+
+## PROBABILIDADE DE DOENÇAS
+${risksFormatted}
+
+## FATORES DE RISCO IDENTIFICADOS
+${riskFactorsFormatted}
 
 ## QUEIXA PRINCIPAL
 Paciente apresenta alterações nos parâmetros clínicos que indicam necessidade de monitoramento contínuo.
@@ -842,8 +875,8 @@ Tratamento deve ser prescrito pelo médico responsável.
 ## OBSERVAÇÕES
 Este diagnóstico foi gerado com auxílio de inteligência artificial e deve ser revisado pelo médico.`;
 
-        diagnosisText.value = aiDiagnosis;
-    };
+    diagnosisText.value = aiDiagnosis;
+};
 
     // Função para salvar diagnóstico
     window.saveDiagnosis = function() {
