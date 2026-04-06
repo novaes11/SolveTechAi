@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corporate Login Form</title>
+    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="company-logo">
+                    <div class="logo-icon"><i class="fas fa-heartbeat"></i></div>
+                </div>
+                <h2>Bem-vindo</h2>
+                <p>Por favor, faça login na sua conta corporativa.</p>
+            </div>
+            
+            <form class="login-form" id="loginForm" novalidate>
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <input type="email" id="email" name="email" required autocomplete="email">
+                        <label for="email">Email corporativo</label>
+                        <span class="input-border"></span>
+                    </div>
+                    <span class="error-message" id="emailError"></span>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-wrapper password-wrapper">
+                        <input type="password" id="password" name="password" required autocomplete="current-password">
+                        <label for="password">Senha</label>
+                        <button type="button" class="password-toggle" id="passwordToggle" aria-label="Toggle password visibility">
+                            <span class="toggle-icon"></span>
+                        </button>
+                        <span class="input-border"></span>
+                    </div>
+                    <span class="error-message" id="passwordError"></span>
+                </div>
+
+                <div class="form-options">
+                    <div class="remember-wrapper">
+                        <input type="checkbox" id="remember" name="remember">
+                        <label for="remember" class="checkbox-label">
+                            <span class="checkbox-custom"></span>
+                            Mantenha-me conectado
+                        </label>
+                    </div>
+                    <a href="#" class="forgot-password">Esqueci minha senha</a>
+                </div>
+
+                <button type="submit" class="login-btn">
+                    <span class="btn-text">Entrar</span>
+                    <span class="btn-loader"></span>
+                </button>
+            </form>
+
+            <div class="divider">
+                <span>ou faça login com</span>
+            </div>
+
+            <div class="sso-options">
+                <button type="button" class="sso-btn google-btn">
+                    <i class="fab fa-google sso-icon"></i>
+                    <span>Google</span>
+                </button>
+                <button type="button" class="sso-btn apple-btn">
+                    <i class="fab fa-apple sso-icon"></i>
+                    <span>Apple</span>
+                </button>
+            </div>
+
+            <div class="footer-links">
+                <a href="#" class="footer-link">Política de Privacidade</a>
+                <span class="separator">•</span>
+                <a href="#" class="footer-link">Termos de Serviço</a>
+                <span class="separator">•</span>
+                <a href="#" class="footer-link">Suporte</a>
+            </div>
+
+            <div class="success-message" id="successMessage">
+                <div class="success-icon">✓</div>
+                <h3>Autenticação Bem-sucedida</h3>
+                <p>Redirecionando para sua área de trabalho...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="login.js"></script>
+</body>
+</html>

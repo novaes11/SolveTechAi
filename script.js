@@ -1127,4 +1127,30 @@ window.printDiagnosis = function() {
             window.closeExamModal();
         }
     };
+
+    // Dropdown do Perfil
+    const profileBtn = document.getElementById("profileBtn");
+    const dropdown = document.getElementById("profileDropdown");
+
+    // abrir/fechar ao clicar
+    profileBtn.addEventListener("click", () => {
+       dropdown.classList.toggle("show");
+    });
+
+    // fechar se clicar fora
+    document.addEventListener("click", (e) => {
+        if (!profileBtn.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.remove("show");
+        }
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", logout);
+    
+    function logout() {
+        // limpa sessão
+        localStorage.clear();
+
+        // força redirecionamento
+        window.location.href = "login.html";
+    }
 });

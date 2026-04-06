@@ -10,6 +10,13 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+    <script>
+        const logado = localStorage.getItem("usuarioLogado");
+
+        if (logado !== "true") {
+            window.location.href = "login.html";
+        }
+    </script>
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
@@ -65,9 +72,18 @@
                         <i class="fas fa-bell"></i>
                         <span class="notification-badge">3</span>
                     </button>
-                    <button class="btn-profile">
-                        <i class="fas fa-user-circle"></i>
-                    </button>
+                    <!-- Profile com dropdown -->
+                    <div class="profile-menu">
+                        <button class="btn-profile" id="profileBtn">
+                            <i class="fas fa-user"></i>
+                        </button>
+
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <button id="logoutBtn" class="dropdown-item">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </button>
+                        </div>
+                    </div>  
                 </div>
             </div>
         </div>
