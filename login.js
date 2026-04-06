@@ -171,6 +171,7 @@ class CorporateLoginForm {
         this.form.style.display = 'none';
         document.querySelector('.sso-options').style.display = 'none';
         document.querySelector('.footer-links').style.display = 'none';
+        this.successMessage.style.display = 'flex';
         this.successMessage.classList.add('show');
         
         // Simular redirecionamento após 3 segundos (sistemas corporativos são mais lentos)
