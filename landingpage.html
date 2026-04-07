@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SolveTechAi — Diagnóstico Clínico Inteligente</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: '#0052FF',
+            'brand-light': '#3378FF',
+            'brand-dim': '#0039CC',
+            navy: '#050D1F',
+            'navy-2': '#080F24',
+            surface: '#0B1530',
+            glass: 'rgba(255,255,255,0.04)',
+            'glass-border': 'rgba(255,255,255,0.08)',
+          },
+          fontFamily: {
+            sans: ['Outfit', 'sans-serif'],
+            mono: ['DM Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /* ── Base ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; }
+    html { background: #050D1F; }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: #050D1F;
+      color: #E2EAF8;
+      overflow-x: hidden;
+    }
+
+    /* ── Noise texture overlay ────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.4;
+    }
+
+    /* ── Glow blobs ───────────────────────────────────── */
+    .glow-blob {
+      position: absolute; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0;
+    }
+
+    /* ── Glass card ───────────────────────────────────── */
+    .glass-card {
+      background: rgba(11, 21, 48, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .glass-card:hover {
+      border-color: rgba(0, 82, 255, 0.35);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 60px rgba(0, 82, 255, 0.12);
+    }
+
+    /* ── Nav glass ────────────────────────────────────── */
+    .nav-glass {
+      background: rgba(5, 13, 31, 0.8);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    /* ── Gradient text ────────────────────────────────── */
+    .gradient-text {
+      background: linear-gradient(135deg, #ffffff 0%, #7EAAFF 50%, #0052FF 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .gradient-text-blue {
+      background: linear-gradient(90deg, #3378FF 0%, #00D4FF 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ── CTA button ───────────────────────────────────── */
+    .btn-primary {
+      background: linear-gradient(135deg, #0052FF 0%, #3378FF 100%);
+      box-shadow: 0 0 0 0 rgba(0,82,255,0.4);
+      transition: box-shadow 0.3s ease, transform 0.2s ease;
+    }
+    .btn-primary:hover {
+      box-shadow: 0 0 30px rgba(0,82,255,0.6), 0 8px 30px rgba(0,82,255,0.3);
+      transform: translateY(-2px);
+    }
+    .btn-secondary {
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.09);
+      border-color: rgba(0,82,255,0.5);
+    }
+
+    /* ── Icon wrapper ─────────────────────────────────── */
+    .icon-ring {
+      background: linear-gradient(135deg, rgba(0,82,255,0.15), rgba(0,212,255,0.08));
+      border: 1px solid rgba(0,82,255,0.25);
+    }
+
+    /* ── Dashboard sim ────────────────────────────────── */
+    .dash-surface {
+      background: #060e22;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .dash-inner {
+      background: #0a1530;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    /* bar chart bars */
+    .bar-fill {
+      border-radius: 4px 4px 0 0;
+      transition: height 1s ease;
+    }
+
+    /* line chart */
+    .chart-wrap { position: relative; }
+    .chart-line {
+      position: absolute; bottom: 0; left: 0; right: 0; top: 0;
+    }
+
+    /* SVG path animation */
+    .path-draw {
+      stroke-dasharray: 600;
+      stroke-dashoffset: 600;
+      animation: drawLine 2.5s ease forwards 0.6s;
+    }
+    .path-draw-2 {
+      stroke-dasharray: 600;
+      stroke-dashoffset: 600;
+      animation: drawLine 2.5s ease forwards 1s;
+    }
+    @keyframes drawLine {
+      to { stroke-dashoffset: 0; }
+    }
+
+    /* pulse dot */
+    .pulse-dot {
+      animation: pulse-ring 1.8s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+    }
+    @keyframes pulse-ring {
+      0% { box-shadow: 0 0 0 0 rgba(0,82,255,0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(0,82,255,0); }
+      100% { box-shadow: 0 0 0 0 rgba(0,82,255,0); }
+    }
+
+    /* ── Stat counters ────────────────────────────────── */
+    .stat-card {
+      background: linear-gradient(135deg, rgba(0,82,255,0.08) 0%, rgba(0,52,180,0.04) 100%);
+      border: 1px solid rgba(0,82,255,0.2);
+    }
+
+    /* ── Fade-in animations ───────────────────────────── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── Scrollbar ────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #050D1F; }
+    ::-webkit-scrollbar-thumb { background: #0052FF55; border-radius: 3px; }
+
+    /* ── ECG line decoration ──────────────────────────── */
+    .ecg-line {
+      stroke-dasharray: 800;
+      stroke-dashoffset: 800;
+      animation: ecgDraw 3s ease forwards 0.3s;
+    }
+    @keyframes ecgDraw {
+      to { stroke-dashoffset: 0; }
+    }
+
+    /* ── Heartbeat badge ──────────────────────────────── */
+    .hb-badge {
+      background: linear-gradient(135deg, #0052FF22, #00D4FF11);
+      border: 1px solid #0052FF44;
+    }
+
+    /* ── Risk ring ────────────────────────────────────── */
+    .risk-ring { transition: stroke-dashoffset 1.5s ease; }
+
+    /* ── Mobile nav ───────────────────────────────────── */
+    #mobile-menu { display: none; }
+    #mobile-menu.open { display: flex; }
+  </style>
+</head>
+
+<body>
+
+<!-- ────────────────────────────────────────────────────
+     NAVIGATION
+──────────────────────────────────────────────────── -->
+<nav class="nav-glass fixed top-0 left-0 right-0 z-50">
+  <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+
+    <!-- Logo -->
+    <a href="#" class="flex items-center gap-2.5 group">
+      <div class="w-9 h-9 rounded-xl bg-brand flex items-center justify-center shadow-lg shadow-brand/30 group-hover:shadow-brand/60 transition-all">
+        <i class="fa-solid fa-heart-pulse text-white text-sm"></i>
+      </div>
+      <span class="text-white font-bold text-lg tracking-tight">
+        SolveTech<span class="text-brand-light">Ai</span>
+      </span>
+    </a>
+
+    <!-- Desktop links -->
+    <div class="hidden md:flex items-center gap-8">
+      <a href="#features" class="text-sm text-slate-400 hover:text-white transition-colors font-medium">Funcionalidades</a>
+      <a href="#dashboard" class="text-sm text-slate-400 hover:text-white transition-colors font-medium">Dashboard</a>
+      <a href="#evidence" class="text-sm text-slate-400 hover:text-white transition-colors font-medium">Evidências</a>
+      <a href="#contact" class="text-sm text-slate-400 hover:text-white transition-colors font-medium">Contato</a>
+    </div>
+
+    <!-- CTA buttons -->
+    <div class="hidden md:flex items-center gap-3">
+      <a href="#" class="btn-secondary text-sm font-semibold text-slate-300 px-5 py-2 rounded-lg">
+        Login
+      </a>
+      <a href="#demo" class="btn-primary text-sm font-semibold text-white px-5 py-2 rounded-lg">
+        Agendar Demo
+      </a>
+    </div>
+
+    <!-- Hamburger -->
+    <button id="hamburger" class="md:hidden text-slate-400 hover:text-white" onclick="toggleMenu()">
+      <i class="fa-solid fa-bars text-xl"></i>
+    </button>
+  </div>
+
+  <!-- Mobile menu -->
+  <div id="mobile-menu" class="flex-col bg-navy-2 border-t border-white/5 px-6 py-4 gap-4 md:hidden">
+    <a href="#features" class="text-sm text-slate-300 hover:text-white font-medium py-1" onclick="toggleMenu()">Funcionalidades</a>
+    <a href="#dashboard" class="text-sm text-slate-300 hover:text-white font-medium py-1" onclick="toggleMenu()">Dashboard</a>
+    <a href="#evidence" class="text-sm text-slate-300 hover:text-white font-medium py-1" onclick="toggleMenu()">Evidências</a>
+    <a href="#contact" class="text-sm text-slate-300 hover:text-white font-medium py-1" onclick="toggleMenu()">Contato</a>
+    <div class="flex gap-3 pt-2">
+      <a href="#" class="btn-secondary text-sm font-semibold text-slate-300 px-4 py-2 rounded-lg flex-1 text-center">Login</a>
+      <a href="#demo" class="btn-primary text-sm font-semibold text-white px-4 py-2 rounded-lg flex-1 text-center">Demo</a>
+    </div>
+  </div>
+</nav>
+
+
+<!-- ────────────────────────────────────────────────────
+     HERO SECTION
+──────────────────────────────────────────────────── -->
+<section class="relative min-h-screen flex items-center pt-16 overflow-hidden">
+
+  <!-- Glow blobs -->
+  <div class="glow-blob w-96 h-96 bg-brand/20 top-10 left-1/3"></div>
+  <div class="glow-blob w-80 h-80 bg-cyan-500/10 top-1/2 right-10"></div>
+  <div class="glow-blob w-64 h-64 bg-brand/10 bottom-20 left-20"></div>
+
+  <!-- ECG decoration -->
+  <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-5">
+    <svg viewBox="0 0 1200 120" class="w-full" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path class="ecg-line" d="M0,60 L160,60 L200,60 L220,10 L240,110 L260,60 L280,60 L300,30 L320,90 L360,60 L560,60 L580,60 L600,10 L620,110 L640,60 L660,60 L680,30 L700,90 L740,60 L1200,60" stroke="#0052FF" stroke-width="2" fill="none"/>
+    </svg>
+  </div>
+
+  <div class="relative z-10 max-w-7xl mx-auto px-6 py-24 grid md:grid-cols-2 gap-16 items-center">
+
+    <!-- Left: Text -->
+    <div class="fade-up">
+      <!-- Badge -->
+      <div class="hb-badge inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-8">
+        <span class="w-2 h-2 rounded-full bg-brand pulse-dot"></span>
+        <span class="text-xs font-semibold text-brand-light tracking-widest uppercase">IA Médica de Próxima Geração</span>
+      </div>
+
+      <h1 class="text-5xl md:text-6xl lg:text-7xl font-black leading-[1.05] mb-6 tracking-tight">
+        <span class="gradient-text">A evolução</span><br/>
+        <span class="text-white">do diagnóstico</span><br/>
+        <span class="text-white">clínico.</span>
+      </h1>
+
+      <p class="text-slate-400 text-lg md:text-xl leading-relaxed mb-10 max-w-lg font-light">
+        Monitoramento contínuo de <strong class="text-slate-200 font-semibold">hipertensão e diabetes</strong> com predição de risco de Síndrome Metabólica — em tempo real, para cada paciente.
+      </p>
+
+      <div class="flex flex-wrap gap-4">
+        <a href="#demo" class="btn-primary inline-flex items-center gap-2.5 text-white font-bold px-8 py-4 rounded-xl text-base">
+          <i class="fa-solid fa-calendar-check text-sm"></i>
+          Agendar Demo Gratuita
+        </a>
+        <a href="#dashboard" class="btn-secondary inline-flex items-center gap-2.5 text-slate-300 font-semibold px-8 py-4 rounded-xl text-base">
+          <i class="fa-solid fa-play text-xs"></i>
+          Ver Dashboard
+        </a>
+      </div>
+
+      <!-- Trust bar -->
+      <div class="flex flex-wrap items-center gap-6 mt-12 pt-12 border-t border-white/05">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-shield-halved text-brand text-sm"></i>
+          <span class="text-xs text-slate-500 font-medium">LGPD Compliant</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-lock text-brand text-sm"></i>
+          <span class="text-xs text-slate-500 font-medium">HIPAA Ready</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-certificate text-brand text-sm"></i>
+          <span class="text-xs text-slate-500 font-medium">ISO 27001</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-hospital text-brand text-sm"></i>
+          <span class="text-xs text-slate-500 font-medium">+120 Clínicas</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Mini Dashboard Preview Card -->
+    <div class="fade-up relative" style="transition-delay:0.2s">
+      <div class="glass-card rounded-2xl p-5 relative overflow-hidden">
+
+        <!-- Card header -->
+        <div class="flex items-center justify-between mb-5">
+          <div>
+            <p class="text-xs text-slate-500 font-mono uppercase tracking-widest mb-1">Paciente Ativo</p>
+            <h3 class="text-white font-bold text-lg">Carlos M., 58a</h3>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="w-2 h-2 bg-emerald-400 rounded-full pulse-dot"></span>
+            <span class="text-xs text-emerald-400 font-semibold">Monitorando</span>
+          </div>
+        </div>
+
+        <!-- Vital mini bars -->
+        <div class="grid grid-cols-3 gap-3 mb-5">
+          <div class="dash-inner rounded-xl p-3 text-center">
+            <p class="text-xs text-slate-500 mb-1">Pressão</p>
+            <p class="text-xl font-black text-white">142<span class="text-xs text-slate-500 font-normal">/91</span></p>
+            <p class="text-xs text-amber-400 mt-0.5 font-medium">↑ Elevada</p>
+          </div>
+          <div class="dash-inner rounded-xl p-3 text-center">
+            <p class="text-xs text-slate-500 mb-1">Glicemia</p>
+            <p class="text-xl font-black text-white">186<span class="text-xs text-slate-500 font-normal"> mg/dL</span></p>
+            <p class="text-xs text-red-400 mt-0.5 font-medium">↑ Alto</p>
+          </div>
+          <div class="dash-inner rounded-xl p-3 text-center">
+            <p class="text-xs text-slate-500 mb-1">IMC</p>
+            <p class="text-xl font-black text-white">28.4</p>
+            <p class="text-xs text-amber-400 mt-0.5 font-medium">Sobrepeso</p>
+          </div>
+        </div>
+
+        <!-- AI Risk indicator -->
+        <div class="dash-inner rounded-xl p-4">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs text-slate-400 font-semibold uppercase tracking-widest">Risco IA · Sínd. Metabólica</span>
+            <span class="text-xs font-mono text-brand-light">72%</span>
+          </div>
+          <div class="h-2 bg-white/05 rounded-full overflow-hidden">
+            <div class="h-full rounded-full bg-gradient-to-r from-amber-500 to-red-500" style="width:72%; transition: width 1.5s ease;"></div>
+          </div>
+          <p class="text-xs text-slate-500 mt-2">Intervenção recomendada em 14 dias</p>
+        </div>
+      </div>
+
+      <!-- Floating badge -->
+      <div class="absolute -top-4 -right-4 glass-card rounded-xl px-4 py-2.5 flex items-center gap-2 shadow-xl">
+        <i class="fa-solid fa-brain text-brand text-sm"></i>
+        <span class="text-xs font-bold text-white">IA Preditiva</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ────────────────────────────────────────────────────
+     FEATURES GRID
+──────────────────────────────────────────────────── -->
+<section id="features" class="relative py-28 overflow-hidden">
+  <div class="glow-blob w-96 h-96 bg-brand/10 top-0 right-0"></div>
+
+  <div class="max-w-7xl mx-auto px-6">
+
+    <!-- Section header -->
+    <div class="text-center mb-16 fade-up">
+      <p class="text-xs font-semibold text-brand-light tracking-widest uppercase mb-4">Plataforma Clínica</p>
+      <h2 class="text-4xl md:text-5xl font-black text-white mb-5 leading-tight">
+        Três pilares do<br/><span class="gradient-text-blue">cuidado inteligente</span>
+      </h2>
+      <p class="text-slate-400 text-lg max-w-xl mx-auto font-light">
+        Desenvolvido com especialistas em endocrinologia e cardiologia para transformar dados em decisões clínicas precisas.
+      </p>
+    </div>
+
+    <!-- Cards grid -->
+    <div class="grid md:grid-cols-3 gap-6">
+
+      <!-- Card 1: Real-time monitoring -->
+      <div class="glass-card rounded-2xl p-8 fade-up" style="transition-delay:0.1s">
+        <div class="icon-ring w-14 h-14 rounded-2xl flex items-center justify-center mb-6">
+          <i class="fa-solid fa-wave-square text-brand-light text-xl"></i>
+        </div>
+        <h3 class="text-xl font-bold text-white mb-3">Monitoramento em Tempo Real</h3>
+        <p class="text-slate-400 text-sm leading-relaxed mb-6">
+          Acompanhe pressão arterial, glicemia, saturação e frequência cardíaca com atualização contínua, alertas automáticos e histórico completo de cada consulta.
+        </p>
+        <ul class="space-y-2">
+          <li class="flex items-center gap-2 text-xs text-slate-400">
+            <i class="fa-solid fa-check text-brand text-xs"></i> Alertas críticos em &lt;30 segundos
+          </li>
+          <li class="flex items-center gap-2 text-xs text-slate-400">
+            <i class="fa-solid fa-check text-brand text-xs"></i> Integração com wearables e IoT
+          </li>
+          <li class="flex items-center gap-2 text-xs text-slate-400">
+            <i class="fa-solid fa-check text-brand text-xs"></i> Dashboard multi-paciente
+          </li>
+        </ul>
+      </div>
+
+      <!-- Card 2: Predictive analysis -->
+      <div class="glass-card rounded-2xl p-8 fade-up relative overflow-hidden" style="transition-delay:0.2s">
+        <!-- Featured badge -->
+        <div class="absolute top-4 right-4 bg-brand/20 border border-brand/30 text-brand-light text-xs font-bold px-3 py-1 rounded-full">
+          Core IA
+        </div>
+        <div class="icon-ring w-14 h-14 rounded-2xl flex items-center justify-center mb-6">
+          <i class="fa-solid fa-brain text-brand-light text-xl"></i>
+        </div>
+        <h3 class="text-xl font-bold text-white mb-3">Análise Preditiva de Comorbidades</h3>
+        <p class="text-slate-400 text-sm leading-relaxed mb-6">
+          Modelos de Machine Learning treinados em mais de 2 milhões de prontuários identificam padrões invisíveis e calculam a probabilidade de Síndrome Metabólica com até 6 meses de antecedência.
+        </p>
+        <ul class="space-y-2">
+          <li class="flex items-center gap-2 text-xs text-slate-400">
+            <i class="fa-solid fa-check text-brand text-xs"></i> Score de risco multifatorial
+          </li>
+          <li class="flex items-center gap-2 text-xs text-slate-400">
+            <i class="fa-solid fa-check text-brand text-xs"></i> Análise de tendência temporal
+          </li>
+          <li class="flex items-center gap-2 text-xs text-slate-400">
+            <i class="fa-solid fa-check text-brand text-xs"></i> 96% de acurácia validada
+          </li>
+        </ul>
+      </div>
+
+      <!-- Card 3: Automated reports -->
+      <div class="glass-card rounded-2xl p-8 fade-up" style="transition-delay:0.3s">
+        <div class="icon-ring w-14 h-14 rounded-2xl flex items-center justify-center mb-6">
+          <i class="fa-solid fa-file-medical text-brand-light text-xl"></i>
+        </div>
+        <h3 class="text-xl font-bold text-white mb-3">Laudos Automatizados</h3>
+        <p class="text-slate-400 text-sm leading-relaxed mb-6">
+          Geração automática de laudos clínicos estruturados com linguagem médica padronizada, prontos para assinatura digital — economizando até 4h por médico por dia.
+        </p>
+        <ul class="space-y-2">
+          <li class="flex items-center gap-2 text-xs text-slate-400">
+            <i class="fa-solid fa-check text-brand text-xs"></i> Templates CFM-compatíveis
+          </li>
+          <li class="flex items-center gap-2 text-xs text-slate-400">
+            <i class="fa-solid fa-check text-brand text-xs"></i> Assinatura digital ICP-Brasil
+          </li>
+          <li class="flex items-center gap-2 text-xs text-slate-400">
+            <i class="fa-solid fa-check text-brand text-xs"></i> Exportação em PDF/HL7/FHIR
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ────────────────────────────────────────────────────
+     DASHBOARD PREVIEW (full CSS simulation)
+──────────────────────────────────────────────────── -->
+<section id="dashboard" class="relative py-28 overflow-hidden">
+  <div class="glow-blob w-[600px] h-[400px] bg-brand/10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+
+  <div class="max-w-7xl mx-auto px-6">
+
+    <!-- Header -->
+    <div class="text-center mb-14 fade-up">
+      <p class="text-xs font-semibold text-brand-light tracking-widest uppercase mb-4">Visualização do Produto</p>
+      <h2 class="text-4xl md:text-5xl font-black text-white mb-5">
+        Dashboard <span class="gradient-text">clínico completo</span>
+      </h2>
+      <p class="text-slate-400 text-lg max-w-lg mx-auto font-light">
+        Interface projetada para médicos — informações críticas na superfície, profundidade analítica a um clique.
+      </p>
+    </div>
+
+    <!-- Dashboard simulation -->
+    <div class="fade-up dash-surface rounded-3xl overflow-hidden shadow-2xl shadow-brand/10">
+
+      <!-- Top bar -->
+      <div class="flex items-center gap-3 px-5 py-3.5 border-b border-white/05 bg-[#04091A]">
+        <div class="w-3 h-3 rounded-full bg-red-500/70"></div>
+        <div class="w-3 h-3 rounded-full bg-amber-400/70"></div>
+        <div class="w-3 h-3 rounded-full bg-emerald-400/70"></div>
+        <div class="flex-1 mx-4 h-6 bg-white/04 rounded-md flex items-center px-3">
+          <span class="text-xs text-slate-600 font-mono">app.solvetechai.com/dashboard</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-full bg-brand/30 border border-brand/30 flex items-center justify-center">
+            <span class="text-xs text-brand-light font-bold">Dr</span>
+          </div>
+          <span class="text-xs text-slate-400">Dr. Ana Costa</span>
+        </div>
+      </div>
+
+      <!-- Dashboard grid -->
+      <div class="flex">
+
+        <!-- Sidebar -->
+        <div class="hidden lg:flex flex-col w-16 bg-[#04091A] border-r border-white/04 py-5 items-center gap-5">
+          <div class="w-9 h-9 rounded-xl bg-brand flex items-center justify-center">
+            <i class="fa-solid fa-heart-pulse text-white text-sm"></i>
+          </div>
+          <div class="space-y-4 mt-3">
+            <div class="w-9 h-9 rounded-xl bg-brand/20 flex items-center justify-center">
+              <i class="fa-solid fa-chart-line text-brand-light text-sm"></i>
+            </div>
+            <div class="w-9 h-9 rounded-xl hover:bg-white/05 flex items-center justify-center">
+              <i class="fa-solid fa-users text-slate-500 text-sm"></i>
+            </div>
+            <div class="w-9 h-9 rounded-xl hover:bg-white/05 flex items-center justify-center">
+              <i class="fa-solid fa-file-medical text-slate-500 text-sm"></i>
+            </div>
+            <div class="w-9 h-9 rounded-xl hover:bg-white/05 flex items-center justify-center">
+              <i class="fa-solid fa-bell text-slate-500 text-sm"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="flex-1 p-5 space-y-4 overflow-hidden">
+
+          <!-- Row 1: KPI cards -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+
+            <div class="dash-inner rounded-xl p-4">
+              <p class="text-xs text-slate-500 mb-1">Pacientes Ativos</p>
+              <p class="text-2xl font-black text-white">248</p>
+              <p class="text-xs text-emerald-400 mt-1 flex items-center gap-1">
+                <i class="fa-solid fa-arrow-up text-xs"></i> +12 esta semana
+              </p>
+            </div>
+
+            <div class="dash-inner rounded-xl p-4">
+              <p class="text-xs text-slate-500 mb-1">Alertas Críticos</p>
+              <p class="text-2xl font-black text-red-400">7</p>
+              <p class="text-xs text-red-400 mt-1 flex items-center gap-1">
+                <i class="fa-solid fa-triangle-exclamation text-xs"></i> Ação imediata
+              </p>
+            </div>
+
+            <div class="dash-inner rounded-xl p-4">
+              <p class="text-xs text-slate-500 mb-1">Precisão IA</p>
+              <p class="text-2xl font-black text-white">96<span class="text-sm font-medium">%</span></p>
+              <p class="text-xs text-brand-light mt-1">↑ 2.1% este mês</p>
+            </div>
+
+            <div class="dash-inner rounded-xl p-4">
+              <p class="text-xs text-slate-500 mb-1">Laudos Gerados</p>
+              <p class="text-2xl font-black text-white">1.4k</p>
+              <p class="text-xs text-slate-500 mt-1">Hoje: 47</p>
+            </div>
+          </div>
+
+          <!-- Row 2: Charts -->
+          <div class="grid md:grid-cols-3 gap-3">
+
+            <!-- Chart 1: Pressão arterial (SVG line) -->
+            <div class="md:col-span-2 dash-inner rounded-xl p-4">
+              <div class="flex items-center justify-between mb-4">
+                <div>
+                  <p class="text-xs text-slate-500 font-semibold uppercase tracking-widest">Pressão Arterial — 30 dias</p>
+                </div>
+                <div class="flex gap-3 text-xs">
+                  <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-brand inline-block"></span>Sistólica</span>
+                  <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-cyan-400 inline-block"></span>Diastólica</span>
+                </div>
+              </div>
+
+              <!-- SVG Chart -->
+              <div class="relative h-36">
+                <svg viewBox="0 0 440 120" class="w-full h-full" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                  <!-- Grid lines -->
+                  <line x1="0" y1="30" x2="440" y2="30" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+                  <line x1="0" y1="60" x2="440" y2="60" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+                  <line x1="0" y1="90" x2="440" y2="90" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+                  <!-- Target zone -->
+                  <rect x="0" y="20" width="440" height="25" fill="rgba(0,82,255,0.04)"/>
+                  <!-- Systolic path -->
+                  <path class="path-draw"
+                    d="M0,55 C20,50 40,45 60,48 S100,60 120,52 S160,38 180,42 S220,50 240,45 S280,35 300,40 S340,52 360,48 S400,42 440,44"
+                    fill="none" stroke="#0052FF" stroke-width="2" stroke-linecap="round"/>
+                  <!-- Diastolic path -->
+                  <path class="path-draw-2"
+                    d="M0,85 C20,82 40,80 60,83 S100,90 120,84 S160,76 180,79 S220,84 240,80 S280,72 300,75 S340,83 360,78 S400,73 440,75"
+                    fill="none" stroke="#22D3EE" stroke-width="2" stroke-linecap="round"/>
+                  <!-- Area fill sistolic -->
+                  <path
+                    d="M0,55 C20,50 40,45 60,48 S100,60 120,52 S160,38 180,42 S220,50 240,45 S280,35 300,40 S340,52 360,48 S400,42 440,44 L440,120 L0,120Z"
+                    fill="url(#sysGrad)" opacity="0.15"/>
+                  <defs>
+                    <linearGradient id="sysGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#0052FF"/>
+                      <stop offset="100%" stop-color="#0052FF" stop-opacity="0"/>
+                    </linearGradient>
+                  </defs>
+                  <!-- Anomaly dot -->
+                  <circle cx="180" cy="42" r="4" fill="#F59E0B" opacity="0.9"/>
+                </svg>
+
+                <!-- Y labels -->
+                <div class="absolute left-0 top-0 h-full flex flex-col justify-between pb-1 pointer-events-none">
+                  <span class="text-[9px] text-slate-600">160</span>
+                  <span class="text-[9px] text-slate-600">130</span>
+                  <span class="text-[9px] text-slate-600">100</span>
+                  <span class="text-[9px] text-slate-600">70</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Chart 2: Risk gauge (CSS circles) -->
+            <div class="dash-inner rounded-xl p-4 flex flex-col items-center justify-between">
+              <p class="text-xs text-slate-500 font-semibold uppercase tracking-widest self-start">Score de Risco</p>
+
+              <!-- Donut SVG -->
+              <div class="relative w-28 h-28 my-2">
+                <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="10"/>
+                  <circle cx="50" cy="50" r="38" fill="none"
+                    stroke="url(#riskGrad)" stroke-width="10"
+                    stroke-linecap="round"
+                    stroke-dasharray="238.76"
+                    stroke-dashoffset="65"
+                    class="risk-ring"/>
+                  <defs>
+                    <linearGradient id="riskGrad" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stop-color="#F59E0B"/>
+                      <stop offset="100%" stop-color="#EF4444"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                  <span class="text-2xl font-black text-white">72<span class="text-sm">%</span></span>
+                  <span class="text-xs text-amber-400 font-semibold">Alto</span>
+                </div>
+              </div>
+
+              <div class="w-full space-y-2">
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-500">Glicemia</span>
+                  <span class="text-amber-400 font-semibold">Alto</span>
+                </div>
+                <div class="h-1.5 bg-white/05 rounded-full"><div class="h-full bg-amber-400 rounded-full" style="width:78%"></div></div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-500">Pressão</span>
+                  <span class="text-red-400 font-semibold">Crítico</span>
+                </div>
+                <div class="h-1.5 bg-white/05 rounded-full"><div class="h-full bg-red-400 rounded-full" style="width:85%"></div></div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-500">IMC</span>
+                  <span class="text-brand-light font-semibold">Moderado</span>
+                </div>
+                <div class="h-1.5 bg-white/05 rounded-full"><div class="h-full bg-brand rounded-full" style="width:55%"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 3: Glicemia bar chart + Patient list -->
+          <div class="grid md:grid-cols-3 gap-3">
+
+            <!-- Glicemia bars -->
+            <div class="dash-inner rounded-xl p-4">
+              <p class="text-xs text-slate-500 font-semibold uppercase tracking-widest mb-4">Glicemia — Semanal</p>
+              <div class="flex items-end gap-2 h-24">
+                <div class="flex-1 flex flex-col items-center gap-1">
+                  <div class="bar-fill w-full bg-brand/70" style="height:55%"></div>
+                  <span class="text-[9px] text-slate-600">Seg</span>
+                </div>
+                <div class="flex-1 flex flex-col items-center gap-1">
+                  <div class="bar-fill w-full bg-brand/70" style="height:70%"></div>
+                  <span class="text-[9px] text-slate-600">Ter</span>
+                </div>
+                <div class="flex-1 flex flex-col items-center gap-1">
+                  <div class="bar-fill w-full bg-amber-500/80" style="height:85%"></div>
+                  <span class="text-[9px] text-slate-600">Qua</span>
+                </div>
+                <div class="flex-1 flex flex-col items-center gap-1">
+                  <div class="bar-fill w-full bg-brand/70" style="height:62%"></div>
+                  <span class="text-[9px] text-slate-600">Qui</span>
+                </div>
+                <div class="flex-1 flex flex-col items-center gap-1">
+                  <div class="bar-fill w-full bg-red-500/80" style="height:95%"></div>
+                  <span class="text-[9px] text-slate-600">Sex</span>
+                </div>
+                <div class="flex-1 flex flex-col items-center gap-1">
+                  <div class="bar-fill w-full bg-brand/50" style="height:48%"></div>
+                  <span class="text-[9px] text-slate-600">Sáb</span>
+                </div>
+                <div class="flex-1 flex flex-col items-center gap-1">
+                  <div class="bar-fill w-full bg-brand/50" style="height:42%"></div>
+                  <span class="text-[9px] text-slate-600">Dom</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Patient list -->
+            <div class="md:col-span-2 dash-inner rounded-xl p-4">
+              <div class="flex items-center justify-between mb-3">
+                <p class="text-xs text-slate-500 font-semibold uppercase tracking-widest">Pacientes Prioritários</p>
+                <span class="text-xs text-brand-light cursor-pointer hover:underline">Ver todos</span>
+              </div>
+              <div class="space-y-2">
+                <div class="flex items-center justify-between py-2 border-b border-white/04">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-red-500/20 border border-red-500/30 flex items-center justify-center">
+                      <span class="text-xs font-bold text-red-400">CM</span>
+                    </div>
+                    <div>
+                      <p class="text-sm font-semibold text-white">Carlos M.</p>
+                      <p class="text-xs text-slate-500">58a · HAS + DM2</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs bg-red-500/15 text-red-400 px-2 py-0.5 rounded-full font-semibold">Crítico 72%</span>
+                    <i class="fa-solid fa-chevron-right text-slate-600 text-xs"></i>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between py-2 border-b border-white/04">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
+                      <span class="text-xs font-bold text-amber-400">LS</span>
+                    </div>
+                    <div>
+                      <p class="text-sm font-semibold text-white">Lúcia S.</p>
+                      <p class="text-xs text-slate-500">63a · HAS + Obesidade</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs bg-amber-500/15 text-amber-400 px-2 py-0.5 rounded-full font-semibold">Alto 58%</span>
+                    <i class="fa-solid fa-chevron-right text-slate-600 text-xs"></i>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between py-2">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-brand/20 border border-brand/30 flex items-center justify-center">
+                      <span class="text-xs font-bold text-brand-light">RO</span>
+                    </div>
+                    <div>
+                      <p class="text-sm font-semibold text-white">Roberto O.</p>
+                      <p class="text-xs text-slate-500">71a · DM2 + IRC</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs bg-brand/15 text-brand-light px-2 py-0.5 rounded-full font-semibold">Moderado 41%</span>
+                    <i class="fa-solid fa-chevron-right text-slate-600 text-xs"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ────────────────────────────────────────────────────
+     EVIDENCE / STATS SECTION
+──────────────────────────────────────────────────── -->
+<section id="evidence" class="relative py-28 overflow-hidden">
+  <div class="glow-blob w-96 h-96 bg-brand/10 bottom-0 left-0"></div>
+
+  <div class="max-w-7xl mx-auto px-6">
+
+    <!-- Header -->
+    <div class="text-center mb-16 fade-up">
+      <p class="text-xs font-semibold text-brand-light tracking-widest uppercase mb-4">Resultados Clínicos</p>
+      <h2 class="text-4xl md:text-5xl font-black text-white mb-5">
+        Evidência que <span class="gradient-text">transforma</span>
+      </h2>
+      <p class="text-slate-400 text-lg max-w-xl mx-auto font-light">
+        Validado em estudos multicêntricos com hospitais e clínicas especializadas em todo o Brasil.
+      </p>
+    </div>
+
+    <!-- Stats grid -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-5 mb-16">
+      <div class="stat-card rounded-2xl p-6 text-center fade-up" style="transition-delay:0.1s">
+        <p class="text-5xl md:text-6xl font-black gradient-text-blue mb-2">96<span class="text-3xl">%</span></p>
+        <p class="text-sm text-slate-400 font-medium">Precisão na predição de Síndrome Metabólica</p>
+      </div>
+      <div class="stat-card rounded-2xl p-6 text-center fade-up" style="transition-delay:0.2s">
+        <p class="text-5xl md:text-6xl font-black gradient-text-blue mb-2">2.5<span class="text-3xl">×</span></p>
+        <p class="text-sm text-slate-400 font-medium">Mais detecção precoce de comorbidades críticas</p>
+      </div>
+      <div class="stat-card rounded-2xl p-6 text-center fade-up" style="transition-delay:0.3s">
+        <p class="text-5xl md:text-6xl font-black gradient-text-blue mb-2">4<span class="text-3xl">h</span></p>
+        <p class="text-sm text-slate-400 font-medium">Economizadas por médico por dia em laudos</p>
+      </div>
+      <div class="stat-card rounded-2xl p-6 text-center fade-up" style="transition-delay:0.4s">
+        <p class="text-5xl md:text-6xl font-black gradient-text-blue mb-2">120<span class="text-3xl">+</span></p>
+        <p class="text-sm text-slate-400 font-medium">Clínicas e hospitais parceiros no Brasil</p>
+      </div>
+    </div>
+
+    <!-- Testimonial / Quote -->
+    <div class="glass-card rounded-2xl p-10 max-w-3xl mx-auto text-center fade-up">
+      <i class="fa-solid fa-quote-left text-brand/30 text-4xl mb-6 block"></i>
+      <p class="text-xl md:text-2xl text-white font-light leading-relaxed mb-8 italic">
+        "O SolveTechAi transformou como acompanhamos nossos pacientes diabéticos. Identificamos crises antes que elas acontecessem — isso é medicina preventiva de verdade."
+      </p>
+      <div class="flex items-center justify-center gap-4">
+        <div class="w-12 h-12 rounded-full bg-brand/20 border border-brand/30 flex items-center justify-center">
+          <span class="font-bold text-brand-light text-sm">DG</span>
+        </div>
+        <div class="text-left">
+          <p class="font-bold text-white">Dra. Gabriela Ramos</p>
+          <p class="text-sm text-slate-500">Endocrinologista · Hospital Albert Einstein</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ────────────────────────────────────────────────────
+     CTA / DEMO SECTION
+──────────────────────────────────────────────────── -->
+<section id="demo" class="relative py-28 overflow-hidden">
+  <div class="glow-blob w-[700px] h-[400px] bg-brand/15 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+
+  <div class="max-w-4xl mx-auto px-6 text-center fade-up">
+    <p class="text-xs font-semibold text-brand-light tracking-widest uppercase mb-4">Comece Agora</p>
+    <h2 class="text-5xl md:text-6xl font-black text-white leading-tight mb-6">
+      Eleve o padrão do<br/><span class="gradient-text">seu atendimento clínico</span>
+    </h2>
+    <p class="text-slate-400 text-lg mb-10 max-w-xl mx-auto font-light">
+      Agende uma demonstração personalizada com nossos especialistas em saúde digital. Sem compromisso, com resultado.
+    </p>
+
+    <div class="glass-card rounded-2xl p-8 max-w-lg mx-auto">
+      <div class="space-y-4 mb-6">
+        <div class="flex gap-3">
+          <input type="text" placeholder="Nome completo" class="flex-1 bg-white/05 border border-white/08 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 outline-none focus:border-brand/50 transition-colors" />
+        </div>
+        <div class="flex gap-3">
+          <input type="email" placeholder="E-mail profissional" class="flex-1 bg-white/05 border border-white/08 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 outline-none focus:border-brand/50 transition-colors" />
+        </div>
+        <div class="flex gap-3">
+          <input type="text" placeholder="Especialidade médica" class="flex-1 bg-white/05 border border-white/08 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 outline-none focus:border-brand/50 transition-colors" />
+          <input type="text" placeholder="CRM" class="w-28 bg-white/05 border border-white/08 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 outline-none focus:border-brand/50 transition-colors" />
+        </div>
+      </div>
+      <button class="btn-primary w-full text-white font-bold py-4 rounded-xl text-base flex items-center justify-center gap-2.5">
+        <i class="fa-solid fa-calendar-check"></i>
+        Agendar Demonstração Gratuita
+      </button>
+      <p class="text-xs text-slate-600 mt-4">Ao enviar, você concorda com nossa <a href="#" class="text-brand-light hover:underline">Política de Privacidade</a> e os termos de uso.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ────────────────────────────────────────────────────
+     FOOTER
+──────────────────────────────────────────────────── -->
+<footer id="contact" class="relative border-t border-white/05 pt-16 pb-8 overflow-hidden">
+  <div class="max-w-7xl mx-auto px-6">
+
+    <div class="grid md:grid-cols-4 gap-10 mb-12">
+
+      <!-- Brand column -->
+      <div class="md:col-span-1">
+        <div class="flex items-center gap-2.5 mb-4">
+          <div class="w-9 h-9 rounded-xl bg-brand flex items-center justify-center">
+            <i class="fa-solid fa-heart-pulse text-white text-sm"></i>
+          </div>
+          <span class="text-white font-bold text-lg">SolveTech<span class="text-brand-light">Ai</span></span>
+        </div>
+        <p class="text-slate-500 text-sm leading-relaxed mb-5">
+          Plataforma de IA clínica para monitoramento e predição de risco cardiometabólico.
+        </p>
+        <div class="flex gap-3">
+          <a href="#" class="w-9 h-9 rounded-lg bg-white/04 border border-white/06 flex items-center justify-center hover:border-brand/40 transition-colors">
+            <i class="fa-brands fa-linkedin-in text-slate-400 text-sm"></i>
+          </a>
+          <a href="#" class="w-9 h-9 rounded-lg bg-white/04 border border-white/06 flex items-center justify-center hover:border-brand/40 transition-colors">
+            <i class="fa-brands fa-instagram text-slate-400 text-sm"></i>
+          </a>
+          <a href="#" class="w-9 h-9 rounded-lg bg-white/04 border border-white/06 flex items-center justify-center hover:border-brand/40 transition-colors">
+            <i class="fa-brands fa-twitter text-slate-400 text-sm"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Links -->
+      <div>
+        <p class="text-xs font-bold text-white uppercase tracking-widest mb-4">Produto</p>
+        <ul class="space-y-3">
+          <li><a href="#" class="text-sm text-slate-500 hover:text-slate-200 transition-colors">Funcionalidades</a></li>
+          <li><a href="#" class="text-sm text-slate-500 hover:text-slate-200 transition-colors">Integrações</a></li>
+          <li><a href="#" class="text-sm text-slate-500 hover:text-slate-200 transition-colors">Preços</a></li>
+          <li><a href="#" class="text-sm text-slate-500 hover:text-slate-200 transition-colors">API para Desenvolvedores</a></li>
+          <li><a href="#" class="text-sm text-slate-500 hover:text-slate-200 transition-colors">Changelog</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <p class="text-xs font-bold text-white uppercase tracking-widest mb-4">Empresa</p>
+        <ul class="space-y-3">
+          <li><a href="#" class="text-sm text-slate-500 hover:text-slate-200 transition-colors">Sobre nós</a></li>
+          <li><a href="#" class="text-sm text-slate-500 hover:text-slate-200 transition-colors">Casos Clínicos</a></li>
+          <li><a href="#" class="text-sm text-slate-500 hover:text-slate-200 transition-colors">Blog Médico</a></li>
+          <li><a href="#" class="text-sm text-slate-500 hover:text-slate-200 transition-colors">Carreiras</a></li>
+          <li><a href="#" class="text-sm text-slate-500 hover:text-slate-200 transition-colors">Contato</a></li>
+        </ul>
+      </div>
+
+      <!-- Compliance -->
+      <div>
+        <p class="text-xs font-bold text-white uppercase tracking-widest mb-4">Conformidade</p>
+        <div class="space-y-3">
+          <div class="flex items-center gap-2.5">
+            <i class="fa-solid fa-shield-halved text-brand text-sm w-5"></i>
+            <div>
+              <p class="text-xs font-semibold text-slate-300">LGPD</p>
+              <p class="text-xs text-slate-600">Lei Geral de Proteção de Dados</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2.5">
+            <i class="fa-solid fa-lock text-brand text-sm w-5"></i>
+            <div>
+              <p class="text-xs font-semibold text-slate-300">HIPAA Compliant</p>
+              <p class="text-xs text-slate-600">Health Insurance Portability</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2.5">
+            <i class="fa-solid fa-certificate text-brand text-sm w-5"></i>
+            <div>
+              <p class="text-xs font-semibold text-slate-300">ISO 27001</p>
+              <p class="text-xs text-slate-600">Segurança da Informação</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2.5">
+            <i class="fa-solid fa-hospital text-brand text-sm w-5"></i>
+            <div>
+              <p class="text-xs font-semibold text-slate-300">CFM Regulamentado</p>
+              <p class="text-xs text-slate-600">Conselho Federal de Medicina</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div class="border-t border-white/05 pt-8">
+      <!-- LGPD/HIPAA Disclaimer -->
+      <div class="glass-card rounded-xl p-4 mb-6 flex items-start gap-3">
+        <i class="fa-solid fa-circle-info text-brand-light text-sm mt-0.5 flex-shrink-0"></i>
+        <p class="text-xs text-slate-500 leading-relaxed">
+          <strong class="text-slate-400">Aviso de Conformidade:</strong> O SolveTechAi processa dados de saúde em conformidade com a Lei nº 13.709/2018 (LGPD) e os padrões internacionais HIPAA. Todos os dados são criptografados em repouso (AES-256) e em trânsito (TLS 1.3). O sistema não substitui o julgamento clínico do profissional médico habilitado. As previsões de risco são ferramentas de suporte à decisão clínica. Uso exclusivo para profissionais de saúde devidamente registrados no CFM/CRM.
+        </p>
+      </div>
+
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+        <p class="text-xs text-slate-600">© 2025 SolveTechAi Tecnologia em Saúde Ltda. Todos os direitos reservados. CNPJ 00.000.000/0001-00.</p>
+        <div class="flex gap-6">
+          <a href="#" class="text-xs text-slate-600 hover:text-slate-400 transition-colors">Política de Privacidade</a>
+          <a href="#" class="text-xs text-slate-600 hover:text-slate-400 transition-colors">Termos de Uso</a>
+          <a href="#" class="text-xs text-slate-600 hover:text-slate-400 transition-colors">Cookies</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+<!-- ────────────────────────────────────────────────────
+     SCRIPTS
+──────────────────────────────────────────────────── -->
+<script>
+  // Mobile menu toggle
+  function toggleMenu() {
+    const menu = document.getElementById('mobile-menu');
+    menu.classList.toggle('open');
+  }
+
+  // Intersection Observer for fade-up animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  // Smooth scroll for all anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // Nav active state on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('nav a[href^="#"]');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 120) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.classList.remove('text-white');
+      a.classList.add('text-slate-400');
+      if (a.getAttribute('href') === '#' + current) {
+        a.classList.remove('text-slate-400');
+        a.classList.add('text-white');
+      }
+    });
+  });
+
+  // Animate stat numbers on scroll
+  function animateValue(el, start, end, duration, suffix) {
+    let startTime = null;
+    function step(ts) {
+      if (!startTime) startTime = ts;
+      const progress = Math.min((ts - startTime) / duration, 1);
+      const value = Math.floor(progress * (end - start) + start);
+      el.textContent = value + suffix;
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+</script>
+
+</body>
+</html>
