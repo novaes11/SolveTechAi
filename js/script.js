@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
             id: 'maria-silva',
             name: 'Maria Silva',
             age: '45 anos | Feminino',
-            avatar: 'avatar/premium_photo-1688572454849-4348982edf7d.jpg',
+            avatar: 'assets/avatar/premium_photo-1688572454849-4348982edf7d.jpg',
             status: 'alto-risco',
             statusText: 'Alto Risco',
             systolic: 140,
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
             id: 'joao-santos',
             name: 'João Santos',
             age: '58 anos | Masculino',
-            avatar: 'avatar/premium_photo-1689568126014-06fea9d5d341.jpg',
+            avatar: 'assets/avatar/premium_photo-1689568126014-06fea9d5d341.jpg',
             status: 'critico',
             statusText: 'Crítico',
             systolic: 160,
@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
             id: 'ana-pereira',
             name: 'Ana Pereira',
             age: '52 anos | Feminino',
-            avatar: 'avatar/1708135913769.jpg',
+            avatar: 'assets/avatar/1708135913769.jpg',
             status: 'moderado',
             statusText: 'Moderado',
             systolic: 135,
@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function() {
             id: 'carlos-pinto',
             name: 'Carlos Pinto',
             age: '65 anos | Masculino',
-            avatar: 'avatar/download.jpg',
+            avatar: 'assets/avatar/download.jpg',
             status: 'critico',
             statusText: 'Crítico',
             systolic: 175,
@@ -1083,7 +1083,7 @@ window.printDiagnosis = function() {
 };
     // Funções do Modal de Exame
     const examBaseByPatient = {
-        default: 'images/resultado-do-exame-de-sangue-v0-0wk34izw0f1d1'
+        default: 'assets/images/resultado-do-exame-de-sangue-v0-0wk34izw0f1d1'
     };
 
     function loadExamImageWithFallback(imgEl, basePath, onDone) {
