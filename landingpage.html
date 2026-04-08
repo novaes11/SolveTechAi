@@ -113,6 +113,81 @@
       border-color: rgba(0,82,255,0.5);
     }
 
+    .login-panel {
+      padding: 3rem 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 2rem;
+      background: rgba(11, 21, 48, 0.72);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.18);
+    }
+    .login-panel h2 {
+      color: #ffffff;
+      font-size: 2.25rem;
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+    }
+    .login-panel p {
+      color: #cbd5e1;
+      margin-bottom: 2rem;
+      max-width: 480px;
+    }
+    .login-field {
+      margin-bottom: 1.25rem;
+    }
+    .login-field label {
+      display: block;
+      margin-bottom: 0.75rem;
+      color: #94a3b8;
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+    .login-field input {
+      width: 100%;
+      padding: 1rem 1.15rem;
+      border-radius: 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.05);
+      color: #edf2f7;
+      transition: border-color 0.25s ease, background 0.25s ease;
+    }
+    .login-field input:focus {
+      outline: none;
+      border-color: #5b9dff;
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .login-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 0.75rem;
+    }
+    .login-actions .remember {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: #cbd5e1;
+      font-size: 0.95rem;
+    }
+    .login-actions .remember input {
+      width: auto;
+      accent-color: #0052FF;
+    }
+    .error-message {
+      display: block;
+      margin-top: 0.6rem;
+      color: #fb7185;
+      font-size: 0.9rem;
+      min-height: 1.2rem;
+    }
+    .login-form .btn-primary {
+      width: 100%;
+      justify-content: center;
+      padding: 1rem 1.2rem;
+      border-radius: 1rem;
+    }
+
     /* ── Icon wrapper ─────────────────────────────────── */
     .icon-ring {
       background: linear-gradient(135deg, rgba(0,82,255,0.15), rgba(0,212,255,0.08));
@@ -241,8 +316,7 @@
 
     <!-- CTA buttons -->
     <div class="hidden md:flex items-center gap-3">
-      <a href="#" class="btn-secondary text-sm font-semibold text-slate-300 px-5 py-2 rounded-lg">
-        Login
+      <a href="#login" class="btn-secondary text-sm font-semibold text-slate-300 px-5 py-2 rounded-lg">
       </a>
       <a href="#demo" class="btn-primary text-sm font-semibold text-white px-5 py-2 rounded-lg">
         Agendar Demo
@@ -262,7 +336,7 @@
     <a href="#evidence" class="text-sm text-slate-300 hover:text-white font-medium py-1" onclick="toggleMenu()">Evidências</a>
     <a href="#contact" class="text-sm text-slate-300 hover:text-white font-medium py-1" onclick="toggleMenu()">Contato</a>
     <div class="flex gap-3 pt-2">
-      <a href="#" class="btn-secondary text-sm font-semibold text-slate-300 px-4 py-2 rounded-lg flex-1 text-center">Login</a>
+      <a href="#login" class="btn-secondary text-sm font-semibold text-slate-300 px-4 py-2 rounded-lg flex-1 text-center">Login</a>
       <a href="#demo" class="btn-primary text-sm font-semibold text-white px-4 py-2 rounded-lg flex-1 text-center">Demo</a>
     </div>
   </div>
@@ -390,6 +464,65 @@
       <div class="absolute -top-4 -right-4 glass-card rounded-xl px-4 py-2.5 flex items-center gap-2 shadow-xl">
         <i class="fa-solid fa-brain text-brand text-sm"></i>
         <span class="text-xs font-bold text-white">IA Preditiva</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="login" class="relative py-24 overflow-hidden">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="grid lg:grid-cols-2 gap-12 items-center">
+      <div class="fade-up">
+        <span class="text-xs font-semibold text-brand-light tracking-widest uppercase mb-4 inline-block">Acesso Seguro</span>
+        <h2 class="text-4xl md:text-5xl font-black text-white mb-6">Acesse o painel com sua conta</h2>
+        <p class="text-slate-400 text-lg max-w-lg leading-relaxed font-light">
+          Entre com seu email corporativo para acompanhar diagnósticos, monitoramento e resultados clínicos com segurança e visual premium.
+        </p>
+      </div>
+
+      <div class="fade-up">
+        <div class="login-panel glass-card shadow-xl">
+          <h2>Login</h2>
+          <p>Use sua conta hospitalar ou corporativa para acessar o dashboard.</p>
+
+          <form id="loginForm" class="login-form" novalidate>
+            <div class="login-field">
+              <label for="email">Email corporativo</label>
+              <input type="email" id="email" name="email" autocomplete="email" required>
+              <span class="error-message" id="emailError"></span>
+            </div>
+
+            <div class="login-field">
+              <label for="password">Senha</label>
+              <div class="relative">
+                <input type="password" id="password" name="password" autocomplete="current-password" required>
+                <button type="button" id="passwordToggle" class="absolute top-1/2 right-4 -translate-y-1/2 text-slate-400 hover:text-white" aria-label="Toggle password visibility">
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+              </div>
+              <span class="error-message" id="passwordError"></span>
+            </div>
+
+            <div class="login-actions">
+              <label class="remember"><input type="checkbox" id="remember" name="remember"> Lembrar-me</label>
+              <a href="#" class="text-sm text-brand-light hover:text-white transition-colors">Esqueci minha senha</a>
+            </div>
+
+            <button type="submit" class="login-btn btn-primary text-white text-base font-semibold mt-8">
+              Entrar
+            </button>
+
+            <div class="success-message hidden mt-8 rounded-3xl bg-emerald-500/10 border border-emerald-400/20 px-5 py-4 text-emerald-100" id="successMessage">
+              <div class="flex items-center gap-3">
+                <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-400/15 text-emerald-200">✓</span>
+                <div>
+                  <p class="font-semibold">Autenticação bem-sucedida</p>
+                  <p class="text-sm text-slate-300">Redirecionando para o dashboard...</p>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>
@@ -1067,6 +1200,7 @@
     requestAnimationFrame(step);
   }
 </script>
+<script src="js/login.js"></script>
 
 </body>
 </html>

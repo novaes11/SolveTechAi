@@ -1,93 +1,211 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR" class="scroll-smooth">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Corporate Login Form</title>
-    <link rel="stylesheet" href="css/login.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SolveTechAi — Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    * { box-sizing: border-box; }
+    html { background: #050D1F; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Outfit', sans-serif;
+      background: radial-gradient(circle at top left, rgba(0,82,255,0.18), transparent 25%),
+                  radial-gradient(circle at bottom right, rgba(0,212,255,0.12), transparent 25%),
+                  #050D1F;
+      color: #E2EAF8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.35;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .login-page {
+      position: relative;
+      width: 100%;
+      max-width: 520px;
+      z-index: 1;
+    }
+    .login-panel {
+      position: relative;
+      background: rgba(11, 21, 48, 0.82);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 32px;
+      padding: 40px 36px;
+      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.35);
+      overflow: hidden;
+    }
+    .login-panel::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 32px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), transparent 55%);
+      pointer-events: none;
+    }
+    .login-panel h1 {
+      margin: 0 0 16px;
+      font-size: clamp(2rem, 3vw, 3rem);
+      letter-spacing: -0.05em;
+      line-height: 1.02;
+    }
+    .login-panel p {
+      margin: 0 0 32px;
+      color: #B7C3D3;
+      line-height: 1.8;
+    }
+    .form-group { margin-bottom: 22px; }
+    .form-label {
+      display: block;
+      margin-bottom: 10px;
+      color: #94A3B8;
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+    .form-control {
+      width: 100%;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 16px 18px;
+      background: rgba(255,255,255,0.04);
+      color: #F8FAFB;
+      font-size: 1rem;
+      transition: border-color 0.25s ease, background 0.25s ease;
+    }
+    .form-control:focus {
+      outline: none;
+      background: rgba(255,255,255,0.1);
+      border-color: #0052FF;
+      box-shadow: 0 0 0 4px rgba(0,82,255,0.12);
+    }
+    .password-field { position: relative; }
+    .password-toggle {
+      position: absolute;
+      top: 50%;
+      right: 16px;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #94A3B8;
+      cursor: pointer;
+    }
+    .form-foot {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+    .form-foot label {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: #B7C3D3;
+      font-size: 0.95rem;
+    }
+    .form-foot a {
+      color: #7BB4FF;
+      font-size: 0.95rem;
+      text-decoration: none;
+    }
+    .form-foot a:hover { color: #fff; }
+    .error-message {
+      margin-top: 10px;
+      color: #FB7185;
+      font-size: 0.92rem;
+      min-height: 1.15rem;
+    }
+    .submit-btn {
+      width: 100%;
+      border-radius: 16px;
+      padding: 16px 1.15rem;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .login-footer {
+      margin-top: 24px;
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      color: #6B7280;
+      font-size: 0.85rem;
+      text-align: center;
+    }
+    .login-footer a {
+      color: #94A3B8;
+      text-decoration: none;
+    }
+    .login-footer span { color: #475569; }
+  </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-card">
-            <div class="login-header">
-                <div class="company-logo">
-                    <div class="logo-icon"><i class="fas fa-heartbeat"></i></div>
-                </div>
-                <h2>Bem-vindo</h2>
-                <p>Por favor, faça login na sua conta corporativa.</p>
-            </div>
-            
-            <form class="login-form" id="loginForm" novalidate>
-                <div class="form-group">
-                    <div class="input-wrapper">
-                        <input type="email" id="email" name="email" required autocomplete="email">
-                        <label for="email">Email corporativo</label>
-                        <span class="input-border"></span>
-                    </div>
-                    <span class="error-message" id="emailError"></span>
-                </div>
+  <main class="login-page">
+    <section class="login-panel">
+      <span class="uppercase text-xs tracking-[0.35em] text-brand-light font-semibold">SolveTechAi</span>
+      <h1>Login Seguro</h1>
+      <p>Acesse sua conta corporativa e veja os diagnósticos clínicos em tempo real dentro do dashboard.</p>
 
-                <div class="form-group">
-                    <div class="input-wrapper password-wrapper">
-                        <input type="password" id="password" name="password" required autocomplete="current-password">
-                        <label for="password">Senha</label>
-                        <button type="button" class="password-toggle" id="passwordToggle" aria-label="Toggle password visibility">
-                            <span class="toggle-icon"></span>
-                        </button>
-                        <span class="input-border"></span>
-                    </div>
-                    <span class="error-message" id="passwordError"></span>
-                </div>
-
-                <div class="form-options">
-                    <div class="remember-wrapper">
-                        <input type="checkbox" id="remember" name="remember">
-                        <label for="remember" class="checkbox-label">
-                            <span class="checkbox-custom"></span>
-                            Mantenha-me conectado
-                        </label>
-                    </div>
-                    <a href="#" class="forgot-password">Esqueci minha senha</a>
-                </div>
-
-                <button type="submit" class="login-btn">
-                    <span class="btn-text">Entrar</span>
-                    <span class="btn-loader"></span>
-                </button>
-            </form>
-
-            <div class="divider">
-                <span>ou faça login com</span>
-            </div>
-
-            <div class="sso-options">
-                <button type="button" class="sso-btn google-btn">
-                    <i class="fab fa-google sso-icon"></i>
-                    <span>Google</span>
-                </button>
-                <button type="button" class="sso-btn apple-btn">
-                    <i class="fab fa-apple sso-icon"></i>
-                    <span>Apple</span>
-                </button>
-            </div>
-
-            <div class="footer-links">
-                <a href="#" class="footer-link">Política de Privacidade</a>
-                <span class="separator">•</span>
-                <a href="#" class="footer-link">Termos de Serviço</a>
-                <span class="separator">•</span>
-                <a href="#" class="footer-link">Suporte</a>
-            </div>
-
-            <div class="success-message" id="successMessage">
-                <div class="success-icon">✓</div>
-                <h3>Autenticação Bem-sucedida</h3>
-                <p>Redirecionando para sua área de trabalho...</p>
-            </div>
+      <form id="loginForm" class="space-y-6" novalidate>
+        <div class="form-group">
+          <label for="email" class="form-label">Email corporativo</label>
+          <input type="email" id="email" name="email" class="form-control" autocomplete="email" required>
+          <span class="error-message" id="emailError"></span>
         </div>
-    </div>
 
-    <script src="js/login.js"></script>
+        <div class="form-group password-field">
+          <label for="password" class="form-label">Senha</label>
+          <input type="password" id="password" name="password" class="form-control" autocomplete="current-password" required>
+          <button type="button" id="passwordToggle" class="password-toggle" aria-label="Toggle password visibility">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+          <span class="error-message" id="passwordError"></span>
+        </div>
+
+        <div class="form-foot">
+          <label><input type="checkbox" id="remember" name="remember"> Lembrar-me</label>
+          <a href="#">Esqueci minha senha</a>
+        </div>
+
+        <button type="submit" class="login-btn submit-btn btn-primary bg-gradient-to-r from-brand to-brand-light text-white shadow-lg shadow-brand/20">
+          Entrar
+        </button>
+
+        <div class="success-message hidden mt-8 rounded-3xl bg-emerald-500/10 border border-emerald-400/20 px-5 py-4 text-emerald-100" id="successMessage">
+          <div class="flex items-center gap-3">
+            <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-emerald-400/15 text-emerald-200">✓</span>
+            <div>
+              <p class="font-semibold">Autenticação bem-sucedida</p>
+              <p class="text-sm text-slate-300">Redirecionando para o dashboard...</p>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <div class="login-footer">
+        <a href="#">Política de Privacidade</a>
+        <span>•</span>
+        <a href="#">Termos de Uso</a>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/login.js"></script>
 </body>
 </html>

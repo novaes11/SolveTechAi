@@ -168,11 +168,21 @@ class CorporateLoginForm {
     }
     
     showSuccess() {
-        this.form.style.display = 'none';
-        document.querySelector('.sso-options').style.display = 'none';
-        document.querySelector('.footer-links').style.display = 'none';
-        this.successMessage.style.display = 'flex';
-        this.successMessage.classList.add('show');
+        if (this.form) {
+            this.form.style.display = 'none';
+        }
+        const ssoOptions = document.querySelector('.sso-options');
+        if (ssoOptions) {
+            ssoOptions.style.display = 'none';
+        }
+        const footerLinks = document.querySelector('.footer-links');
+        if (footerLinks) {
+            footerLinks.style.display = 'none';
+        }
+        if (this.successMessage) {
+            this.successMessage.style.display = 'flex';
+            this.successMessage.classList.add('show');
+        }
         
         // Simular redirecionamento após 3 segundos (sistemas corporativos são mais lentos)
         setTimeout(() => {
@@ -187,5 +197,7 @@ class CorporateLoginForm {
 
 // Inicializar o formulário quando o DOM for carregado
 document.addEventListener('DOMContentLoaded', () => {
-    new CorporateLoginForm();
+    if (document.getElementById('loginForm')) {
+        new CorporateLoginForm();
+    }
 });
