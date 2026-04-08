@@ -1,1156 +1,1098 @@
-// Espera o DOM carregar
-document.addEventListener('DOMContentLoaded', function() {
-    // Elementos do DOM
-    const sidebar = document.querySelector('.sidebar');
-    const menuToggle = document.getElementById('menuToggle');
-    const navItems = document.querySelectorAll('.nav-item');
-    const sections = document.querySelectorAll('.section');
-    const pageTitle = document.getElementById('pageTitle');
-
-    // Dados globais para gráficos (usados nos gráficos gerais e nos específicos de pacientes)
-    const globalPressureData = {
-        labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago'],
-        systolic: [140, 145, 150, 155, 160, 165, 170, 175],
-        diastolic: [90, 92, 95, 98, 100, 102, 105, 108]
-    };
-
-    const globalGlucoseData = {
-        labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago'],
-        fasting: [95, 105, 115, 125, 135, 145, 155, 165],
-        postprandial: [140, 150, 160, 170, 180, 190, 200, 210]
-    };
-
-    // =============================================
-    // US01 - Dashboard de Indicadores
-    // =============================================
-
-    // Dados clínicos centralizados do dashboard
-    const dashboardData = {
-        totalPacientes:  { value: 2156, trend: '+45 este mês',           alert: false },
-        hipertensao:     { value: 456,  trend: '21.2% da população',     alert: false },
-        diabetes:        { value: 312,  trend: '14.5% da população',     alert: false },
-        diagnosticosIA:  { value: 234,  trend: '96% precisão',           alert: false },
-        comorbidades:    { value: 89,   trend: 'Hipertensão + Diabetes', alert: true  },
-        alertasCriticos: { value: 18,   trend: 'Requerem atenção',       alert: true  }
-    };
-
-    // Injeta os valores nos cards do dashboard via JS (US01 - item 1)
-    function renderDashboardCards() {
-        const cards = document.querySelectorAll('#dashboard .card');
-        const keys  = Object.keys(dashboardData);
-
-        cards.forEach((card, index) => {
-            const key = keys[index];
-            if (!key) return;
-
-            const data     = dashboardData[key];
-            const numberEl = card.querySelector('.number');
-            const trendEl  = card.querySelector('.trend');
-
-            if (numberEl) numberEl.textContent = data.value.toLocaleString('pt-BR');
-            if (trendEl)  trendEl.textContent  = data.trend;
-
-            // Aplica estado de alerta visual (US01 - item 2)
-            if (data.alert) {
-                card.classList.add('card--alert');
-            } else {
-                card.classList.remove('card--alert');
-            }
-        });
-    }
-
-    // Atualiza apenas os cards do dashboard com novos dados simulados (US01)
-    function updateDashboardNumbers() {
-        dashboardData.totalPacientes.value  += Math.floor(Math.random() * 3);
-        dashboardData.alertasCriticos.value += Math.floor(Math.random() * 2);
-
-        // Marca como crítico dinamicamente se alertas ultrapassar 20
-        dashboardData.alertasCriticos.alert = dashboardData.alertasCriticos.value > 20;
-
-        renderDashboardCards();
-    }
-
-    // =============================================
-    // US03 - Lista de Pacientes
-    // =============================================
-
-    // Array de objetos JSON com os dados dos pacientes (US03 - item 1)
-    const patientsData = [
-        {
-            id: 'maria-silva',
-            name: 'Maria Silva',
-            age: '45 anos | Feminino',
-            avatar: 'assets/avatar/premium_photo-1688572454849-4348982edf7d.jpg',
-            status: 'alto-risco',
-            statusText: 'Alto Risco',
-            systolic: 140,
-            glucose: 95,
-            riskFactors: ['Obesidade', 'Sedentarismo', 'Histórico Familiar'],
-            aiSummary: 'Hipertensão Grau 1 - Pressão arterial elevada com múltiplos fatores de risco. Recomenda-se monitoramento contínuo e ajuste de medicação.',
-            aiConfidence: '94%',
-            risks: [
-                { disease: 'Hipertensão', percentage: 85 },
-                { disease: 'Diabetes', percentage: 45 },
-                { disease: 'Doença Cardíaca', percentage: 30 },
-                { disease: 'AVC', percentage: 15 }
-            ]
-        },
-        {
-            id: 'joao-santos',
-            name: 'João Santos',
-            age: '58 anos | Masculino',
-            avatar: 'assets/avatar/premium_photo-1689568126014-06fea9d5d341.jpg',
-            status: 'critico',
-            statusText: 'Crítico',
-            systolic: 160,
-            glucose: 180,
-            riskFactors: ['Diabetes Tipo 2', 'Tabagismo', 'Estresse'],
-            aiSummary: 'Diabetes Tipo 2 + Hipertensão - Comorbidade grave com risco cardiovascular alto. Necessita intervenção imediata e ajuste de medicação.',
-            aiConfidence: '97%',
-            risks: [
-                { disease: 'Diabetes', percentage: 95 },
-                { disease: 'Hipertensão', percentage: 90 },
-                { disease: 'Doença Cardíaca', percentage: 75 },
-                { disease: 'Insuficiência Renal', percentage: 40 }
-            ]
-        },
-        {
-            id: 'ana-pereira',
-            name: 'Ana Pereira',
-            age: '52 anos | Feminino',
-            avatar: 'assets/avatar/1708135913769.jpg',
-            status: 'moderado',
-            statusText: 'Moderado',
-            systolic: 135,
-            glucose: 110,
-            riskFactors: ['Pré-Diabetes', 'Sedentarismo', 'Dieta Rica em Sódio'],
-            aiSummary: 'Pré-Diabetes + Pré-Hipertensão - Estado pré-mórbido com alto risco de progressão. Recomenda-se mudanças no estilo de vida e monitoramento preventivo.',
-            aiConfidence: '89%',
-            risks: [
-                { disease: 'Diabetes', percentage: 65 },
-                { disease: 'Hipertensão', percentage: 60 },
-                { disease: 'Doença Cardíaca', percentage: 25 },
-                { disease: 'AVC', percentage: 15 }
-            ]
-        },
-        {
-            id: 'carlos-pinto',
-            name: 'Carlos Pinto',
-            age: '65 anos | Masculino',
-            avatar: 'assets/avatar/download.jpg',
-            status: 'critico',
-            statusText: 'Crítico',
-            systolic: 175,
-            glucose: 220,
-            riskFactors: ['Diabetes Tipo 2', 'Hipertensão Grave', 'Obesidade'],
-            aiSummary: 'Síndrome Metabólica Grave - Hipertensão descontrolada + Diabetes descompensado. Risco cardiovascular extremamente alto. Intervenção urgente necessária.',
-            aiConfidence: '99%',
-            risks: [
-                { disease: 'Diabetes', percentage: 98 },
-                { disease: 'Hipertensão', percentage: 95 },
-                { disease: 'Doença Cardíaca', percentage: 85 },
-                { disease: 'Insuficiência Renal', percentage: 60 }
-            ]
-        }
-    ];
-
-    // Renderiza os cards de pacientes dinamicamente via forEach (US03 - item 2)
-    function renderPatientCards() {
-        const grid = document.getElementById('patients-grid');
-        if (!grid) return;
-
-        grid.innerHTML = '';
-
-        patientsData.forEach(patient => {
-            const tagsHTML = patient.riskFactors
-                .map(tag => `<span class="tag">${tag}</span>`)
-                .join('');
-
-            const card = document.createElement('div');
-            card.className = 'fan-card';
-            card.onclick = () => openPatientDetails(patient.id);
-
-            card.innerHTML = `
-                <div class="fan-header">
-                    <img src="${patient.avatar}" alt="Avatar" class="fan-avatar">
-                    <div class="fan-info">
-                        <h3>${patient.name}</h3>
-                        <p class="fan-location">${patient.age}</p>
-                    </div>
-                </div>
-                <div class="fan-stats">
-                    <div class="stat">
-                        <span class="label">Pressão Sistólica</span>
-                        <span class="value">${patient.systolic} mmHg</span>
-                    </div>
-                    <div class="stat">
-                        <span class="label">Glicemia</span>
-                        <span class="value">${patient.glucose} mg/dL</span>
-                    </div>
-                </div>
-                <div class="fan-interests">
-                    <h4>Fatores de Risco</h4>
-                    <div class="tags">${tagsHTML}</div>
-                </div>
-            `;
-
-            grid.appendChild(card);
-        });
-    }
-
-    // Navegação entre abas
-    function navigateToSection(sectionId) {
-        // Remove active de todas as seções
-        sections.forEach(section => {
-            section.classList.remove('active');
-        });
-
-        // Remove active de todos os nav items
-        navItems.forEach(item => {
-            item.classList.remove('active');
-        });
-
-        // Adiciona active na seção e nav item correspondente
-        const targetSection = document.getElementById(sectionId);
-        const targetNavItem = document.querySelector(`[data-section="${sectionId}"]`);
-
-        if (targetSection) {
-            targetSection.classList.add('active');
-        }
-
-        if (targetNavItem) {
-            targetNavItem.classList.add('active');
-        }
-
-        // Atualiza o título da página
-        updatePageTitle(sectionId);
-
-        // Fecha o menu mobile se estiver aberto
-        if (window.innerWidth <= 768) {
-            sidebar.classList.remove('open');
-        }
-    }
-
-    // Atualiza o título da página
-    function updatePageTitle(sectionId) {
-        const titles = {
-            'dashboard': 'Dashboard',
-            'pacientes': 'Pacientes',
-            'correlacoes': 'Correlações'
-        };
-
-        if (titles[sectionId]) {
-            pageTitle.textContent = titles[sectionId];
-        }
-    }
-
-    // Event listeners para navegação
-    navItems.forEach(item => {
-        item.addEventListener('click', function(e) {
-            e.preventDefault();
-            const sectionId = this.getAttribute('data-section');
-            navigateToSection(sectionId);
-        });
-    });
-
-    // Menu mobile toggle
-    if (menuToggle) {
-        menuToggle.addEventListener('click', function() {
-            sidebar.classList.toggle('open');
-        });
-    }
-
-    // Fecha o menu mobile ao clicar fora
-    document.addEventListener('click', function(e) {
-        if (window.innerWidth <= 768) {
-            if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
-                sidebar.classList.remove('open');
-            }
-        }
-    });
-
-    // Animação dos cards ao entrar na viewport
-    const observerOptions = {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.1
-    };
-
-    const observer = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-                observer.unobserve(entry.target);
-            }
-        });
-    }, observerOptions);
-
-    document.querySelectorAll('.card, .fan-card, .chart-card, .campaign-card').forEach(card => {
-        observer.observe(card);
-    });
-
-    // Configuração dos gráficos médicos
-    // Gráfico de Evolução da Pressão Arterial
-    const pressureCtx = document.getElementById('pressureChart');
-    if (pressureCtx) {
-        const pressureChart = new Chart(pressureCtx.getContext('2d'), {
-        type: 'line',
-        data: {
-                labels: globalPressureData.labels,
-            datasets: [{
-                label: 'Pressão Sistólica (mmHg)',
-                    data: globalPressureData.systolic,
-                borderColor: '#FF4655',
-                backgroundColor: 'rgba(255, 70, 85, 0.1)',
-                fill: true,
-                tension: 0.4,
-                yAxisID: 'y'
-            }, {
-                label: 'Pressão Diastólica (mmHg)',
-                    data: globalPressureData.diastolic,
-                borderColor: '#0F1923',
-                backgroundColor: 'rgba(15, 25, 35, 0.1)',
-                fill: true,
-                tension: 0.4,
-                yAxisID: 'y'
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    type: 'linear',
-                    display: true,
-                    position: 'left',
-                    beginAtZero: false,
-                    min: 80,
-                    max: 200,
-                    grid: {
-                        color: 'rgba(0,0,0,0.1)'
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    position: 'top'
-                }
-            }
-        }
-    });
-    }
-
-    // Gráfico de Evolução da Glicemia
-    const glucoseCtx = document.getElementById('glucoseChart');
-    if (glucoseCtx) {
-        const glucoseChart = new Chart(glucoseCtx.getContext('2d'), {
-        type: 'line',
-        data: {
-                labels: globalGlucoseData.labels,
-            datasets: [{
-                label: 'Glicemia em Jejum (mg/dL)',
-                    data: globalGlucoseData.fasting,
-                borderColor: '#7B2CBF',
-                backgroundColor: 'rgba(123, 44, 191, 0.1)',
-                fill: true,
-                tension: 0.4,
-                yAxisID: 'y'
-            }, {
-                label: 'Glicemia Pós-Prandial (mg/dL)',
-                    data: globalGlucoseData.postprandial,
-                borderColor: '#28a745',
-                backgroundColor: 'rgba(40, 167, 69, 0.1)',
-                fill: true,
-                tension: 0.4,
-                yAxisID: 'y'
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    type: 'linear',
-                    display: true,
-                    position: 'left',
-                    beginAtZero: false,
-                    min: 70,
-                    max: 250,
-                    grid: {
-                        color: 'rgba(0,0,0,0.1)'
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    position: 'top'
-                }
-            }
-        }
-    });
-    }
-
-    // Gráfico de Fatores de Risco
-    const riskFactorsCtx = document.getElementById('riskFactorsChart');
-    if (riskFactorsCtx) {
-        const riskFactorsChart = new Chart(riskFactorsCtx.getContext('2d'), {
-        type: 'doughnut',
-        data: {
-            labels: ['Obesidade', 'Sedentarismo', 'Histórico Familiar', 'Diabetes', 'Tabagismo', 'Estresse', 'Dieta Rica em Sódio', 'Dislipidemia'],
-            datasets: [{
-                data: [35, 25, 20, 15, 10, 15, 12, 18],
-                backgroundColor: [
-                    '#FF4655',
-                    '#0F1923',
-                    '#7B2CBF',
-                    '#28a745',
-                    '#ffc107',
-                    '#17a2b8',
-                    '#6f42c1',
-                    '#fd7e14'
-                ],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom'
-                }
-            }
-        }
-    });
-    }
-
-    // Gráfico de Medicações
-    const medicationsCtx = document.getElementById('medicationsChart');
-    if (medicationsCtx) {
-        const medicationsChart = new Chart(medicationsCtx.getContext('2d'), {
-        type: 'bar',
-        data: {
-            labels: ['Captopril', 'Losartana', 'Amlodipina', 'Metformina', 'Gliclazida', 'Insulina', 'Hidroclorotiazida', 'Enalapril'],
-            datasets: [{
-                label: 'Pacientes em Uso',
-                data: [45, 38, 32, 28, 25, 22, 20, 18],
-                backgroundColor: [
-                    '#FF4655',
-                    '#0F1923',
-                    '#7B2CBF',
-                    '#28a745',
-                    '#ffc107',
-                    '#17a2b8',
-                    '#6f42c1',
-                    '#fd7e14'
-                ],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-    }
-
-    // Gráfico de Comorbidades
-    const comorbiditiesCtx = document.getElementById('comorbiditiesChart');
-    if (comorbiditiesCtx) {
-        const comorbiditiesChart = new Chart(comorbiditiesCtx.getContext('2d'), {
-        type: 'pie',
-        data: {
-            labels: ['Apenas Hipertensão', 'Apenas Diabetes', 'Hipertensão + Diabetes', 'Síndrome Metabólica', 'Sem Doenças'],
-            datasets: [{
-                data: [367, 223, 89, 67, 1410],
-                backgroundColor: [
-                    '#FF4655',
-                    '#7B2CBF',
-                    '#28a745',
-                    '#ffc107',
-                    '#17a2b8'
-                ],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom'
-                }
-            }
-        }
-    });
-    }
-
-    // Adiciona interatividade aos cards de diagnóstico
-    document.querySelectorAll('.campaign-card').forEach(card => {
-        card.addEventListener('click', () => {
-            card.classList.toggle('expanded');
-        });
-    });
-
-    // Animação das barras de progresso
-    function animateProgressBars() {
-        const progressBars = document.querySelectorAll('.progress');
-        progressBars.forEach(bar => {
-            const width = bar.style.width;
-            bar.style.width = '0%';
-            setTimeout(() => {
-                bar.style.width = width;
-            }, 500);
-        });
-    }
-
-    // Executa animação das barras de progresso quando a seção de diagnóstico estiver visível
-    const diagnosisSection = document.querySelector('#diagnostico');
-    if (diagnosisSection) {
-        const diagnosisObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    animateProgressBars();
-                    diagnosisObserver.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.5 });
-
-        diagnosisObserver.observe(diagnosisSection);
-    }
-
-    // Executa animação das barras de progresso quando a seção de correlações estiver visível
-    const correlationsSection = document.querySelector('#correlacoes');
-    if (correlationsSection) {
-        const correlationsObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    animateProgressBars();
-                    correlationsObserver.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.5 });
-
-        correlationsObserver.observe(correlationsSection);
-    }
-
-    // Simulação de correlações em tempo real
-    function simulateCorrelations() {
-        const correlationValues = document.querySelectorAll('#correlacoes .value');
-        correlationValues.forEach(value => {
-            if (value.textContent.includes('0.')) {
-                const currentValue = parseFloat(value.textContent);
-                const newValue = currentValue + (Math.random() * 0.02 - 0.01);
-                value.textContent = newValue.toFixed(2);
-            }
-        });
-    }
-
-    // Simula atualizações de correlações a cada 20 segundos
-    setInterval(simulateCorrelations, 20000);
-
-    // US01 - Inicializa dashboard com dados e agenda atualização periódica
-    renderDashboardCards();
-    setInterval(updateDashboardNumbers, 10000);
-
-    // US03 - Renderiza os cards de pacientes via forEach
-    renderPatientCards();
-
-    // Inicializa com a seção dashboard ativa
-    navigateToSection('dashboard');
-
-    // Resize handler para responsividade
-    window.addEventListener('resize', function() {
-        if (window.innerWidth > 768) {
-            sidebar.classList.remove('open');
-        }
-    });
-
-    // Função para abrir detalhes do paciente
-    window.openPatientDetails = function(patientId) {
-        // US03: busca o paciente no array pelo id
-        const patient = patientsData.find(p => p.id === patientId);
-        if (!patient) return;
-
-        // Atualiza informações do paciente
-        document.getElementById('patient-avatar').src = patient.avatar;
-        document.getElementById('patient-name').textContent = patient.name;
-        document.getElementById('patient-age').textContent = patient.age;
-        document.getElementById('patient-status').textContent = patient.statusText;
-        document.getElementById('patient-status').className = `status ${patient.status}`;
-
-        // Atualiza diagnóstico IA
-        document.getElementById('ai-summary-text').textContent = patient.aiSummary;
-        document.getElementById('ai-confidence').textContent = patient.aiConfidence;
-
-        // Atualiza riscos de doenças
-        const riskContainer = document.getElementById('ai-risk-percentages');
-        riskContainer.innerHTML = '';
-
-        patient.risks.forEach(risk => {
-            const riskItem = document.createElement('div');
-            riskItem.className = 'risk-item';
-            riskItem.innerHTML = `
-                <span>${risk.disease}: ${risk.percentage}%</span>
-                <div class="progress-bar">
-                    <div class="progress" style="width: ${risk.percentage}%"></div>
-                </div>
-            `;
-            riskContainer.appendChild(riskItem);
-        });
-
-        // Atualiza o texto do diagnóstico
-        const diagnosisText = document.getElementById('diagnosis-text');
-        const currentDate = new Date().toLocaleDateString('pt-BR');
-        diagnosisText.value = diagnosisText.value.replace('[Nome do Paciente]', patient.name);
-        diagnosisText.value = diagnosisText.value.replace('[Idade]', patient.age.split(' ')[0]);
-        diagnosisText.value = diagnosisText.value.replace('[Gênero]', patient.age.includes('Feminino') ? 'Feminino' : 'Masculino');
-        diagnosisText.value = diagnosisText.value.replace('[Data Atual]', currentDate);
-
-        // Navega para a página de detalhes
-        navigateToSection('patient-details');
-
-        // Atualiza o título da página
-        document.getElementById('pageTitle').textContent = patient.name;
-
-        // Cria os gráficos específicos do paciente
-        createPatientChartsWithRetry(patientId, 0);
-
-        // Armazena paciente atual para o modal de exame
-        window.currentPatientId = patientId;
-    };
-
-    // Função para fechar detalhes do paciente
-    window.closePatientDetails = function() {
-        navigateToSection('pacientes');
-    };
-
-    // Função para criar gráficos específicos do paciente
-    function createPatientCharts(patientId) {
-        const patient = patientsData.find(p => p.id === patientId);
-        if (!patient) return;
-
-        const labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago'];
-        function generateSeries(start, trendPerStep, noiseRange, min, max, len = 8) {
-            const series = [];
-            let value = start;
-            for (let i = 0; i < len; i++) {
-                const noise = (Math.random() * 2 - 1) * noiseRange;
-                value = Math.max(min, Math.min(max, value + trendPerStep + noise));
-                series.push(Math.round(value));
-            }
-            return series;
-        }
-
-        // Dados fixos para Maria Silva
-        const fixedData = {
-            'maria-silva': {
-                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago'],
-                systolic:   [138, 140, 142, 145, 147, 150, 152, 155],
-                diastolic:  [ 88,  90,  91,  92,  93,  94,  95,  96],
-                fasting:    [ 92,  95,  98, 100, 104, 107, 110, 112],
-                post:       [135, 140, 145, 150, 155, 160, 165, 170]
-            }
-        };
-
-        // Baselines por paciente (fallback para demais pacientes)
-        const baselines = {
-            'maria-silva': {
-                systolic: 140, diastolic: 90, fasting: 95, post: 140,
-                trends: { sys: 1.5, dia: 1, fast: 2, post: 3 }
-            },
-            'joao-santos': {
-                systolic: 165, diastolic: 100, fasting: 185, post: 230,
-                trends: { sys: 3, dia: 2, fast: 4, post: 5 }
-            },
-            'ana-pereira': {
-                systolic: 135, diastolic: 85, fasting: 110, post: 155,
-                trends: { sys: 1, dia: 0.8, fast: 1.5, post: 2 }
-            },
-            'carlos-pinto': {
-                systolic: 175, diastolic: 110, fasting: 220, post: 265,
-                trends: { sys: 3.5, dia: 2.5, fast: 4.5, post: 5.5 }
-            }
-        };
-
-        const base = baselines[patientId] || baselines['maria-silva'];
-
-        let labelsLocal = labels;
-        let systolicSeries, diastolicSeries, fastingSeries, postSeries;
-
-        if (fixedData[patientId]) {
-            labelsLocal     = fixedData[patientId].labels;
-            systolicSeries  = fixedData[patientId].systolic;
-            diastolicSeries = fixedData[patientId].diastolic;
-            fastingSeries   = fixedData[patientId].fasting;
-            postSeries      = fixedData[patientId].post;
-        } else {
-            systolicSeries  = generateSeries(base.systolic, base.trends.sys, 3, 90, 220, labels.length);
-            diastolicSeries = generateSeries(base.diastolic, base.trends.dia, 2, 60, 140, labels.length);
-            fastingSeries   = generateSeries(base.fasting, base.trends.fast, 5, 70, 260, labels.length);
-            postSeries      = generateSeries(base.post, base.trends.post, 6, 90, 320, labels.length);
-        }
-
-        // Gráfico de Pressão Arterial do Paciente
-        const patientPressureCtx = document.getElementById('patientPressureChart');
-        if (patientPressureCtx) {
-            if (window.patientPressureChart) {
-                window.patientPressureChart.destroy();
-            }
-
-            window.patientPressureChart = new Chart(patientPressureCtx.getContext('2d'), {
-                type: 'line',
-                data: {
-                    labels: labelsLocal,
-                    datasets: [{
-                        label: 'Pressão Sistólica (mmHg)',
-                        data: systolicSeries,
-                        borderColor: '#FF4655',
-                        backgroundColor: 'rgba(255, 70, 85, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        yAxisID: 'y'
-                    }, {
-                        label: 'Pressão Diastólica (mmHg)',
-                        data: diastolicSeries,
-                        borderColor: '#0F1923',
-                        backgroundColor: 'rgba(15, 25, 35, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        yAxisID: 'y'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            type: 'linear',
-                            display: true,
-                            position: 'left',
-                            beginAtZero: false,
-                            min: Math.min(...diastolicSeries) - 10,
-                            max: Math.max(...systolicSeries) + 10,
-                            grid: { color: 'rgba(0,0,0,0.1)' }
-                        }
-                    },
-                    plugins: { legend: { position: 'top' } }
-                }
-            });
-        }
-
-        // Gráfico de Glicemia do Paciente
-        const patientGlucoseCtx = document.getElementById('patientGlucoseChart');
-        if (patientGlucoseCtx) {
-            if (window.patientGlucoseChart) {
-                window.patientGlucoseChart.destroy();
-            }
-
-            window.patientGlucoseChart = new Chart(patientGlucoseCtx.getContext('2d'), {
-                type: 'line',
-                data: {
-                    labels: labelsLocal,
-                    datasets: [{
-                        label: 'Glicemia em Jejum (mg/dL)',
-                        data: fastingSeries,
-                        borderColor: '#7B2CBF',
-                        backgroundColor: 'rgba(123, 44, 191, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        yAxisID: 'y'
-                    }, {
-                        label: 'Glicemia Pós-Prandial (mg/dL)',
-                        data: postSeries,
-                        borderColor: '#28a745',
-                        backgroundColor: 'rgba(40, 167, 69, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        yAxisID: 'y'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            type: 'linear',
-                            display: true,
-                            position: 'left',
-                            beginAtZero: false,
-                            min: Math.min(...fastingSeries) - 15,
-                            max: Math.max(...postSeries) + 15,
-                            grid: { color: 'rgba(0,0,0,0.1)' }
-                        }
-                    },
-                    plugins: { legend: { position: 'top' } }
-                }
-            });
-        }
-    }
-
-    // Retry helper para aguardar layout antes de criar gráficos
-    function createPatientChartsWithRetry(patientId, attempt) {
-        const pressureCanvas = document.getElementById('patientPressureChart');
-        const glucoseCanvas = document.getElementById('patientGlucoseChart');
-        const maxAttempts = 10;
-        const ready = pressureCanvas && glucoseCanvas && pressureCanvas.clientHeight > 0 && glucoseCanvas.clientHeight > 0;
-        if (ready) {
-            createPatientCharts(patientId);
-        } else if (attempt < maxAttempts) {
-            setTimeout(() => createPatientChartsWithRetry(patientId, attempt + 1), 60);
-        }
-    }
-
-// US05 - Gerador de IA Melhorado (Laudo Realista e Dinâmico)
-window.generateAIDiagnosis = function() {
-    const diagnosisText = document.getElementById('diagnosis-text');
-
-    // 1. Tenta pegar o paciente pelo ID global que foi salvo ao abrir a tela
-    let patient = null;
-    if (window.currentPatientId) {
-        patient = patientsData.find(p => p.id === window.currentPatientId);
-    }
-
-    // 2. PLANO B (Fallback Salvador): Se a variável global se perdeu, 
-    // procuramos o paciente pelo nome que está aparecendo no HTML da tela!
-    if (!patient) {
-        const patientNameEl = document.getElementById('patient-name');
-        if (patientNameEl) {
-            const nomeNaTela = patientNameEl.textContent.trim();
-            patient = patientsData.find(p => p.name === nomeNaTela);
-            
-            // Restaura o ID global para consertar o erro para as próximas ações (como abrir exames)
-            if (patient) {
-                window.currentPatientId = patient.id;
-            }
-        }
-    }
-
-    // Se mesmo com o Plano B não achar ninguém, aí sim barramos a execução
-    if (!patient) {
-        alert('Erro: Não foi possível identificar o paciente aberto na tela. Tente voltar e abrir o paciente novamente.');
-        return;
-    }
-
-    // =========================================================
-    // 🧠 MOTOR DE IA SIMULADA: GERANDO TEXTOS CLÍNICOS REAIS
-    // =========================================================
-
-    // 1. Queixa Principal baseada na condição real do paciente
-    let queixa = "Consulta de rotina para acompanhamento de quadro metabólico e cardiovascular.";
-    if (patient.glucose > 150) {
-        queixa = "Paciente relata episódios de fadiga intensa, poliúria (aumento do volume da urina) e polidipsia (sede excessiva) nas últimas semanas, sugestivo de descompensação glicêmica.";
-    } else if (patient.systolic >= 150) {
-        queixa = "Paciente queixa-se de cefaleia (dor de cabeça) occipital esporádica e episódios de tontura, principalmente no período da manhã.";
-    } else if (patient.status === 'moderado') {
-        queixa = "Paciente assintomático(a) no momento, comparece para reavaliação de exames de rotina e acompanhamento preventivo.";
-    }
-
-    // 2. Histórico Médico puxando os Fatores de Risco
-    const historico = patient.riskFactors.length > 0 
-        ? `Paciente apresenta histórico prévio significativo para: ${patient.riskFactors.join(', ')}.` 
-        : `Paciente nega comorbidades prévias além das diagnosticadas no quadro atual.`;
-
-    // 3. Exame Físico simulado (calcula uma diastólica coerente para ficar real)
-    const diastolicaCalculada = Math.round(patient.systolic * 0.6); 
-    const exameFisico = `Bom estado geral (BEG), corado(a), hidratado(a), acianótico(a) e anictérico(a).\n- Pressão Arterial aferida: ${patient.systolic} x ${diastolicaCalculada} mmHg.\n- Ritmo Cardíaco Regular em 2 tempos (RCR 2T), bulhas normofonéticas sem sopros.\n- Murmúrio vesicular presente (MVP), sem ruídos adventícios.`;
-
-    // 4. Exames Complementares (dando direcionamento de acordo com o caso)
-    const exames = `Glicemia capilar aferida no consultório: ${patient.glucose} mg/dL.\nSugere-se solicitar para a próxima consulta: Hemograma Completo, Hemoglobina Glicada (HbA1c), Perfil Lipídico (Colesterol Total e Frações), Ureia, Creatinina e EAS.`;
-
-    // 5. Plano Terapêutico dinâmico avaliando o Risco
-    let plano = "";
-    if (patient.status === 'critico') {
-        plano = "1. Ajuste imediato do protocolo medicamentoso (avaliar introdução/aumento de anti-hipertensivos e hipoglicemiantes).\n2. Encaminhamento de urgência para cardiologia e endocrinologia.\n3. Retorno obrigatório em 15 dias com novos exames laboratoriais.";
-    } else if (patient.status === 'alto-risco') {
-        plano = "1. Otimização terapêutica das medicações em uso.\n2. Início de intervenção nutricional focada em reeducação alimentar.\n3. Prescrição de rotina de exercícios físicos leves sob supervisão.\n4. Retorno em 30 dias para acompanhamento.";
-    } else {
-        plano = "1. Conduta conservadora com foco em Mudança de Estilo de Vida (MEV).\n2. Orientação para dieta hipossódica e restrição de carboidratos simples.\n3. Manutenção das medicações atuais (se houver).\n4. Retorno de rotina em 3 meses.";
-    }
-
-    // =========================================================
-
-    // Monta listas formatadas
-    const risksFormatted = patient.risks.map(r => `  - ${r.disease}: ${r.percentage}%`).join('\n');
-    const riskFactorsFormatted = patient.riskFactors.map(f => `  - ${f}`).join('\n');
-
-    // String template final aplicando a formatação Markdown que a função de impressão lê
-    const aiDiagnosis = `# DIAGNÓSTICO MÉDICO COMPLETO
-
-## DADOS DO PACIENTE
-- Nome: ${patient.name}
-- Idade/Gênero: ${patient.age}
-- Status Clínico: ${patient.statusText}
-- Data da Consulta: ${new Date().toLocaleDateString('pt-BR')}
-
-## PARÂMETROS CLÍNICOS ATUAIS
-- Pressão Sistólica: ${patient.systolic} mmHg
-- Glicemia: ${patient.glucose} mg/dL
-
-## ANÁLISE IA E DIAGNÓSTICO BASE (Confiança: ${patient.aiConfidence})
-${patient.aiSummary}
-
-## QUEIXA PRINCIPAL
-${queixa}
-
-## HISTÓRICO MÉDICO
-${historico}
-
-## EXAME FÍSICO
-${exameFisico}
-
-## EXAMES COMPLEMENTARES
-${exames}
-
-## PLANO TERAPÊUTICO CONDUTA
-${plano}
-
-## PROBABILIDADE DE DOENÇAS FUTURAS (IA)
-${risksFormatted}
-
-## FATORES DE RISCO IDENTIFICADOS
-${riskFactorsFormatted}
-
-## OBSERVAÇÕES
-Este laudo foi gerado e pré-preenchido com auxílio de Inteligência Artificial para otimizar o tempo de consulta. O médico responsável deve revisar, alterar (se necessário) e validar as informações contidas acima antes da emissão final e assinatura.`;
-
-    // Injeta o laudo montado no textarea
-    diagnosisText.value = aiDiagnosis;
-};
-
-    // Função para salvar diagnóstico
-    window.saveDiagnosis = function() {
-        const diagnosisText = document.getElementById('diagnosis-text').value;
-        const patientName = document.getElementById('patient-name').textContent;
-        alert(`Diagnóstico de ${patientName} salvo com sucesso!`);
-        console.log('Diagnóstico salvo:', diagnosisText);
-    };
-
-window.printDiagnosis = function() {
-    const diagnosisText = document.getElementById('diagnosis-text').value;
-    const patientName = document.getElementById('patient-name').textContent || 'Paciente';
-
-    // 1. "Limpando" e formatando o texto (Converte o Markdown para HTML)
-    // Isso remove os símbolos # e cria títulos bonitos, além de respeitar as quebras de linha
-    let formattedText = diagnosisText
-        .replace(/^# (.*$)/gim, '<h2 class="main-title">$1</h2>')         // Transforma '# Titulo' em <h2>
-        .replace(/^## (.*$)/gim, '<h3 class="section-title">$1</h3>')     // Transforma '## Subtitulo' em <h3>
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')                 // Transforma '**negrito**' em <strong>
-        .replace(/\n/g, '<br>');                                          // Troca quebras de linha reais por <br>
-
-    // 2. Pegando a data de hoje para o laudo
-    const today = new Date().toLocaleDateString('pt-BR');
-
-    // 3. Montando a janela de impressão
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(`
-        <!DOCTYPE html>
-        <html lang="pt-BR">
-            <head>
-                <meta charset="UTF-8">
-                <title>Laudo Médico - ${patientName}</title>
-                <style>
-                    /* Define o tamanho da folha A4 e zera margens de sistema */
-                    @page { 
-                        size: A4; 
-                        margin: 2cm; 
-                    }
-                    
-                    /* Estilo base com fonte mais profissional (semelhante ao Word) */
-                    body { 
-                        font-family: 'Segoe UI', Arial, sans-serif; 
-                        color: #111; 
-                        line-height: 1.6; 
-                        margin: 0; 
-                        padding: 0;
-                    }
-
-                    /* Cabeçalho do Laudo */
-                    .document-header {
-                        text-align: center;
-                        border-bottom: 2px solid #2c3e50;
-                        padding-bottom: 10px;
-                        margin-bottom: 20px;
-                    }
-                    .document-header h1 {
-                        margin: 0;
-                        color: #2c3e50;
-                        font-size: 24px;
-                        text-transform: uppercase;
-                        letter-spacing: 1px;
-                    }
-                    .document-header p {
-                        margin: 5px 0 0 0;
-                        color: #555;
-                        font-size: 14px;
-                    }
-
-                    /* Caixinha de informações do paciente */
-                    .patient-info {
-                        background-color: #f8f9fa;
-                        border: 1px solid #e9ecef;
-                        border-radius: 6px;
-                        padding: 15px;
-                        margin-bottom: 30px;
-                        display: flex;
-                        justify-content: space-between;
-                        font-size: 14px;
-                    }
-                    .patient-info p { 
-                        margin: 0; 
-                    }
-
-                    /* Área principal do conteúdo */
-                    .content {
-                        font-size: 12pt; /* Tamanho ideal para leitura em papel */
-                        text-align: justify;
-                    }
-
-                    /* Estilização dos títulos que vieram do Markdown */
-                    .main-title {
-                        text-align: center;
-                        font-size: 16pt;
-                        margin-top: 0;
-                        margin-bottom: 20px;
-                        display: none; /* Ocultamos o "# DIAGNÓSTICO MÉDICO COMPLETO" original porque já temos o cabeçalho novo */
-                    }
-                    .section-title {
-                        color: #2c3e50;
-                        border-bottom: 1px solid #eee;
-                        padding-bottom: 5px;
-                        margin-top: 30px;
-                        margin-bottom: 15px;
-                        font-size: 14pt;
-                        text-transform: uppercase;
-                    }
-
-                    /* Área de Assinatura ao final do documento */
-                    .signature-area {
-                        margin-top: 60px;
-                        text-align: center;
-                        page-break-inside: avoid; /* Evita que a linha de assinatura fique separada na folha seguinte */
-                    }
-                    .signature-area hr {
-                        width: 50%;
-                        border: none;
-                        border-top: 1px solid #000;
-                        margin-bottom: 8px;
-                    }
-                    .signature-area p {
-                        margin: 0;
-                        font-size: 14px;
-                        color: #333;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="document-header">
-                    <h1>Clínica Médica</h1>
-                    <p>Laudo e Avaliação Clínica</p>
-                </div>
-
-                <div class="patient-info">
-                    <div>
-                        <p><strong>Paciente:</strong> ${patientName}</p>
-                    </div>
-                    <div>
-                        <p><strong>Data da Emissão:</strong> ${today}</p>
-                    </div>
-                </div>
-
-                <div class="content">
-                    ${formattedText}
-                </div>
-
-                <div class="signature-area">
-                    <hr>
-                    <p>Assinatura e Carimbo do(a) Médico(a)</p>
-                </div>
-            </body>
-        </html>
-    `);
-    printWindow.document.close();
-    
-    // Pequeno delay para garantir que o navegador renderize o HTML antes de chamar a caixa de impressão
-    setTimeout(() => {
-        printWindow.print();
-    }, 250);
-};
-    // Funções do Modal de Exame
-    const examBaseByPatient = {
-        default: 'assets/images/resultado-do-exame-de-sangue-v0-0wk34izw0f1d1'
-    };
-
-    function loadExamImageWithFallback(imgEl, basePath, onDone) {
-        const exts = ['.jpg', '.jpeg', '.png', '.webp'];
-        let idx = 0;
-        function tryNext() {
-            if (idx >= exts.length) {
-                imgEl.src = 'https://via.placeholder.com/900x600?text=Laudo+nao+encontrado';
-                if (onDone) onDone(false);
-                return;
-            }
-            const candidate = basePath + exts[idx++];
-            imgEl.onerror = tryNext;
-            imgEl.onload = () => { imgEl.onerror = null; if (onDone) onDone(true); };
-            imgEl.src = candidate;
-        }
-        tryNext();
-    }
-
-    window.openExamImage = function() {
-        const modal = document.getElementById('examModal');
-        const img = document.getElementById('examImage');
-        const caption = document.getElementById('examCaption');
-        const patientId = window.currentPatientId;
-        const base = (examBaseByPatient[patientId] || examBaseByPatient.default);
-        loadExamImageWithFallback(img, base);
-        const patient = patientsData.find(p => p.id === patientId);
-        caption.textContent = patient ? `Exame médico de ${patient.name}` : 'Exame médico';
-        modal.classList.add('open');
-    };
-
-    window.closeExamModal = function() {
-        const modal = document.getElementById('examModal');
-        const img = document.getElementById('examImage');
-        modal.classList.remove('open');
-        img.src = '';
-    };
-
-    window.handleExamBackdropClick = function(event) {
-        if (event.target && event.target.id === 'examModal') {
-            window.closeExamModal();
-        }
-    };
-
-    // Dropdown do Perfil
-    const profileBtn = document.getElementById("profileBtn");
-    const dropdown = document.getElementById("profileDropdown");
-
-    // abrir/fechar ao clicar
-    profileBtn.addEventListener("click", () => {
-       dropdown.classList.toggle("show");
-    });
-
-    // fechar se clicar fora
-    document.addEventListener("click", (e) => {
-        if (!profileBtn.contains(e.target) && !dropdown.contains(e.target)) {
-            dropdown.classList.remove("show");
-        }
-    });
-
-    document.getElementById("logoutBtn").addEventListener("click", logout);
-    
-    function logout() {
-        // limpa sessão
-        localStorage.clear();
-
-        // força redirecionamento
-        window.location.href = "login.html";
-    }
+/**
+ * SolveTechAi — script.js
+ * Arquitetura: POO com ES6+ Classes
+ * Classes: DashboardApp | ChartRenderer | PatientManager
+ * Dados: Mockados com perfil realista de paciente cardiológico
+ */
+
+'use strict';
+
+/* ================================================================
+   CONSTANTES GLOBAIS — Paleta e Tokens
+   Espelha o CSS :root para uso nos datasets do Chart.js
+================================================================ */
+const COLORS = Object.freeze({
+  bgDeep:       '#04091A',
+  bgCard:       '#0C1530',
+  primary:      '#0052FF',
+  secondary:    '#00D4FF',
+  danger:       '#FF3B6F',
+  warning:      '#FFB800',
+  success:      '#00C896',
+  purple:       '#8B5CF6',
+  textPrimary:  '#E8F0FF',
+  textSecondary:'#7A8BB5',
+  textMuted:    '#3D4F72',
+  border:       '#162040',
 });
+
+/* ================================================================
+   MOCK DATA — Fonte de verdade para todos os componentes
+================================================================ */
+const MOCK_DATA = Object.freeze({
+
+  /** Pressão Arterial — 24 pontos horários (00h–23h) */
+  bloodPressure: {
+    labels: [
+      '00h','01h','02h','03h','04h','05h','06h','07h',
+      '08h','09h','10h','11h','12h','13h','14h','15h',
+      '16h','17h','18h','19h','20h','21h','22h','23h',
+    ],
+    systolic:  [122, 120, 118, 125, 178, 155, 148, 138,
+                132, 128, 126, 130, 124, 122, 120, 124,
+                128, 132, 135, 130, 126, 124, 122, 120],
+    diastolic: [ 78,  76,  74,  80,  98,  90,  86,  82,
+                 80,  78,  76,  80,  78,  76,  74,  78,
+                 82,  85,  86,  82,  78,  76,  74,  72],
+    anomalyIndex: 4, // índice do pico
+  },
+
+  /** Glicemia — 7 dias, 3 leituras por dia */
+  glucose: {
+    labels: [
+      'Seg\n7h','Seg\n12h','Seg\n19h',
+      'Ter\n7h','Ter\n12h','Ter\n19h',
+      'Qua\n7h','Qua\n12h','Qua\n19h',
+      'Qui\n7h','Qui\n12h','Qui\n19h',
+      'Sex\n7h','Sex\n12h','Sex\n19h',
+      'Sáb\n7h','Sáb\n12h','Sáb\n19h',
+      'Dom\n7h','Dom\n12h','Dom\n19h',
+    ],
+    values: [
+       98, 145, 162,
+      102, 218, 175,   // pico pós-prandial ← anomalia
+      108, 188, 164,
+       95, 172, 155,
+      100, 195, 168,   // segundo pico
+       92, 160, 148,
+       98, 155, 142,
+    ],
+    refHigh: 180, // limite superior de referência
+    refLow:  70,  // limite inferior de referência
+  },
+
+  /** Score de Risco Multifatorial — Radar */
+  riskRadar: {
+    labels: ['Cardio', 'Metab.', 'Renal', 'Neuro', 'Respirat.', 'Psíquico'],
+    patient: [72, 45, 28, 35, 22, 40],  // paciente João
+    ref:     [30, 30, 30, 30, 30, 30],  // linha de referência saudável
+  },
+
+  /** Sparklines dos KPI Cards */
+  sparklines: {
+    patients: [210, 218, 225, 230, 228, 235, 240, 248],
+  },
+
+  /** Pacientes em monitoramento */
+  patients: [
+    {
+      id: 'PAC-001',
+      name: 'João P. Almeida',
+      age: 58,
+      cid: 'I10 — HAS',
+      bp: '178/98',
+      glucose: 145,
+      riskScore: 72,
+      status: 'critical',
+      lastReading: '04:12 hoje',
+      avatarColor: ['#0052FF', '#00D4FF'],
+    },
+    {
+      id: 'PAC-002',
+      name: 'Maria C. Santos',
+      age: 43,
+      cid: 'E11 — DM2',
+      bp: '124/78',
+      glucose: 218,
+      riskScore: 58,
+      status: 'monitoring',
+      lastReading: '09:45 hoje',
+      avatarColor: ['#8B5CF6', '#EC4899'],
+    },
+    {
+      id: 'PAC-003',
+      name: 'Carlos E. Ferreira',
+      age: 61,
+      cid: 'I25 — DAC',
+      bp: '132/84',
+      glucose: 112,
+      riskScore: 65,
+      status: 'monitoring',
+      lastReading: '08:30 hoje',
+      avatarColor: ['#F59E0B', '#EF4444'],
+    },
+    {
+      id: 'PAC-004',
+      name: 'Ana L. Rodrigues',
+      age: 35,
+      cid: 'J45 — Asma',
+      bp: '118/72',
+      glucose: 98,
+      riskScore: 22,
+      status: 'stable',
+      lastReading: '07:00 hoje',
+      avatarColor: ['#00C896', '#0052FF'],
+    },
+    {
+      id: 'PAC-005',
+      name: 'Pedro H. Oliveira',
+      age: 70,
+      cid: 'I50 — IC',
+      bp: '145/90',
+      glucose: 134,
+      riskScore: 81,
+      status: 'critical',
+      lastReading: '10:02 hoje',
+      avatarColor: ['#EF4444', '#F59E0B'],
+    },
+    {
+      id: 'PAC-006',
+      name: 'Beatriz M. Lima',
+      age: 52,
+      cid: 'N18 — DRC',
+      bp: '148/92',
+      glucose: 108,
+      riskScore: 47,
+      status: 'monitoring',
+      lastReading: '09:15 hoje',
+      avatarColor: ['#06B6D4', '#8B5CF6'],
+    },
+    {
+      id: 'PAC-007',
+      name: 'Roberto A. Souza',
+      age: 48,
+      cid: 'K29 — Gastrite',
+      bp: '120/76',
+      glucose: 95,
+      riskScore: 18,
+      status: 'stable',
+      lastReading: 'Ontem 18h',
+      avatarColor: ['#10B981', '#06B6D4'],
+    },
+    {
+      id: 'PAC-008',
+      name: 'Luciana T. Costa',
+      age: 66,
+      cid: 'M79 — Fibromialgia',
+      bp: '126/80',
+      glucose: 102,
+      riskScore: 35,
+      status: 'stable',
+      lastReading: 'Ontem 20h',
+      avatarColor: ['#F472B6', '#A78BFA'],
+    },
+  ],
+});
+
+/* ================================================================
+   CLASSE: ChartRenderer
+   Responsável por instanciar e gerenciar todos os gráficos Chart.js
+================================================================ */
+class ChartRenderer {
+  /** @type {Map<string, Chart>} Registro de instâncias Chart.js */
+  #charts = new Map();
+
+  constructor() {
+    this.#configureChartDefaults();
+  }
+
+  /**
+   * Configura defaults globais do Chart.js para o tema dark.
+   * Evita repetição em cada instância.
+   */
+  #configureChartDefaults() {
+    Chart.defaults.color          = COLORS.textSecondary;
+    Chart.defaults.font.family    = "'IBM Plex Mono', monospace";
+    Chart.defaults.font.size      = 11;
+    Chart.defaults.borderColor    = COLORS.border;
+    Chart.defaults.plugins.legend.display = false; // legendas customizadas no HTML
+  }
+
+  /**
+   * Cria um gradiente vertical para uso como backgroundColor.
+   * @param {CanvasRenderingContext2D} ctx
+   * @param {string} colorTop  - Cor superior (com alpha)
+   * @param {string} colorBottom - Cor inferior (transparente)
+   * @param {number} [height=300]
+   * @returns {CanvasGradient}
+   */
+  #createGradient(ctx, colorTop, colorBottom, height = 300) {
+    const gradient = ctx.createLinearGradient(0, 0, 0, height);
+    gradient.addColorStop(0,   colorTop);
+    gradient.addColorStop(1,   colorBottom);
+    return gradient;
+  }
+
+  /**
+   * Destrói uma instância Chart.js existente antes de recriar.
+   * @param {string} id
+   */
+  #destroyIfExists(id) {
+    if (this.#charts.has(id)) {
+      this.#charts.get(id).destroy();
+      this.#charts.delete(id);
+    }
+  }
+
+  /* ────────────────────────────────────────────────────────────
+     GRÁFICO 1 — Pressão Arterial (Line Chart — 2 datasets)
+  ──────────────────────────────────────────────────────────── */
+  renderBloodPressure(canvasId, data) {
+    this.#destroyIfExists(canvasId);
+
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    // Gradientes
+    const gradSystolic  = this.#createGradient(ctx, 'rgba(255,59,111,0.30)', 'rgba(255,59,111,0.00)', 280);
+    const gradDiastolic = this.#createGradient(ctx, 'rgba(0,82,255,0.22)',   'rgba(0,82,255,0.00)',   280);
+
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: data.labels,
+        datasets: [
+          {
+            label: 'Sistólica',
+            data:  data.systolic,
+            borderColor:     COLORS.danger,
+            backgroundColor: gradSystolic,
+            borderWidth: 2,
+            tension: 0.4,
+            fill: true,
+            pointRadius: data.systolic.map((_, i) => i === data.anomalyIndex ? 7 : 3),
+            pointBackgroundColor: data.systolic.map((_, i) =>
+              i === data.anomalyIndex ? COLORS.danger : COLORS.bgDeep
+            ),
+            pointBorderColor: data.systolic.map((_, i) =>
+              i === data.anomalyIndex ? '#fff' : COLORS.danger
+            ),
+            pointBorderWidth: data.systolic.map((_, i) => i === data.anomalyIndex ? 2 : 1.5),
+            pointHoverRadius: 6,
+            order: 1,
+          },
+          {
+            label: 'Diastólica',
+            data:  data.diastolic,
+            borderColor:     COLORS.primary,
+            backgroundColor: gradDiastolic,
+            borderWidth: 1.8,
+            tension: 0.4,
+            fill: true,
+            pointRadius: 3,
+            pointBackgroundColor: COLORS.bgDeep,
+            pointBorderColor: COLORS.primary,
+            pointBorderWidth: 1.5,
+            pointHoverRadius: 5,
+            order: 2,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          tooltip: this.#buildTooltipStyle({
+            callbacks: {
+              label: (ctx) => {
+                const unit = 'mmHg';
+                return `  ${ctx.dataset.label}: ${ctx.parsed.y} ${unit}`;
+              },
+              afterBody: (items) => {
+                const i = items[0].dataIndex;
+                if (i === data.anomalyIndex) {
+                  return ['', '  ⚠ Pico hipertensivo detectado'];
+                }
+                return [];
+              },
+            },
+          }),
+          annotation: undefined, // sem plugin externo
+        },
+        scales: {
+          x: this.#buildScaleX(),
+          y: {
+            ...this.#buildScaleY(),
+            min: 55,
+            max: 190,
+            ticks: {
+              ...this.#buildScaleY().ticks,
+              callback: (v) => `${v}`,
+              stepSize: 30,
+            },
+            title: {
+              display: true,
+              text: 'mmHg',
+              color: COLORS.textMuted,
+              font: { size: 10 },
+            },
+          },
+        },
+      },
+    });
+
+    this.#charts.set(canvasId, chart);
+    return chart;
+  }
+
+  /* ────────────────────────────────────────────────────────────
+     GRÁFICO 2 — Glicemia (Line Chart com faixas de referência)
+  ──────────────────────────────────────────────────────────── */
+  renderGlucose(canvasId, data) {
+    this.#destroyIfExists(canvasId);
+
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    const gradGlucose = this.#createGradient(ctx, 'rgba(255,184,0,0.25)', 'rgba(255,184,0,0.00)', 260);
+
+    // Identifica pontos acima do limite
+    const isAnomaly = data.values.map(v => v > data.refHigh);
+
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: data.labels,
+        datasets: [
+          {
+            label: 'Glicemia',
+            data:  data.values,
+            borderColor: (ctx2) => {
+              // Linha fica vermelha se o segmento estiver acima do limite
+              return COLORS.warning;
+            },
+            segment: {
+              borderColor: (ctx2) =>
+                data.values[ctx2.p1DataIndex] > data.refHigh ? COLORS.danger : COLORS.warning,
+            },
+            backgroundColor: gradGlucose,
+            borderWidth: 2,
+            tension: 0.35,
+            fill: true,
+            pointRadius: isAnomaly.map(a => a ? 7 : 3),
+            pointBackgroundColor: isAnomaly.map(a => a ? COLORS.danger : COLORS.bgDeep),
+            pointBorderColor: isAnomaly.map(a => a ? '#fff' : COLORS.warning),
+            pointBorderWidth: isAnomaly.map(a => a ? 2 : 1.5),
+            pointHoverRadius: 6,
+          },
+          // Linha de limite superior
+          {
+            label: 'Limite Superior',
+            data: new Array(data.labels.length).fill(data.refHigh),
+            borderColor: 'rgba(255,59,111,0.35)',
+            backgroundColor: 'transparent',
+            borderWidth: 1,
+            borderDash: [6, 3],
+            pointRadius: 0,
+            tension: 0,
+            fill: false,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          tooltip: this.#buildTooltipStyle({
+            callbacks: {
+              label: (ctx) => {
+                if (ctx.datasetIndex === 1) return null;
+                const v = ctx.parsed.y;
+                const flag = v > data.refHigh ? '  ⚠ Acima do limite' : '';
+                return `  Glicemia: ${v} mg/dL${flag}`;
+              },
+            },
+            filter: (item) => item.datasetIndex === 0,
+          }),
+        },
+        scales: {
+          x: {
+            ...this.#buildScaleX(),
+            ticks: {
+              ...this.#buildScaleX().ticks,
+              maxTicksLimit: 7,
+            },
+          },
+          y: {
+            ...this.#buildScaleY(),
+            min: 60,
+            max: 240,
+            ticks: {
+              ...this.#buildScaleY().ticks,
+              callback: (v) => `${v}`,
+              stepSize: 40,
+            },
+            title: {
+              display: true,
+              text: 'mg/dL',
+              color: COLORS.textMuted,
+              font: { size: 10 },
+            },
+          },
+        },
+      },
+    });
+
+    this.#charts.set(canvasId, chart);
+    return chart;
+  }
+
+  /* ────────────────────────────────────────────────────────────
+     GRÁFICO 3 — Risk Radar (Radar Chart)
+  ──────────────────────────────────────────────────────────── */
+  renderRiskRadar(canvasId, data) {
+    this.#destroyIfExists(canvasId);
+
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    const gradPatient = this.#createGradient(ctx, 'rgba(255,184,0,0.3)', 'rgba(255,184,0,0.05)', 220);
+
+    const chart = new Chart(ctx, {
+      type: 'radar',
+      data: {
+        labels: data.labels,
+        datasets: [
+          {
+            label: 'Paciente',
+            data: data.patient,
+            borderColor: COLORS.warning,
+            backgroundColor: gradPatient,
+            borderWidth: 2,
+            pointBackgroundColor: COLORS.warning,
+            pointBorderColor: COLORS.bgDeep,
+            pointBorderWidth: 2,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+          },
+          {
+            label: 'Referência saudável',
+            data: data.ref,
+            borderColor: 'rgba(0, 200, 150, 0.45)',
+            backgroundColor: 'rgba(0, 200, 150, 0.06)',
+            borderWidth: 1.5,
+            borderDash: [4, 2],
+            pointRadius: 0,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'point' },
+        plugins: {
+          tooltip: this.#buildTooltipStyle({
+            callbacks: {
+              label: (ctx) => `  ${ctx.dataset.label}: ${ctx.parsed.r}%`,
+            },
+          }),
+        },
+        scales: {
+          r: {
+            min: 0,
+            max: 100,
+            backgroundColor: 'transparent',
+            grid: {
+              color: COLORS.border,
+              lineWidth: 1,
+            },
+            angleLines: {
+              color: COLORS.border,
+              lineWidth: 1,
+            },
+            pointLabels: {
+              color: COLORS.textSecondary,
+              font: { size: 10, family: "'IBM Plex Mono', monospace" },
+            },
+            ticks: {
+              color: COLORS.textMuted,
+              backdropColor: 'transparent',
+              font: { size: 9 },
+              stepSize: 25,
+              callback: (v) => `${v}%`,
+            },
+          },
+        },
+      },
+    });
+
+    this.#charts.set(canvasId, chart);
+    return chart;
+  }
+
+  /* ────────────────────────────────────────────────────────────
+     GRÁFICO 4 — Sparkline KPI Card (mini Line sem eixos)
+  ──────────────────────────────────────────────────────────── */
+  renderSparkline(canvasId, values, color = COLORS.primary) {
+    this.#destroyIfExists(canvasId);
+
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    const grad = this.#createGradient(ctx, `${color}40`, `${color}00`, 40);
+
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: values.map(() => ''),
+        datasets: [{
+          data: values,
+          borderColor: color,
+          backgroundColor: grad,
+          borderWidth: 1.5,
+          tension: 0.4,
+          fill: true,
+          pointRadius: 0,
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        events: [], // sem interação
+        plugins: {
+          tooltip: { enabled: false },
+          legend:  { display: false },
+        },
+        scales: {
+          x: { display: false },
+          y: { display: false },
+        },
+        animation: { duration: 600, easing: 'easeInOutCubic' },
+      },
+    });
+
+    this.#charts.set(canvasId, chart);
+    return chart;
+  }
+
+  /* ────────────────────────────────────────────────────────────
+     BUILDERS PRIVADOS — Estilos reutilizáveis
+  ──────────────────────────────────────────────────────────── */
+
+  /** Tooltip com estilo dark padrão da aplicação */
+  #buildTooltipStyle(overrides = {}) {
+    return {
+      enabled: true,
+      backgroundColor: '#0C1530',
+      titleColor: COLORS.textPrimary,
+      bodyColor:  COLORS.textSecondary,
+      borderColor: COLORS.border,
+      borderWidth: 1,
+      cornerRadius: 8,
+      padding: 12,
+      titleFont: { family: "'Syne', sans-serif", size: 12, weight: '700' },
+      bodyFont:  { family: "'IBM Plex Mono', monospace", size: 11 },
+      boxPadding: 4,
+      ...overrides,
+    };
+  }
+
+  /** Configuração padrão de eixo X */
+  #buildScaleX() {
+    return {
+      border: { display: false },
+      grid: {
+        color: COLORS.border,
+        lineWidth: 0.5,
+        drawTicks: false,
+      },
+      ticks: {
+        color: COLORS.textMuted,
+        maxRotation: 0,
+        padding: 8,
+        font: { size: 10 },
+      },
+    };
+  }
+
+  /** Configuração padrão de eixo Y */
+  #buildScaleY() {
+    return {
+      position: 'right',
+      border: { display: false },
+      grid: {
+        color: COLORS.border,
+        lineWidth: 0.5,
+        drawTicks: false,
+      },
+      ticks: {
+        color: COLORS.textMuted,
+        padding: 8,
+        font: { size: 10 },
+      },
+    };
+  }
+
+  /**
+   * Retorna instância Chart.js pelo ID do canvas.
+   * @param {string} id
+   * @returns {Chart|undefined}
+   */
+  getChart(id) {
+    return this.#charts.get(id);
+  }
+
+  /**
+   * Destrói todos os gráficos (útil em unmount / SPA navigation).
+   */
+  destroyAll() {
+    this.#charts.forEach(chart => chart.destroy());
+    this.#charts.clear();
+  }
+}
+
+/* ================================================================
+   CLASSE: PatientManager
+   Responsável pelo estado e renderização da lista de pacientes
+================================================================ */
+class PatientManager {
+  /** @type {Array} Lista completa de pacientes */
+  #patients = [];
+
+  /** @type {string} Filtro ativo */
+  #activeFilter = 'all';
+
+  /** @type {HTMLElement} Elemento da tabela */
+  #tableBody;
+
+  /** @type {HTMLElement} Contador de pacientes */
+  #countEl;
+
+  /**
+   * @param {Array}       patients   - Array de pacientes mock
+   * @param {HTMLElement} tableBody  - tbody da tabela
+   * @param {HTMLElement} countEl    - span com o count
+   */
+  constructor(patients, tableBody, countEl) {
+    this.#patients    = patients;
+    this.#tableBody   = tableBody;
+    this.#countEl     = countEl;
+  }
+
+  /** Inicializa: renderiza tabela e associa filtros */
+  init() {
+    this.#render();
+    this.#bindFilterTabs();
+  }
+
+  /**
+   * Filtra a lista de pacientes pelo status.
+   * @param {string} filter - 'all' | 'critical' | 'stable' | 'monitoring'
+   */
+  setFilter(filter) {
+    this.#activeFilter = filter;
+    this.#render();
+  }
+
+  /** Retorna pacientes filtrados */
+  #getFiltered() {
+    if (this.#activeFilter === 'all') return this.#patients;
+    return this.#patients.filter(p => p.status === this.#activeFilter);
+  }
+
+  /** Renderiza as linhas da tabela */
+  #render() {
+    const filtered = this.#getFiltered();
+
+    // Atualiza contador
+    if (this.#countEl) {
+      this.#countEl.textContent = `${filtered.length} paciente${filtered.length !== 1 ? 's' : ''}`;
+    }
+
+    if (!this.#tableBody) return;
+
+    // Fragment para evitar reflows repetidos
+    const fragment = document.createDocumentFragment();
+
+    if (filtered.length === 0) {
+      const tr = document.createElement('tr');
+      tr.className = 'patients-table__row';
+      tr.innerHTML = `<td class="patients-table__td" colspan="8" style="text-align:center;color:var(--color-text-muted);padding:2rem;">
+        Nenhum paciente encontrado nesta categoria.
+      </td>`;
+      fragment.appendChild(tr);
+    } else {
+      filtered.forEach(patient => {
+        fragment.appendChild(this.#createRow(patient));
+      });
+    }
+
+    this.#tableBody.innerHTML = '';
+    this.#tableBody.appendChild(fragment);
+  }
+
+  /**
+   * Cria um elemento <tr> para um paciente.
+   * @param {Object} patient
+   * @returns {HTMLTableRowElement}
+   */
+  #createRow(patient) {
+    const tr = document.createElement('tr');
+    tr.className = 'patients-table__row';
+    tr.setAttribute('data-patient-id', patient.id);
+
+    const initials = this.#getInitials(patient.name);
+    const statusLabel = this.#statusLabel(patient.status);
+    const riskClass   = this.#riskClass(patient.riskScore);
+
+    tr.innerHTML = `
+      <td class="patients-table__td">
+        <div class="patient-cell">
+          <div class="patient-cell__avatar"
+               style="background: linear-gradient(135deg, ${patient.avatarColor[0]}, ${patient.avatarColor[1]})"
+               aria-hidden="true">
+            ${initials}
+          </div>
+          <div>
+            <p class="patient-cell__name">${this.#escapeHtml(patient.name)}</p>
+            <p class="patient-cell__id">${this.#escapeHtml(patient.id)}</p>
+          </div>
+        </div>
+      </td>
+      <td class="patients-table__td">
+        <span style="color:var(--color-text-primary);font-weight:500">${patient.age}a</span>
+        <br>
+        <span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--color-text-muted)">${this.#escapeHtml(patient.cid)}</span>
+      </td>
+      <td class="patients-table__td patients-table__td--hide-sm">
+        <span style="font-family:var(--font-mono);font-weight:500;
+              color:${this.#bpColor(patient.bp)}">${patient.bp}</span>
+      </td>
+      <td class="patients-table__td patients-table__td--hide-sm">
+        <span style="font-family:var(--font-mono);font-weight:500;
+              color:${patient.glucose > 180 ? 'var(--color-accent-danger)' : 'var(--color-text-secondary)'}">
+          ${patient.glucose} <span style="font-size:var(--text-xs);opacity:.6">mg/dL</span>
+        </span>
+      </td>
+      <td class="patients-table__td patients-table__td--hide-md">
+        <div class="risk-bar-cell">
+          <div class="risk-bar" aria-hidden="true">
+            <div class="risk-bar__fill risk-bar__fill--${riskClass}"
+                 style="width:${patient.riskScore}%"></div>
+          </div>
+          <span class="risk-bar-cell__value">${patient.riskScore}%</span>
+        </div>
+      </td>
+      <td class="patients-table__td">
+        <span class="status-badge status-badge--${patient.status}" role="status">
+          ${statusLabel}
+        </span>
+      </td>
+      <td class="patients-table__td patients-table__td--hide-md">
+        <span style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--color-text-muted)">
+          ${this.#escapeHtml(patient.lastReading)}
+        </span>
+      </td>
+      <td class="patients-table__td">
+        <button class="row-action-btn" aria-label="Ver prontuário de ${this.#escapeHtml(patient.name)}"
+                data-action="view" data-patient="${this.#escapeHtml(patient.id)}">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </td>
+    `;
+
+    return tr;
+  }
+
+  /** Extrai iniciais do nome (máx. 2 chars) */
+  #getInitials(name) {
+    return name
+      .split(' ')
+      .slice(0, 2)
+      .map(w => w[0])
+      .join('')
+      .toUpperCase();
+  }
+
+  /** Label localizado de status */
+  #statusLabel(status) {
+    const map = {
+      critical:   'Crítico',
+      stable:     'Estável',
+      monitoring: 'Atenção',
+    };
+    return map[status] ?? status;
+  }
+
+  /** Classe CSS da barra de risco */
+  #riskClass(score) {
+    if (score >= 60) return 'high';
+    if (score >= 35) return 'medium';
+    return 'low';
+  }
+
+  /** Cor da pressão arterial */
+  #bpColor(bp) {
+    const systolic = parseInt(bp.split('/')[0], 10);
+    if (systolic >= 160) return 'var(--color-accent-danger)';
+    if (systolic >= 140) return 'var(--color-accent-warning)';
+    return 'var(--color-text-secondary)';
+  }
+
+  /** Previne XSS escapando HTML */
+  #escapeHtml(str) {
+    const map = { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' };
+    return String(str).replace(/[&<>"']/g, c => map[c]);
+  }
+
+  /** Associa eventos de clique nos filter-tabs */
+  #bindFilterTabs() {
+    const tabs = document.querySelectorAll('[data-filter]');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('filter-tabs__btn--active'));
+        tab.classList.add('filter-tabs__btn--active');
+        this.setFilter(tab.dataset.filter);
+      });
+    });
+  }
+}
+
+/* ================================================================
+   CLASSE: DashboardApp
+   Orquestrador principal — inicializa e conecta todos os módulos
+================================================================ */
+class DashboardApp {
+  /** @type {ChartRenderer} */
+  #chartRenderer;
+
+  /** @type {PatientManager} */
+  #patientManager;
+
+  constructor() {
+    this.#chartRenderer  = new ChartRenderer();
+    this.#patientManager = new PatientManager(
+      MOCK_DATA.patients,
+      document.getElementById('patientsTableBody'),
+      document.getElementById('patientCount')
+    );
+  }
+
+  /** Ponto de entrada público */
+  init() {
+    // Garante execução após DOM pronto
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => this.#bootstrap());
+    } else {
+      this.#bootstrap();
+    }
+  }
+
+  /** Inicialização interna após DOM */
+  #bootstrap() {
+    this.#setCurrentDate();
+    this.#renderAllCharts();
+    this.#patientManager.init();
+    this.#bindSidebarToggle();
+    this.#bindPeriodTabs();
+    this.#bindPatientActions();
+    this.#animateKpiValues();
+
+    console.info('[SolveTechAi] Dashboard inicializado com sucesso.');
+  }
+
+  /** Exibe a data atual no topbar */
+  #setCurrentDate() {
+    const el = document.getElementById('currentDate');
+    if (!el) return;
+
+    const now = new Date();
+    el.textContent = now.toLocaleDateString('pt-BR', {
+      weekday: 'long',
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+    });
+  }
+
+  /** Instancia todos os gráficos */
+  #renderAllCharts() {
+    // 1. Pressão Arterial
+    this.#chartRenderer.renderBloodPressure(
+      'bloodPressureChart',
+      MOCK_DATA.bloodPressure
+    );
+
+    // 2. Glicemia
+    this.#chartRenderer.renderGlucose(
+      'glucoseChart',
+      MOCK_DATA.glucose
+    );
+
+    // 3. Radar de Risco IA
+    this.#chartRenderer.renderRiskRadar(
+      'riskRadarChart',
+      MOCK_DATA.riskRadar
+    );
+
+    // 4. Sparkline KPI Pacientes
+    this.#chartRenderer.renderSparkline(
+      'sparklinePatients',
+      MOCK_DATA.sparklines.patients,
+      COLORS.secondary
+    );
+  }
+
+  /** Sidebar toggle (hamburger mobile) */
+  #bindSidebarToggle() {
+    const btn     = document.getElementById('hamburgerBtn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+
+    if (!btn || !sidebar || !overlay) return;
+
+    const open = () => {
+      overlay.style.display = 'block';
+      // Força o reflow do DOM para que a animação de opacidade funcione
+      void overlay.offsetWidth; 
+      
+      sidebar.classList.add('sidebar--open');
+      overlay.classList.add('sidebar-overlay--visible');
+      btn.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+    };
+
+    const close = () => {
+      sidebar.classList.remove('sidebar--open');
+      overlay.classList.remove('sidebar-overlay--visible');
+      btn.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+      
+      // Remove o elemento do fluxo apenas DEPOS que a transição terminar
+      setTimeout(() => { 
+        if (!sidebar.classList.contains('sidebar--open')) {
+          overlay.style.display = 'none'; 
+        }
+      }, 250); 
+    };
+
+    btn.addEventListener('click', () => {
+      const isOpen = sidebar.classList.contains('sidebar--open');
+      isOpen ? close() : open();
+    });
+
+    overlay.addEventListener('click', close);
+
+    // Fecha com ESC
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && sidebar.classList.contains('sidebar--open')) {
+        close();
+      }
+    });
+  }
+
+  /** Period tabs — troca de período do gráfico de PA */
+  #bindPeriodTabs() {
+    const tabs = document.querySelectorAll('.period-tabs__btn');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => {
+          t.classList.remove('period-tabs__btn--active');
+          t.setAttribute('aria-pressed', 'false');
+        });
+        tab.classList.add('period-tabs__btn--active');
+        tab.setAttribute('aria-pressed', 'true');
+
+        // Neste MVP, apenas simula recarregamento com os mesmos dados
+        // Em produção: buscar dados da API conforme o período selecionado
+        const period = tab.textContent.trim();
+        this.#simulatePeriodChange(period);
+      });
+    });
+  }
+
+  /**
+   * Simula mudança de período — perturba levemente os dados.
+   * @param {string} period
+   */
+  #simulatePeriodChange(period) {
+    const chart = this.#chartRenderer.getChart('bloodPressureChart');
+    if (!chart) return;
+
+    // Aplica variação aleatória suave para simular período diferente
+    const jitter = (arr, factor = 8) =>
+      arr.map(v => Math.round(v + (Math.random() - 0.5) * factor));
+
+    chart.data.datasets[0].data = jitter(MOCK_DATA.bloodPressure.systolic);
+    chart.data.datasets[1].data = jitter(MOCK_DATA.bloodPressure.diastolic);
+    chart.update('active');
+  }
+
+  /** Ações nas linhas da tabela (ver prontuário) */
+  #bindPatientActions() {
+    const tableBody = document.getElementById('patientsTableBody');
+    if (!tableBody) return;
+
+    tableBody.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-action="view"]');
+      if (!btn) return;
+
+      const id = btn.dataset.patient;
+      const patient = MOCK_DATA.patients.find(p => p.id === id);
+      if (!patient) return;
+
+      // Neste MVP: log. Em produção: abrir modal/página de prontuário
+      console.info(`[PatientManager] Abrindo prontuário: ${patient.name} (${id})`);
+      // Futura implementação: this.#openPatientModal(patient);
+    });
+  }
+  
+  /**
+   * Anima os valores dos KPI Cards de 0 até o valor real.
+   * Usa requestAnimationFrame para suavidade.
+   */
+  #animateKpiValues() {
+    const kpiTargets = {
+      patients: 248,
+      alerts:   7,
+      consults: 14,
+      risk:     34,
+    };
+
+    const duration = 1200;
+    const start = performance.now();
+    const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+
+    const step = (now) => {
+      const elapsed  = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased    = easeOutCubic(progress);
+
+      document.querySelectorAll('[data-kpi]').forEach(el => {
+        const key    = el.dataset.kpi;
+        const target = kpiTargets[key];
+        if (target === undefined) return;
+
+        const current = Math.round(eased * target);
+        
+        // Forma segura: atualiza apenas os dígitos iniciais do nó de texto,
+        // mantendo intocados eventuais elementos filhos (como a tag <span>%).
+        Array.from(el.childNodes).forEach(node => {
+          if (node.nodeType === Node.TEXT_NODE && node.nodeValue.trim().length > 0) {
+            node.nodeValue = String(current);
+          }
+        });
+      });
+
+      if (progress < 1) requestAnimationFrame(step);
+    };
+
+    requestAnimationFrame(step);
+  }
+}
+
+/* ================================================================
+   INICIALIZAÇÃO
+================================================================ */
+const app = new DashboardApp();
+app.init();

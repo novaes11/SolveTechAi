@@ -1,536 +1,899 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IA Diagnóstico - Hipertensão & Diabetes</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="SolveTechAi — Plataforma HealthTech de monitoramento clínico inteligente" />
+  <title>SolveTechAi — Dashboard Clínico</title>
+
+  <!-- Typefaces: Syne (display) + IBM Plex Mono (data) + DM Sans (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-    <script>
-        const logado = localStorage.getItem("usuarioLogado");
 
-        if (logado !== "true") {
-            window.location.href = "login.html";
-        }
-    </script>
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <div class="logo">
-                <i class="fas fa-heartbeat"></i>
-                <h1>IA Diagnóstico</h1>
-            </div>
+  <!-- ============================================================
+       APP SHELL
+  ============================================================ -->
+  <div class="app" id="app">
+
+    <!-- ── SIDEBAR ───────────────────────────────────────────── -->
+    <aside class="sidebar" id="sidebar" aria-label="Navegação principal">
+
+      <!-- Logotipo -->
+      <div class="sidebar__brand">
+        <div class="sidebar__logo" aria-hidden="true">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <rect width="32" height="32" rx="8" fill="#0052FF"/>
+            <path d="M8 16h4l3-6 4 12 3-8 2 2h2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
         </div>
-        
-        <nav class="sidebar-nav">
-            <ul>
-                <li>
-                    <a href="#dashboard" class="nav-item active" data-section="dashboard">
-                        <i class="fas fa-chart-line"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#pacientes" class="nav-item" data-section="pacientes">
-                        <i class="fas fa-users"></i>
-                        <span>Pacientes</span>
-                    </a>
-                </li>
+        <span class="sidebar__brand-name">SolveTechAi</span>
+      </div>
 
-                <li>
-                    <a href="#correlacoes" class="nav-item" data-section="correlacoes">
-                        <i class="fas fa-link"></i>
-                        <span>Correlações</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
+      <!-- Divisor de seção -->
+      <p class="sidebar__section-label">Principal</p>
 
-        <div class="sidebar-footer">
-            <div class="user-info">
-                <i class="fas fa-user-md"></i>
-                <span>Dr. Silva</span>
-            </div>
+      <!-- Navegação primária -->
+      <nav class="sidebar__nav" role="navigation">
+        <ul class="sidebar__nav-list" role="list">
+          <li class="sidebar__nav-item">
+            <a href="#" class="sidebar__nav-link sidebar__nav-link--active" aria-current="page" data-target="view-dashboard">
+              <span class="sidebar__nav-icon" aria-hidden="true">
+                <!-- Dashboard icon -->
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                  <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+                </svg>
+              </span>
+              <span class="sidebar__nav-label">Dashboard</span>
+            </a>
+          </li>
+          <li class="sidebar__nav-item">
+            <a href="#" class="sidebar__nav-link" data-target="view-patients">
+              <span class="sidebar__nav-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75"/>
+                </svg>
+              </span>
+              <span class="sidebar__nav-label">Pacientes</span>
+              <span class="sidebar__badge" aria-label="12 pacientes">12</span>
+            </a>
+          </li>
+          <li class="sidebar__nav-item">
+            <a href="#" class="sidebar__nav-link" data-target="view-vitals">
+              <span class="sidebar__nav-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+              </span>
+              <span class="sidebar__nav-label">Sinais Vitais</span>
+            </a>
+          </li>
+          <li class="sidebar__nav-item">
+            <a href="#" class="sidebar__nav-link" data-target="view-records">
+              <span class="sidebar__nav-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <line x1="16" y1="13" x2="8" y2="13"/>
+                  <line x1="16" y1="17" x2="8" y2="17"/>
+                  <polyline points="10 9 9 9 8 9"/>
+                </svg>
+              </span>
+              <span class="sidebar__nav-label">Prontuários</span>
+            </a>
+          </li>
+          <li class="sidebar__nav-item">
+          <a href="#" class="sidebar__nav-link" data-target="view-consults">
+              <span class="sidebar__nav-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/>
+                  <line x1="8" y1="2" x2="8" y2="6"/>
+                  <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+              </span>
+              <span class="sidebar__nav-label">Consultas</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <p class="sidebar__section-label">Análise</p>
+
+      <nav class="sidebar__nav" role="navigation" aria-label="Análise">
+        <ul class="sidebar__nav-list" role="list">
+          <li class="sidebar__nav-item">
+            <a href="#" class="sidebar__nav-link" data-target="view-history">
+              <span class="sidebar__nav-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 8v4l3 3"/>
+                </svg>
+              </span>
+              <span class="sidebar__nav-label">Histórico</span>
+            </a>
+          </li>
+          <li class="sidebar__nav-item">
+            <a href="#" class="sidebar__nav-link" data-target="view-ai-reports">
+              <span class="sidebar__nav-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                </svg>
+              </span>
+              <span class="sidebar__nav-label">Relatórios IA</span>
+              <span class="sidebar__badge sidebar__badge--new" aria-label="Novo">N</span>
+            </a>
+          </li>
+          <li class="sidebar__nav-item">
+            <a href="#" class="sidebar__nav-link" data-target="view-statistics">
+              <span class="sidebar__nav-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 20V10m-6 10V4M6 20v-6"/>
+                </svg>
+              </span>
+              <span class="sidebar__nav-label">Estatísticas</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Rodapé da Sidebar: perfil do médico -->
+      <div class="sidebar__footer">
+        <div class="sidebar__user">
+          <div class="sidebar__user-avatar" aria-hidden="true">
+            <span>DR</span>
+          </div>
+          <div class="sidebar__user-info">
+            <p class="sidebar__user-name">Dr. Ricardo</p>
+            <p class="sidebar__user-role">Cardiologista</p>
+          </div>
+          <button class="sidebar__user-settings" aria-label="Configurações do usuário">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+          </button>
         </div>
+      </div>
     </aside>
 
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Top Bar -->
-        <div class="top-bar">
-            <button class="menu-toggle" id="menuToggle">
-                <i class="fas fa-bars"></i>
-            </button>
-            <div class="top-bar-content">
-                <h2 id="pageTitle">Dashboard</h2>
-                <div class="top-bar-actions">
-                    <button class="btn-notification">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-badge">3</span>
-                    </button>
-                    <!-- Profile com dropdown -->
-                    <div class="profile-menu">
-                        <button class="btn-profile" id="profileBtn">
-                            <i class="fas fa-user"></i>
-                        </button>
+    <!-- ── CONTEÚDO PRINCIPAL ────────────────────────────────── -->
+    <div class="main-wrapper">
 
-                        <div class="profile-dropdown" id="profileDropdown">
-                            <button id="logoutBtn" class="dropdown-item">
-                                <i class="fas fa-sign-out-alt"></i> Logout
-                            </button>
-                        </div>
-                    </div>  
-                </div>
+      <!-- TOPBAR -->
+      <header class="topbar" role="banner">
+        <div class="topbar__start">
+          <!-- Botão hamburger (mobile) -->
+          <button class="topbar__hamburger" id="hamburgerBtn" aria-label="Abrir menu" aria-expanded="false" aria-controls="sidebar">
+            <span class="topbar__hamburger-line"></span>
+            <span class="topbar__hamburger-line"></span>
+            <span class="topbar__hamburger-line"></span>
+          </button>
+
+          <div class="topbar__context">
+            <h1 class="topbar__title">Dashboard Clínico</h1>
+            <p class="topbar__subtitle">
+              <span class="topbar__date" id="currentDate"></span>
+              <span class="topbar__sep" aria-hidden="true">·</span>
+              <span class="topbar__session">Turno Matutino</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="topbar__center">
+          <!-- Barra de busca global -->
+          <div class="search-bar" role="search">
+            <span class="search-bar__icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+            </span>
+            <input class="search-bar__input" type="search" placeholder="Buscar paciente, CID, exame…" aria-label="Busca global" />
+            <kbd class="search-bar__kbd" aria-hidden="true">⌘K</kbd>
+          </div>
+        </div>
+
+        <div class="topbar__end">
+          <!-- Alerta de notificações -->
+          <button class="topbar__icon-btn" aria-label="Alertas críticos — 3 não lidos">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            <span class="topbar__notification-dot" aria-hidden="true"></span>
+          </button>
+
+          <!-- Status da IA -->
+          <div class="topbar__ai-status" aria-label="Inteligência artificial ativa">
+            <span class="topbar__ai-pulse" aria-hidden="true"></span>
+            <span class="topbar__ai-label">IA Ativa</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- ── CONTEÚDO DO DASHBOARD ──────────────────────────── -->
+      <main class="dashboard" id="main-content" role="main">
+
+        <!-- VIEW 1: DASHBOARD -->
+        <section id="view-dashboard" class="view active">
+
+        <!-- ── SEÇÃO 1: KPI CARDS ─────────────────────────── -->
+        <section class="kpi-grid" aria-label="Indicadores-chave de performance">
+
+          <!-- KPI 1: Pacientes ativos -->
+          <article class="kpi-card kpi-card--primary" aria-label="Pacientes em monitoramento">
+            <div class="kpi-card__header">
+              <span class="kpi-card__label">Pacientes Ativos</span>
+              <div class="kpi-card__icon kpi-card__icon--blue" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87m-4-12a4 4 0 0 1 0 7.75"/>
+                </svg>
+              </div>
             </div>
+            <div class="kpi-card__body">
+              <p class="kpi-card__value" data-kpi="patients">248</p>
+              <div class="kpi-card__delta kpi-card__delta--up" aria-label="Aumento de 12% em relação ao mês anterior">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="18 15 12 9 6 15"/>
+                </svg>
+                <span>+12%</span>
+              </div>
+            </div>
+            <p class="kpi-card__footnote">vs. mês anterior</p>
+            <div class="kpi-card__sparkline" id="sparkPatients" aria-hidden="true">
+              <canvas id="sparklinePatients"></canvas>
+            </div>
+          </article>
+
+          <!-- KPI 2: Alertas críticos -->
+          <article class="kpi-card kpi-card--danger" aria-label="Alertas críticos pendentes">
+            <div class="kpi-card__header">
+              <span class="kpi-card__label">Alertas Críticos</span>
+              <div class="kpi-card__icon kpi-card__icon--red" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                  <line x1="12" y1="9" x2="12" y2="13"/>
+                  <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+              </div>
+            </div>
+            <div class="kpi-card__body">
+              <p class="kpi-card__value kpi-card__value--danger" data-kpi="alerts">7</p>
+              <div class="kpi-card__delta kpi-card__delta--down" aria-label="Redução de 3 alertas">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+                <span>−3 hoje</span>
+              </div>
+            </div>
+            <p class="kpi-card__footnote">requer atenção imediata</p>
+            <div class="kpi-card__alert-dots" aria-hidden="true">
+              <span class="kpi-card__dot kpi-card__dot--blink"></span>
+              <span class="kpi-card__dot kpi-card__dot--blink"></span>
+              <span class="kpi-card__dot"></span>
+            </div>
+          </article>
+
+          <!-- KPI 3: Consultas hoje -->
+          <article class="kpi-card" aria-label="Consultas agendadas para hoje">
+            <div class="kpi-card__header">
+              <span class="kpi-card__label">Consultas Hoje</span>
+              <div class="kpi-card__icon kpi-card__icon--cyan" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/>
+                  <line x1="8" y1="2" x2="8" y2="6"/>
+                  <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+              </div>
+            </div>
+            <div class="kpi-card__body">
+              <p class="kpi-card__value" data-kpi="consults">14</p>
+              <div class="kpi-card__progress-wrap" aria-label="6 de 14 concluídas">
+                <div class="kpi-card__progress">
+                  <div class="kpi-card__progress-bar" style="width: 43%"></div>
+                </div>
+                <span class="kpi-card__progress-label">6/14</span>
+              </div>
+            </div>
+            <p class="kpi-card__footnote">próxima: 10h30 — M. Santos</p>
+          </article>
+
+          <!-- KPI 4: Score de risco médio -->
+          <article class="kpi-card" aria-label="Score de risco médio da carteira">
+            <div class="kpi-card__header">
+              <span class="kpi-card__label">Risco Médio IA</span>
+              <div class="kpi-card__icon kpi-card__icon--amber" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                  <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                  <line x1="12" y1="22.08" x2="12" y2="12"/>
+                </svg>
+              </div>
+            </div>
+            <div class="kpi-card__body">
+              <p class="kpi-card__value kpi-card__value--amber" data-kpi="risk">34<span class="kpi-card__unit">%</span></p>
+              <span class="kpi-card__tag kpi-card__tag--moderate">Moderado</span>
+            </div>
+            <p class="kpi-card__footnote">↓ 4pp em relação à semana</p>
+          </article>
+
+        </section>
+
+        <!-- ── SEÇÃO 2: GRÁFICOS CLÍNICOS ────────────────── -->
+        <section class="charts-grid" aria-label="Gráficos de sinais vitais">
+
+          <!-- Gráfico 1: Pressão Arterial -->
+          <div class="chart-card chart-card--wide">
+            <div class="chart-card__header">
+              <div class="chart-card__title-group">
+                <h2 class="chart-card__title">Pressão Arterial</h2>
+                <p class="chart-card__subtitle">Últimas 24 horas — João P. Almeida</p>
+              </div>
+              <div class="chart-card__controls">
+                <!-- Legenda inline -->
+                <div class="chart-legend">
+                  <span class="chart-legend__item">
+                    <span class="chart-legend__dot chart-legend__dot--systolic" aria-hidden="true"></span>
+                    Sistólica
+                  </span>
+                  <span class="chart-legend__item">
+                    <span class="chart-legend__dot chart-legend__dot--diastolic" aria-hidden="true"></span>
+                    Diastólica
+                  </span>
+                </div>
+                <!-- Seletor de período -->
+                <div class="period-tabs" role="group" aria-label="Selecionar período">
+                  <button class="period-tabs__btn" aria-pressed="false">6h</button>
+                  <button class="period-tabs__btn period-tabs__btn--active" aria-pressed="true">24h</button>
+                  <button class="period-tabs__btn" aria-pressed="false">7d</button>
+                  <button class="period-tabs__btn" aria-pressed="false">30d</button>
+                </div>
+              </div>
+            </div>
+            <div class="chart-card__body">
+              <!-- Indicador de anomalia -->
+              <div class="chart-anomaly" id="bpAnomaly" role="status" aria-live="polite">
+                <span class="chart-anomaly__dot" aria-hidden="true"></span>
+                <span class="chart-anomaly__text">Pico hipertensivo detectado às 04h12 — 178/98 mmHg</span>
+              </div>
+              <div class="chart-card__canvas-wrap">
+                <canvas id="bloodPressureChart" aria-label="Gráfico de linha mostrando pressão arterial sistólica e diastólica nas últimas 24 horas" role="img"></canvas>
+              </div>
+            </div>
+            <!-- Rodapé com stats rápidas -->
+            <div class="chart-card__footer">
+              <div class="chart-stat">
+                <span class="chart-stat__label">Máx. Sistólica</span>
+                <span class="chart-stat__value chart-stat__value--danger">178 mmHg</span>
+              </div>
+              <div class="chart-stat">
+                <span class="chart-stat__label">Mín. Diastólica</span>
+                <span class="chart-stat__value">62 mmHg</span>
+              </div>
+              <div class="chart-stat">
+                <span class="chart-stat__label">Média</span>
+                <span class="chart-stat__value">124/78 mmHg</span>
+              </div>
+              <div class="chart-stat">
+                <span class="chart-stat__label">Classificação</span>
+                <span class="chart-stat__value chart-stat__value--warning">Hipertensão Grau I</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Gráfico 2: Glicemia -->
+          <div class="chart-card">
+            <div class="chart-card__header">
+              <div class="chart-card__title-group">
+                <h2 class="chart-card__title">Glicemia</h2>
+                <p class="chart-card__subtitle">mg/dL — últimos 7 dias</p>
+              </div>
+              <div class="chart-card__controls">
+                <div class="chart-badge chart-badge--warning" role="status">
+                  <span class="chart-badge__dot" aria-hidden="true"></span>
+                  2 picos
+                </div>
+              </div>
+            </div>
+            <div class="chart-card__body">
+              <div class="chart-card__canvas-wrap">
+                <canvas id="glucoseChart" aria-label="Gráfico de linha mostrando glicemia nos últimos 7 dias" role="img"></canvas>
+              </div>
+            </div>
+            <!-- Faixa de referência legend -->
+            <div class="chart-card__footer">
+              <div class="chart-stat">
+                <span class="chart-stat__label">Jejum</span>
+                <span class="chart-stat__value chart-stat__value--success">98 mg/dL</span>
+              </div>
+              <div class="chart-stat">
+                <span class="chart-stat__label">Pós-prandial</span>
+                <span class="chart-stat__value chart-stat__value--danger">218 mg/dL</span>
+              </div>
+              <div class="chart-stat">
+                <span class="chart-stat__label">HbA1c est.</span>
+                <span class="chart-stat__value chart-stat__value--warning">7.2%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Gráfico 3: Score de Risco Multifatorial -->
+          <div class="chart-card">
+            <div class="chart-card__header">
+              <div class="chart-card__title-group">
+                <h2 class="chart-card__title">Score de Risco IA</h2>
+                <p class="chart-card__subtitle">Análise multifatorial — João P.</p>
+              </div>
+            </div>
+            <div class="chart-card__body chart-card__body--radar">
+              <div class="chart-card__canvas-wrap chart-card__canvas-wrap--radar">
+                <canvas id="riskRadarChart" aria-label="Gráfico radar mostrando score de risco multifatorial" role="img"></canvas>
+              </div>
+              <!-- Score central -->
+              <div class="risk-score" aria-label="Score de risco geral: 34 por cento — risco moderado">
+                <p class="risk-score__value" id="riskScoreValue">34</p>
+                <p class="risk-score__label">Score Geral</p>
+                <p class="risk-score__tag">Moderado</p>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ── SEÇÃO 3: TABELA DE PACIENTES ──────────────── -->
+        <section class="patients-section" aria-label="Lista de pacientes em monitoramento">
+          <div class="patients-section__header">
+            <div class="patients-section__title-group">
+              <h2 class="patients-section__title">Pacientes em Monitoramento</h2>
+              <span class="patients-section__count" id="patientCount" aria-live="polite">12 pacientes</span>
+            </div>
+            <div class="patients-section__actions">
+              <div class="filter-tabs" role="group" aria-label="Filtrar pacientes">
+                <button class="filter-tabs__btn filter-tabs__btn--active" data-filter="all">Todos</button>
+                <button class="filter-tabs__btn" data-filter="critical">Críticos</button>
+                <button class="filter-tabs__btn" data-filter="stable">Estáveis</button>
+                <button class="filter-tabs__btn" data-filter="monitoring">Atenção</button>
+              </div>
+              <button class="btn btn--primary" id="addPatientBtn" aria-label="Adicionar novo paciente">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Novo Paciente
+              </button>
+            </div>
+          </div>
+
+          <!-- Tabela responsiva -->
+          <div class="patients-table-wrap" role="region" aria-label="Tabela de pacientes" tabindex="0">
+            <table class="patients-table" id="patientsTable">
+              <thead class="patients-table__head">
+                <tr>
+                  <th class="patients-table__th" scope="col">Paciente</th>
+                  <th class="patients-table__th" scope="col">Idade / CID</th>
+                  <th class="patients-table__th patients-table__th--hide-sm" scope="col">PA (mmHg)</th>
+                  <th class="patients-table__th patients-table__th--hide-sm" scope="col">Glicemia</th>
+                  <th class="patients-table__th patients-table__th--hide-md" scope="col">Score IA</th>
+                  <th class="patients-table__th" scope="col">Status</th>
+                  <th class="patients-table__th patients-table__th--hide-md" scope="col">Última Leitura</th>
+                  <th class="patients-table__th" scope="col"><span class="sr-only">Ações</span></th>
+                </tr>
+              </thead>
+              <tbody class="patients-table__body" id="patientsTableBody">
+                <!-- Linhas injetadas via JS / PatientManager -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        </section><!-- /view-dashboard -->
+
+        <!-- VIEW 2: PACIENTES -->
+        <section id="view-patients" class="view hidden">
+          <div class="patients-section">
+            <div class="patients-section__header">
+              <div class="patients-section__title-group">
+                <h2 class="patients-section__title">Gerenciamento de Pacientes</h2>
+              </div>
+              <div class="patients-section__actions">
+                <div class="search-bar" role="search" style="min-width: 250px;">
+                  <span class="search-bar__icon" aria-hidden="true">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                  </span>
+                  <input class="search-bar__input" type="search" placeholder="Buscar paciente por nome ou CID..." />
+                </div>
+              </div>
+            </div>
+            <div class="patients-table-wrap">
+              <table class="patients-table">
+                <thead class="patients-table__head">
+                  <tr>
+                    <th class="patients-table__th">Paciente</th>
+                    <th class="patients-table__th">Idade</th>
+                    <th class="patients-table__th">CID (Diagnóstico)</th>
+                    <th class="patients-table__th">Status</th>
+                    <th class="patients-table__th">Ação</th>
+                  </tr>
+                </thead>
+                <tbody class="patients-table__body" id="fullPatientsTableBody">
+                  <!-- Injetado dinamicamente pelo PatientManager -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section><!-- /view-patients -->
+
+      <!-- VIEW 3: CONSULTAS -->
+      <section id="view-consults" class="view hidden">
+        <div class="patients-section">
+          <div class="patients-section__header">
+            <div class="patients-section__title-group">
+              <h2 class="patients-section__title">Histórico de Consultas</h2>
+            </div>
+            <div class="patients-section__actions">
+              <div class="search-bar" role="search" style="min-width: 250px;">
+                <span class="search-bar__icon" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                  </svg>
+                </span>
+                <input class="search-bar__input" type="search" placeholder="Buscar por data ou paciente..." />
+              </div>
+            </div>
+          </div>
+          <div class="patients-table-wrap">
+            <table class="patients-table">
+              <thead class="patients-table__head">
+                <tr>
+                  <th class="patients-table__th">Data / Hora</th>
+                  <th class="patients-table__th">Paciente</th>
+                  <th class="patients-table__th">Tipo de Consulta</th>
+                  <th class="patients-table__th">Diagnóstico (CID)</th>
+                  <th class="patients-table__th">Status</th>
+                </tr>
+              </thead>
+              <tbody class="patients-table__body" id="consultsTableBody">
+                <!-- Injetado dinamicamente pelo ConsultManager -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section><!-- /view-consults -->
+
+      <!-- VIEW 4: SINAIS VITAIS -->
+      <section id="view-vitals" class="view hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: var(--space-2);">
+           <div>
+             <h2 class="chart-card__title" style="font-size: var(--text-2xl);">Monitoramento Contínuo</h2>
+             <p class="chart-card__subtitle">Paciente ativo: João P. Almeida (Leito 04)</p>
+           </div>
+           <div class="chart-badge" style="background: rgba(255, 59, 111, 0.1); border: 1px solid rgba(255, 59, 111, 0.2); color: var(--color-accent-danger);">
+             <span class="chart-badge__dot" style="background-color: var(--color-accent-danger);"></span> Transmissão ao Vivo
+           </div>
         </div>
 
-        <!-- Content Area -->
-        <div class="content-area">
-            <!-- Dashboard Section -->
-            <section id="dashboard" class="section active">
-                <div class="section-header">
-                    <h2>Dashboard Médico</h2>
-                    <p>Visão geral dos dados clínicos e diagnósticos</p>
-                </div>
-                
-                <div class="dashboard-grid">
-                    <!-- Card de Total de Pacientes -->
-                    <div class="card">
-                        <div class="card-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="card-content">
-                            <h3>Total de Pacientes</h3>
-                            <p class="number">2,156</p>
-                            <p class="trend positive">+45 este mês</p>
-                        </div>
-                    </div>
+        <!-- KPIs de Sinais Vitais -->
+        <section class="kpi-grid">
+           <!-- BPM -->
+           <article class="kpi-card kpi-card--danger">
+             <div class="kpi-card__header">
+               <span class="kpi-card__label">Freq. Cardíaca</span>
+               <div class="kpi-card__icon kpi-card__icon--red">
+                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+               </div>
+             </div>
+             <div class="kpi-card__body">
+               <p class="kpi-card__value kpi-card__value--danger" id="liveBpm">84</p>
+               <span class="kpi-card__unit" style="color: var(--color-accent-danger); opacity: 0.7;">bpm</span>
+             </div>
+             <div class="kpi-card__alert-dots">
+               <span class="kpi-card__dot kpi-card__dot--blink"></span>
+             </div>
+           </article>
 
-                    <!-- Card de Casos de Hipertensão -->
-                    <div class="card">
-                        <div class="card-icon">
-                            <i class="fas fa-heartbeat"></i>
-                        </div>
-                        <div class="card-content">
-                            <h3>Casos de Hipertensão</h3>
-                            <p class="number">456</p>
-                            <p class="trend positive">21.2% da população</p>
-                        </div>
-                    </div>
+           <!-- SpO2 -->
+           <article class="kpi-card">
+             <div class="kpi-card__header">
+               <span class="kpi-card__label">Saturação SpO2</span>
+               <div class="kpi-card__icon kpi-card__icon--blue">
+                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+               </div>
+             </div>
+             <div class="kpi-card__body">
+               <p class="kpi-card__value" style="color: var(--color-accent-secondary);">98</p>
+               <span class="kpi-card__unit" style="color: var(--color-accent-secondary); opacity: 0.7;">%</span>
+             </div>
+           </article>
 
-                    <!-- Card de Casos de Diabetes -->
-                    <div class="card">
-                        <div class="card-icon">
-                            <i class="fas fa-tint"></i>
-                        </div>
-                        <div class="card-content">
-                            <h3>Casos de Diabetes</h3>
-                            <p class="number">312</p>
-                            <p class="trend positive">14.5% da população</p>
-                        </div>
-                    </div>
+           <!-- Temp -->
+           <article class="kpi-card">
+             <div class="kpi-card__header">
+               <span class="kpi-card__label">Temperatura</span>
+               <div class="kpi-card__icon kpi-card__icon--amber">
+                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+               </div>
+             </div>
+             <div class="kpi-card__body">
+               <p class="kpi-card__value" style="color: var(--color-accent-warning);">36.8</p>
+               <span class="kpi-card__unit" style="color: var(--color-accent-warning); opacity: 0.7;">°C</span>
+             </div>
+           </article>
 
-                    <!-- Card de Diagnósticos IA -->
-                    <div class="card">
-                        <div class="card-icon">
-                            <i class="fas fa-robot"></i>
-                        </div>
-                        <div class="card-content">
-                            <h3>Diagnósticos IA</h3>
-                            <p class="number">234</p>
-                            <p class="trend positive">96% precisão</p>
-                        </div>
-                    </div>
+           <!-- Resp -->
+           <article class="kpi-card">
+             <div class="kpi-card__header">
+               <span class="kpi-card__label">Freq. Respiratória</span>
+               <div class="kpi-card__icon kpi-card__icon--cyan">
+                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></svg>
+               </div>
+             </div>
+             <div class="kpi-card__body">
+               <p class="kpi-card__value" style="color: var(--color-text-primary);">16</p>
+               <span class="kpi-card__unit" style="color: var(--color-text-primary); opacity: 0.7;">irpm</span>
+             </div>
+           </article>
+        </section>
 
-                    <!-- Card de Comorbidades -->
-                    <div class="card">
-                        <div class="card-icon">
-                            <i class="fas fa-link"></i>
-                        </div>
-                        <div class="card-content">
-                            <h3>Comorbidades</h3>
-                            <p class="number">89</p>
-                            <p class="trend">Hipertensão + Diabetes</p>
-                        </div>
-                    </div>
+        <!-- Gráfico ECG Contínuo -->
+        <section class="charts-grid" style="grid-template-columns: 1fr;">
+          <div class="chart-card chart-card--wide">
+            <div class="chart-card__body">
+              <div class="chart-card__canvas-wrap" style="min-height: 250px;">
+                <canvas id="ecgChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section><!-- /view-vitals -->
 
-                    <!-- Card de Alertas -->
-                    <div class="card">
-                        <div class="card-icon">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
-                        <div class="card-content">
-                            <h3>Alertas Críticos</h3>
-                            <p class="number">18</p>
-                            <p class="trend">Requerem atenção</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
+      <!-- VIEW 5: PRONTUÁRIOS (SIMULAÇÃO IA) -->
+      <section id="view-records" class="view hidden">
+        <div class="patients-section" style="padding: var(--space-6);">
+          
+          <!-- Cabeçalho do Documento -->
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: var(--space-6); border-bottom: 1px solid var(--color-border-subtle); padding-bottom: var(--space-5);">
+            <div class="patient-cell">
+              <div class="patient-cell__avatar" style="background: linear-gradient(135deg, #0052FF, #00D4FF); width: 48px; height: 48px; font-size: var(--text-md);">
+                JP
+              </div>
+              <div>
+                <h2 class="patients-section__title" style="font-size: var(--text-xl);">João P. Almeida</h2>
+                <p class="patient-cell__id" style="font-size: var(--text-sm); margin-top: 4px;">PAC-001 • 58 anos • CID: I10 (Hipertensão)</p>
+              </div>
+            </div>
+            <div class="chart-badge" style="background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.3); color: #A78BFA; font-size: var(--text-sm); padding: var(--space-2) var(--space-3);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2z"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+              Prontuário Sintetizado por IA
+            </div>
+          </div>
 
-            <!-- Pacientes Section -->
-            <section id="pacientes" class="section">
-                <div class="section-header">
-                    <h2>Perfis de Pacientes</h2>
-                    <p>Gerenciamento e visualização de dados dos pacientes</p>
-                </div>
+          <!-- Corpo do Prontuário Grid -->
+          <div style="display: flex; flex-direction: column; gap: var(--space-5);">
+            
+            <!-- Resumo Clínico -->
+            <div class="chart-card">
+              <h3 class="chart-card__title" style="font-size: var(--text-md); color: var(--color-accent-secondary);">Resumo Clínico da Última Evolução</h3>
+              <p style="color: var(--color-text-secondary); font-size: var(--text-sm); line-height: 1.8;">
+                Paciente apresentou entrada no sistema de monitoramento relatando leve cefaleia matinal e tontura nas últimas 24 horas.
+                A análise de telemetria contínua identificou um <strong style="color: var(--color-accent-danger);">pico hipertensivo sustentado (178/98 mmHg)</strong> iniciado às 04h12.
+                A glicemia capilar média encontra-se estável para o quadro base (145 mg/dL). 
+                <br><br>
+                <strong>Sintetizado a partir de:</strong> 14 registros vitais, 1 áudio-transcrição de enfermagem e o histórico medicamentoso do paciente.
+              </p>
+            </div>
 
-                <!-- US03: cards gerados dinamicamente via forEach no script.js -->
-                <div class="fans-grid" id="patients-grid"></div>
+            <!-- Insights e Correlações da IA -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-4);">
+              <div class="chart-card" style="border-left: 3px solid var(--color-accent-danger); padding: var(--space-4);">
+                <h4 style="font-family: var(--font-mono); font-size: var(--text-xs); color: var(--color-text-muted); text-transform: uppercase; margin-bottom: var(--space-2);">Alerta Analítico</h4>
+                <p style="color: var(--color-text-primary); font-size: var(--text-sm); font-weight: 500;">Risco Cardiovascular Agudo Elevado</p>
+                <p style="color: var(--color-text-secondary); font-size: var(--text-xs); margin-top: 6px; line-height: 1.5;">O algoritmo de predição ajustou o score de risco do paciente para 72% devido ao padrão do descontrole pressórico em horário noturno atípico.</p>
+              </div>
+              <div class="chart-card" style="border-left: 3px solid var(--color-accent-success); padding: var(--space-4);">
+                <h4 style="font-family: var(--font-mono); font-size: var(--text-xs); color: var(--color-text-muted); text-transform: uppercase; margin-bottom: var(--space-2);">Correlação Identificada</h4>
+                <p style="color: var(--color-text-primary); font-size: var(--text-sm); font-weight: 500;">Possível Falha Medicamentosa</p>
+                <p style="color: var(--color-text-secondary); font-size: var(--text-xs); margin-top: 6px; line-height: 1.5;">Correlação com dados anteriores indica que o paciente costuma omitir a dose noturna do bloqueador de canal de cálcio às sextas-feiras.</p>
+              </div>
+            </div>
 
-                <!-- Estatísticas Gerais -->
-                <div class="section-header" style="margin-top: 3rem;">
-                    <h3>Estatísticas Gerais dos Pacientes</h3>
-                    <p>Análise clínica e evolução dos dados médicos</p>
-                </div>
-                
-                <div class="analytics-grid">
-                    <!-- Gráfico de Fatores de Risco -->
-                    <div class="chart-card">
-                        <h3>Distribuição de Fatores de Risco</h3>
-                        <div class="chart">
-                            <canvas id="riskFactorsChart"></canvas>
-                        </div>
-                    </div>
+            <!-- Sugestões de Conduta (Copilot) -->
+            <div class="chart-card">
+              <h3 class="chart-card__title" style="font-size: var(--text-md); color: #A78BFA; display: flex; align-items: center; gap: 8px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                Sugestão de Conduta Médica
+              </h3>
+              <div style="margin-top: var(--space-3); display: flex; flex-direction: column; gap: var(--space-3);">
+                <label style="display: flex; gap: var(--space-3); align-items: flex-start; cursor: pointer;">
+                  <input type="checkbox" checked style="margin-top: 4px; accent-color: var(--color-accent-primary);">
+                  <div>
+                    <strong style="color: var(--color-text-primary); font-size: var(--text-sm);">Otimização Terapêutica</strong>
+                    <p style="color: var(--color-text-secondary); font-size: var(--text-xs); margin-top: 2px;">Ajustar prescrição do anti-hipertensivo garantindo reforço da adesão à dose noturna.</p>
+                  </div>
+                </label>
+                <label style="display: flex; gap: var(--space-3); align-items: flex-start; cursor: pointer;">
+                  <input type="checkbox" checked style="margin-top: 4px; accent-color: var(--color-accent-primary);">
+                  <div>
+                    <strong style="color: var(--color-text-primary); font-size: var(--text-sm);">Solicitar Exames Complementares</strong>
+                    <p style="color: var(--color-text-secondary); font-size: var(--text-xs); margin-top: 2px;">Agendar MAPA 24h e painel de função renal (Ureia, Creatinina, Microalbuminúria) com urgência relativa.</p>
+                  </div>
+                </label>
+              </div>
+            </div>
 
-                    <!-- Gráfico de Medicações -->
-                    <div class="chart-card">
-                        <h3>Medicações Prescritas</h3>
-                        <div class="chart">
-                            <canvas id="medicationsChart"></canvas>
-                        </div>
-                    </div>
+            <!-- Barra de Ações -->
+            <div style="display: flex; gap: var(--space-4); justify-content: flex-end; margin-top: var(--space-2); flex-wrap: wrap;">
+              <button class="btn" style="border: 1px solid var(--color-border); color: var(--color-text-secondary);">Revisar e Editar Conteúdo</button>
+              <button class="btn btn--primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                Assinar Prontuário Eletrônico
+              </button>
+            </div>
 
-                    <!-- Gráfico de Comorbidades -->
-                    <div class="chart-card">
-                        <h3>Prevalência de Comorbidades</h3>
-                        <div class="chart">
-                            <canvas id="comorbiditiesChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Correlações Section -->
-            <section id="correlacoes" class="section">
-                <div class="section-header">
-                    <h2>Análise de Correlações</h2>
-                    <p>Estudo das relações entre diferentes condições médicas</p>
-                </div>
-                
-                <div class="campaigns-grid">
-                    <!-- Card de Correlação 1 -->
-                    <div class="campaign-card">
-                        <div class="campaign-header">
-                            <h3>Hipertensão → Diabetes</h3>
-                            <span class="status correlacao">Correlação Forte</span>
-                        </div>
-                        <div class="campaign-content">
-                            <div class="diagnosis-content">
-                                <h4>Análise IA:</h4>
-                                <p><strong>Risco de Progressão:</strong> Pacientes com hipertensão têm 2.5x mais chances de desenvolver diabetes. Mecanismo: resistência à insulina e disfunção endotelial.</p>
-                                
-                                <div class="risk-percentage">
-                                    <h4>Fatores de Risco Compartilhados:</h4>
-                                    <div class="disease-risk">
-                                        <div class="risk-item">
-                                            <span>Obesidade: 85%</span>
-                                            <div class="progress-bar">
-                                                <div class="progress" style="width: 85%"></div>
-                                            </div>
-                                        </div>
-                                        <div class="risk-item">
-                                            <span>Sedentarismo: 75%</span>
-                                            <div class="progress-bar">
-                                                <div class="progress" style="width: 75%"></div>
-                                            </div>
-                                        </div>
-                                        <div class="risk-item">
-                                            <span>Dieta Rica em Sódio: 70%</span>
-                                            <div class="progress-bar">
-                                                <div class="progress" style="width: 70%"></div>
-                                            </div>
-                                        </div>
-                                        <div class="risk-item">
-                                            <span>Estresse: 60%</span>
-                                            <div class="progress-bar">
-                                                <div class="progress" style="width: 60%"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="campaign-stats">
-                                <div class="stat">
-                                    <span class="label">Correlação</span>
-                                    <span class="value">0.78</span>
-                                </div>
-                                <div class="stat">
-                                    <span class="label">Confiança</span>
-                                    <span class="value">95%</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Card de Correlação 2 -->
-                    <div class="campaign-card">
-                        <div class="campaign-header">
-                            <h3>Diabetes → Hipertensão</h3>
-                            <span class="status correlacao">Correlação Forte</span>
-                        </div>
-                        <div class="campaign-content">
-                            <div class="diagnosis-content">
-                                <h4>Análise IA:</h4>
-                                <p><strong>Risco de Progressão:</strong> Pacientes com diabetes têm 3.2x mais chances de desenvolver hipertensão. Mecanismo: nefropatia diabética e disfunção autonômica.</p>
-                                
-                                <div class="risk-percentage">
-                                    <h4>Complicações Associadas:</h4>
-                                    <div class="disease-risk">
-                                        <div class="risk-item">
-                                            <span>Nefropatia: 40%</span>
-                                            <div class="progress-bar">
-                                                <div class="progress" style="width: 40%"></div>
-                                            </div>
-                                        </div>
-                                        <div class="risk-item">
-                                            <span>Retinopatia: 35%</span>
-                                            <div class="progress-bar">
-                                                <div class="progress" style="width: 35%"></div>
-                                            </div>
-                                        </div>
-                                        <div class="risk-item">
-                                            <span>Neuropatia: 30%</span>
-                                            <div class="progress-bar">
-                                                <div class="progress" style="width: 30%"></div>
-                                            </div>
-                                        </div>
-                                        <div class="risk-item">
-                                            <span>Doença Cardíaca: 65%</span>
-                                            <div class="progress-bar">
-                                                <div class="progress" style="width: 65%"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="campaign-stats">
-                                <div class="stat">
-                                    <span class="label">Correlação</span>
-                                    <span class="value">0.82</span>
-                                </div>
-                                <div class="stat">
-                                    <span class="label">Confiança</span>
-                                    <span class="value">97%</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Card de Correlação 3 -->
-                    <div class="campaign-card">
-                        <div class="campaign-header">
-                            <h3>Síndrome Metabólica</h3>
-                            <span class="status alto-risco">Alto Risco</span>
-                        </div>
-                        <div class="campaign-content">
-                            <div class="diagnosis-content">
-                                <h4>Análise IA:</h4>
-                                <p><strong>Cluster de Doenças:</strong> 67% dos pacientes com hipertensão + diabetes apresentam síndrome metabólica completa. Risco cardiovascular extremamente elevado.</p>
-                                
-                                <div class="risk-percentage">
-                                    <h4>Componentes da Síndrome:</h4>
-                                    <div class="disease-risk">
-                                        <div class="risk-item">
-                                            <span>Hipertensão: 95%</span>
-                                            <div class="progress-bar">
-                                                <div class="progress" style="width: 95%"></div>
-                                            </div>
-                                        </div>
-                                        <div class="risk-item">
-                                            <span>Diabetes: 90%</span>
-                                            <div class="progress-bar">
-                                                <div class="progress" style="width: 90%"></div>
-                                            </div>
-                                        </div>
-                                        <div class="risk-item">
-                                            <span>Dislipidemia: 85%</span>
-                                            <div class="progress-bar">
-                                                <div class="progress" style="width: 85%"></div>
-                                            </div>
-                                        </div>
-                                        <div class="risk-item">
-                                            <span>Obesidade Central: 80%</span>
-                                            <div class="progress-bar">
-                                                <div class="progress" style="width: 80%"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="campaign-stats">
-                                <div class="stat">
-                                    <span class="label">Prevalência</span>
-                                    <span class="value">67%</span>
-                                </div>
-                                <div class="stat">
-                                    <span class="label">Mortalidade</span>
-                                    <span class="value">+300%</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Página de Detalhes do Paciente -->
-            <section id="patient-details" class="section">
-                <div class="patient-details-container">
-                    <!-- Header do Paciente -->
-                    <div class="patient-header">
-                        <button class="btn-back" onclick="closePatientDetails()">
-                            <i class="fas fa-arrow-left"></i>
-                            Voltar
-                        </button>
-                        <div class="patient-info">
-                            <button class="btn-exam" title="Mostrar laudo diagnosticado" onclick="openExamImage()">
-                                mostrar laudo diagnosticado
-                            </button>
-                            <img id="patient-avatar" src="" alt="Avatar" class="patient-avatar">
-                            <div class="patient-details">
-                                <h2 id="patient-name">Nome do Paciente</h2>
-                                <p id="patient-age">Idade | Gênero</p>
-                                <span id="patient-status" class="status">Status</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Conteúdo Principal -->
-                    <div class="patient-content">
-                        <!-- Diagnóstico IA (Lado Esquerdo) -->
-                        <div class="ai-diagnosis">
-                            <h3>Diagnóstico Inteligente</h3>
-                            <div class="ai-content">
-                                <div class="ai-summary">
-                                    <h4>Resumo IA</h4>
-                                    <p id="ai-summary-text">Análise de risco baseada em dados clínicos...</p>
-                                </div>
-                                
-                                <div class="risk-percentage">
-                                    <h4>Probabilidade de Doenças:</h4>
-                                    <div class="disease-risk" id="ai-risk-percentages">
-                                        <!-- Risco será preenchido via JavaScript -->
-                                    </div>
-                                </div>
-
-                                <div class="ai-stats">
-                                    <div class="stat">
-                                        <span class="label">Confiança IA</span>
-                                        <span class="value" id="ai-confidence">0%</span>
-                                    </div>
-                                    <div class="stat">
-                                        <span class="label">Última Atualização</span>
-                                        <span class="value">Hoje</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Área de Diagnóstico Completo (Lado Direito) -->
-                        <div class="complete-diagnosis">
-                            <h3>Diagnóstico Médico Completo</h3>
-                            <div class="diagnosis-editor">
-                                <div class="editor-toolbar">
-                                    <button class="btn-tool" onclick="generateAIDiagnosis()">
-                                        <i class="fas fa-robot"></i>
-                                        Gerar com IA
-                                    </button>
-                                    <button class="btn-tool" onclick="saveDiagnosis()">
-                                        <i class="fas fa-save"></i>
-                                        Salvar
-                                    </button>
-                                    <button class="btn-tool" onclick="printDiagnosis()">
-                                        <i class="fas fa-print"></i>
-                                        Imprimir
-                                    </button>
-                                </div>
-                                <div class="editor-content">
-                                    <textarea id="diagnosis-text" placeholder="Digite ou gere o diagnóstico completo do paciente aqui...">
-# DIAGNÓSTICO MÉDICO COMPLETO
-
-## DADOS DO PACIENTE
-- Nome: [Nome do Paciente]
-- Idade: [Idade] anos
-- Gênero: [Gênero]
-- Data da Consulta: [Data Atual]
-
-## QUEIXA PRINCIPAL
-[Descrever a queixa principal do paciente]
-
-## HISTÓRICO MÉDICO
-[Histórico médico relevante]
-
-## EXAME FÍSICO
-[Resultados do exame físico]
-
-## EXAMES COMPLEMENTARES
-[Resultados de exames laboratoriais e de imagem]
-
-## DIAGNÓSTICO
-[Diagnóstico principal e secundários]
-
-## PLANO TERAPÊUTICO
-[Tratamento prescrito]
-
-## OBSERVAÇÕES
-[Observações adicionais]
-                                    </textarea>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Gráficos do Paciente -->
-                    <div class="patient-charts">
-                        <h3>Evolução Clínica do Paciente</h3>
-                        <div class="charts-grid">
-                            <!-- Gráfico de Evolução da Pressão -->
-                            <div class="chart-card">
-                                <h4>Evolução da Pressão Arterial</h4>
-                                <div class="chart">
-                                    <canvas id="patientPressureChart"></canvas>
-                                </div>
-                            </div>
-
-                            <!-- Gráfico de Evolução da Glicemia -->
-                            <div class="chart-card">
-                                <h4>Evolução da Glicemia</h4>
-                                <div class="chart">
-                                    <canvas id="patientGlucoseChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+          </div>
         </div>
-    </main>
+      </section><!-- /view-records -->
 
-    <!-- Modal de Exame -->
-    <div id="examModal" class="exam-modal" onclick="handleExamBackdropClick(event)">
-        <div class="exam-modal-content">
-            <button class="exam-modal-close" onclick="closeExamModal()" aria-label="Fechar">
-                <i class="fas fa-times"></i>
+      <!-- VIEW 6: HISTÓRICO -->
+      <section id="view-history" class="view hidden">
+        <div class="chart-card">
+          <div class="chart-card__header">
+            <h2 class="chart-card__title">Histórico de Eventos do Sistema</h2>
+            <p class="chart-card__subtitle">Logs de ações recentes e auditoria clínica</p>
+          </div>
+          <div class="chart-card__body" style="margin-top: var(--space-4);">
+            <div style="display:flex; flex-direction:column; gap: var(--space-4);">
+              
+              <!-- Evento 1 -->
+              <div style="display:flex; gap: var(--space-4); align-items: flex-start; padding-bottom: var(--space-4); border-bottom: 1px solid var(--color-border-subtle);">
+                <div style="color: var(--color-text-muted); font-family: var(--font-mono); font-size: var(--text-sm); width: 80px; flex-shrink: 0; padding-top: 4px;">10:42</div>
+                <div style="color: var(--color-accent-success); background: rgba(0, 200, 150, 0.1); padding: 8px; border-radius: var(--radius-full);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>
+                <div>
+                  <p style="color: var(--color-text-primary); font-weight: 500; font-size: var(--text-md);">Prontuário Assinado Eletronicamente</p>
+                  <p style="color: var(--color-text-secondary); font-size: var(--text-sm); margin-top: 2px;">Dr. Ricardo assinou e bloqueou a evolução médica do paciente João P. Almeida.</p>
+                </div>
+              </div>
+              
+              <!-- Evento 2 -->
+              <div style="display:flex; gap: var(--space-4); align-items: flex-start; padding-bottom: var(--space-4); border-bottom: 1px solid var(--color-border-subtle);">
+                <div style="color: var(--color-text-muted); font-family: var(--font-mono); font-size: var(--text-sm); width: 80px; flex-shrink: 0; padding-top: 4px;">09:15</div>
+                <div style="color: #A78BFA; background: rgba(139, 92, 246, 0.1); padding: 8px; border-radius: var(--radius-full);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg></div>
+                <div>
+                  <p style="color: var(--color-text-primary); font-weight: 500; font-size: var(--text-md);">Laudo de Risco Preditivo IA Gerado</p>
+                  <p style="color: var(--color-text-secondary); font-size: var(--text-sm); margin-top: 2px;">O sistema concluiu o processamento do Lote-2 de pacientes crônicos.</p>
+                </div>
+              </div>
+              
+              <!-- Evento 3 -->
+              <div style="display:flex; gap: var(--space-4); align-items: flex-start; padding-bottom: var(--space-4); border-bottom: 1px solid var(--color-border-subtle);">
+                <div style="color: var(--color-accent-danger); font-family: var(--font-mono); font-size: var(--text-sm); width: 80px; flex-shrink: 0; padding-top: 4px;">04:12</div>
+                <div style="color: var(--color-accent-danger); background: rgba(255, 59, 111, 0.1); padding: 8px; border-radius: var(--radius-full);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></div>
+                <div>
+                  <p style="color: var(--color-text-primary); font-weight: 500; font-size: var(--text-md);">Alerta Crítico: Pico Hipertensivo Detectado</p>
+                  <p style="color: var(--color-text-secondary); font-size: var(--text-sm); margin-top: 2px;">Telemetria registrou 178/98 mmHg no monitor do paciente João P. Almeida.</p>
+                </div>
+              </div>
+
+            </div>
+            <button class="btn" style="color: var(--color-text-secondary); border: 1px solid var(--color-border); margin-top: var(--space-4); width: 100%; justify-content: center;">Carregar Mais Registros</button>
+          </div>
+        </div>
+      </section><!-- /view-history -->
+
+      <!-- VIEW 7: RELATÓRIOS IA -->
+      <section id="view-ai-reports" class="view hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-2);">
+           <div>
+             <h2 class="chart-card__title" style="font-size: var(--text-2xl);">Relatórios Analíticos IA</h2>
+             <p class="chart-card__subtitle">Previsões e agrupamentos processados por Deep Learning</p>
+           </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--space-4);">
+          <!-- Report Card 1 -->
+          <div class="chart-card" style="border-top: 3px solid #8B5CF6; position: relative;">
+            <span class="chart-badge" style="position: absolute; top: var(--space-4); right: var(--space-4); background: rgba(139, 92, 246, 0.15); color: #A78BFA; border: 1px solid rgba(139, 92, 246, 0.3);">Recente</span>
+            <h3 style="font-size: var(--text-md); color: var(--color-text-primary); margin-top: var(--space-2);">Estratificação de Risco Cardiovascular</h3>
+            <p style="font-family: var(--font-mono); font-size: var(--text-xs); color: var(--color-text-muted); margin-top: 4px;">Gerado: Hoje, 02h00</p>
+            <p style="color: var(--color-text-secondary); font-size: var(--text-sm); margin-top: var(--space-3); line-height: 1.6; flex: 1;">Agrupamento de 248 pacientes ativos categorizados por probabilidade de desenvolvimento de IAM nos próximos 60 dias.</p>
+            <button class="btn btn--primary" style="margin-top: var(--space-5); background: rgba(139, 92, 246, 0.1); color: #A78BFA; border: 1px solid rgba(139, 92, 246, 0.2); box-shadow: none; justify-content: center; width: 100%;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Baixar Documento (.PDF)
             </button>
-            <img id="examImage" alt="Imagem do exame do paciente" />
-            <div class="exam-caption" id="examCaption"></div>
-        </div>
-    </div>
+          </div>
 
-    <script src="js/script.js"></script>
+          <!-- Report Card 2 -->
+          <div class="chart-card" style="border-top: 3px solid #0052FF;">
+            <h3 style="font-size: var(--text-md); color: var(--color-text-primary); margin-top: var(--space-2);">Previsão de Descompensação Glicêmica</h3>
+            <p style="font-family: var(--font-mono); font-size: var(--text-xs); color: var(--color-text-muted); margin-top: 4px;">Gerado: 12/Out/2023</p>
+            <p style="color: var(--color-text-secondary); font-size: var(--text-sm); margin-top: var(--space-3); line-height: 1.6; flex: 1;">Modelagem focada em pacientes com DM2 identificando padrões de falha terapêutica baseado no monitoramento contínuo.</p>
+            <button class="btn btn--primary" style="margin-top: var(--space-5); background: transparent; color: var(--color-accent-secondary); border: 1px solid rgba(0, 212, 255, 0.2); box-shadow: none; justify-content: center; width: 100%;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              Visualizar Relatório
+            </button>
+          </div>
+        </div>
+      </section><!-- /view-ai-reports -->
+
+      <!-- VIEW 8: ESTATÍSTICAS -->
+      <section id="view-statistics" class="view hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-2);">
+           <div>
+             <h2 class="chart-card__title" style="font-size: var(--text-2xl);">Desempenho da Clínica</h2>
+             <p class="chart-card__subtitle">Métricas agregadas do uso do sistema</p>
+           </div>
+        </div>
+
+        <section class="kpi-grid">
+           <!-- KPI A -->
+           <article class="kpi-card">
+             <div class="kpi-card__header"><span class="kpi-card__label">Total de Consultas</span></div>
+             <div class="kpi-card__body"><p class="kpi-card__value" style="color: var(--color-accent-secondary);">1.402</p></div>
+             <p class="kpi-card__footnote">Acumulado do Mês</p>
+           </article>
+           <!-- KPI B -->
+           <article class="kpi-card">
+             <div class="kpi-card__header"><span class="kpi-card__label">Tempo Resp. Médio IA</span></div>
+             <div class="kpi-card__body"><p class="kpi-card__value" style="color: #A78BFA;">0.4<span class="kpi-card__unit">s</span></p></div>
+             <p class="kpi-card__footnote">Processamento de Sinais</p>
+           </article>
+           <!-- KPI C -->
+           <article class="kpi-card">
+             <div class="kpi-card__header"><span class="kpi-card__label">Adesão ao Tratamento</span></div>
+             <div class="kpi-card__body"><p class="kpi-card__value" style="color: var(--color-accent-success);">82<span class="kpi-card__unit">%</span></p></div>
+             <div class="kpi-card__progress-wrap" style="margin-top: 6px;"><div class="kpi-card__progress"><div class="kpi-card__progress-bar" style="width: 82%; background: var(--color-accent-success);"></div></div></div>
+           </article>
+           <!-- KPI D -->
+           <article class="kpi-card">
+             <div class="kpi-card__header"><span class="kpi-card__label">Novos Cadastros</span></div>
+             <div class="kpi-card__body"><p class="kpi-card__value" style="color: var(--color-text-primary);">+24</p></div>
+             <p class="kpi-card__footnote">Esta semana</p>
+           </article>
+        </section>
+
+        <!-- Gráfico Novo de Estatísticas -->
+        <section class="charts-grid" style="grid-template-columns: 1fr; margin-top: var(--space-4);">
+          <div class="chart-card chart-card--wide">
+            <div class="chart-card__header">
+              <div class="chart-card__title-group">
+                <h2 class="chart-card__title">Distribuição de Patologias (CID)</h2>
+                <p class="chart-card__subtitle">Proporção da população ativa monitorada</p>
+              </div>
+            </div>
+            <div class="chart-card__body">
+              <div class="chart-card__canvas-wrap" style="min-height: 280px;">
+                <canvas id="populationChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section><!-- /view-statistics -->
+
+      </main><!-- /main -->
+    </div><!-- /main-wrapper -->
+
+    <!-- Overlay para mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
+
+  </div><!-- /app -->
+
+  <!-- Script principal -->
+  <script src="js/app.js"></script>
 </body>
 </html>
