@@ -13,9 +13,30 @@ class CorporateLoginForm {
     }
     
     init() {
+        // Carregar dados passados da landing page
+        this.loadCredentialsFromStorage();
         this.bindEvents();
         this.setupPasswordToggle();
         this.setupSSOButtons();
+    }
+
+    /**
+     * Carrega credenciais armazenadas no sessionStorage
+     * (dados passados da landing page)
+     */
+    loadCredentialsFromStorage() {
+        const storedEmail = sessionStorage.getItem('loginEmail');
+        const storedPassword = sessionStorage.getItem('loginPassword');
+
+        if (storedEmail) {
+            this.emailInput.value = storedEmail;
+            sessionStorage.removeItem('loginEmail');
+        }
+
+        if (storedPassword) {
+            this.passwordInput.value = storedPassword;
+            sessionStorage.removeItem('loginPassword');
+        }
     }
     
     bindEvents() {
@@ -180,17 +201,18 @@ class CorporateLoginForm {
             footerLinks.style.display = 'none';
         }
         if (this.successMessage) {
+            // Remove hidden class and set display to flex
+            this.successMessage.classList.remove('hidden');
             this.successMessage.style.display = 'flex';
             this.successMessage.classList.add('show');
         }
         
-        // Simular redirecionamento após 3 segundos (sistemas corporativos são mais lentos)
+        // Salva sessão e redireciona para o dashboard
+        localStorage.setItem("usuarioLogado", "true");
+        
+        // Redireciona para o dashboard de forma confiável
         setTimeout(() => {
-            // salva sessão
-            localStorage.setItem("usuarioLogado", "true");
-
-            // redireciona para o dashboard
-            window.location.href = "index.html";
+            window.location.href = "./index.html";
         }, 1500);
     }
 }

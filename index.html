@@ -16,6 +16,12 @@
 
   <!-- Stylesheet -->
   <link rel="stylesheet" href="css/styles.css" />
+  <script>
+    // Verificar se o usuário está autenticado
+    if (localStorage.getItem("usuarioLogado") !== "true") {
+      window.location.href = "login.html";
+    }
+  </script>
 </head>
 <body>
 
@@ -158,12 +164,23 @@
             <p class="sidebar__user-name">Dr. Ricardo</p>
             <p class="sidebar__user-role">Cardiologista</p>
           </div>
-          <button class="sidebar__user-settings" aria-label="Configurações do usuário">
+          <button class="sidebar__user-settings" aria-label="Menu de usuário" id="userMenuBtn">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="3"/>
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
             </svg>
           </button>
+          <!-- Menu dropdown -->
+          <div class="sidebar__user-menu" id="userMenu" style="display: none; position: absolute; bottom: 60px; left: 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; min-width: 160px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); z-index: 100;">
+            <button id="logoutBtn" style="width: 100%; text-align: left; padding: 12px 16px; border: none; background: none; color: var(--text-secondary); cursor: pointer; font-size: 14px; transition: all 0.2s ease;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; margin-right: 8px;">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+              </svg>
+              Sair
+            </button>
+          </div>
         </div>
       </div>
     </aside>

@@ -96,12 +96,29 @@
     /* ── CTA button ───────────────────────────────────── */
     .btn-primary {
       background: linear-gradient(135deg, #0052FF 0%, #3378FF 100%);
-      box-shadow: 0 0 0 0 rgba(0,82,255,0.4);
+      box-shadow: 0 8px 24px rgba(0,82,255,0.35), 0 4px 12px rgba(0,82,255,0.2);
       transition: box-shadow 0.3s ease, transform 0.2s ease;
     }
     .btn-primary:hover {
-      box-shadow: 0 0 30px rgba(0,82,255,0.6), 0 8px 30px rgba(0,82,255,0.3);
+      box-shadow: 0 12px 32px rgba(0,82,255,0.5), 0 6px 16px rgba(0,82,255,0.3);
       transform: translateY(-2px);
+    }
+    .btn-primary:active {
+      transform: translateY(0);
+      box-shadow: 0 4px 12px rgba(0,82,255,0.4);
+    }
+    .login-form .login-btn {
+      padding: 18px 1.15rem !important;
+      font-size: 1.05rem !important;
+      font-weight: 700 !important;
+      width: 100% !important;
+      border-radius: 16px !important;
+      background: linear-gradient(135deg, #0052FF 0%, #3378FF 100%) !important;
+      box-shadow: 0 8px 24px rgba(0, 82, 255, 0.35), 0 4px 12px rgba(0, 82, 255, 0.2) !important;
+    }
+    .login-form .login-btn:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 12px 32px rgba(0,82,255,0.5), 0 6px 16px rgba(0,82,255,0.3) !important;
     }
     .btn-secondary {
       border: 1px solid rgba(255,255,255,0.12);
@@ -1199,6 +1216,32 @@
     }
     requestAnimationFrame(step);
   }
+
+  // Landing page login form redirect
+  document.addEventListener('DOMContentLoaded', () => {
+    const landingLoginForm = document.getElementById('loginForm');
+    
+    // Apenas modifica se for o formulário da landing page (não do login.html)
+    if (landingLoginForm && window.location.pathname.includes('landingpage')) {
+      const emailInput = document.getElementById('email');
+      const passwordInput = document.getElementById('password');
+      
+      landingLoginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        // Armazena as credenciais no sessionStorage
+        if (emailInput.value) {
+          sessionStorage.setItem('loginEmail', emailInput.value);
+        }
+        if (passwordInput.value) {
+          sessionStorage.setItem('loginPassword', passwordInput.value);
+        }
+        
+        // Redireciona para a página de login
+        window.location.href = './login.html';
+      });
+    }
+  });
 </script>
 <script src="js/login.js"></script>
 

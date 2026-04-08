@@ -1095,4 +1095,41 @@ class DashboardApp {
    INICIALIZAÇÃO
 ================================================================ */
 const app = new DashboardApp();
+
+/* ================================================================
+   USER MENU & LOGOUT FUNCTIONALITY
+================================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+  // Toggle user menu
+  const userMenuBtn = document.getElementById('userMenuBtn');
+  const userMenu = document.getElementById('userMenu');
+  
+  if (userMenuBtn && userMenu) {
+    userMenuBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      userMenu.style.display = userMenu.style.display === 'none' ? 'block' : 'none';
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', () => {
+      userMenu.style.display = 'none';
+    });
+
+    // Prevent closing when clicking inside menu
+    userMenu.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+  }
+
+  // Logout button
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+      // Limpar sessão
+      localStorage.removeItem('usuarioLogado');
+      // Redirecionar para login
+      window.location.href = 'login.html';
+    });
+  }
+});
 app.init();
