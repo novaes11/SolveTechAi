@@ -127,10 +127,24 @@ class CorporateLoginForm {
             // Simular autenticação corporativa com verificação MFA
             await new Promise(resolve => setTimeout(resolve, 2000));
             
-            // Mostra estado de sucesso ou erro
-            this.showSuccess();
+            const email = this.emailInput.value.trim().toLowerCase();
+            const password = this.passwordInput.value;
+            let doctorName = "";
+
+            // Lógica de verificação para permitir apenas 2 acessos específicos
+            if (email === "carlos.silva@clinica.com" && password === "Senha@123") {
+                doctorName = "Dr. Carlos Silva";
+            } else if (email === "ana.costa@clinica.com" && password === "Senha@123") {
+                doctorName = "Dra. Ana Costa";
+            } else {
+                // Rejeita qualquer outro acesso gerando um erro
+                throw new Error("Credenciais inválidas");
+            }
+            
+            // Mostra estado de sucesso e passa o nome
+            this.showSuccess(doctorName);
         } catch (error) {
-            this.showError('password', 'Authentication failed. Please contact IT support.');
+            this.showError('password', 'Falha na autenticação. E-mail ou senha incorretos.');
         } finally {
             this.setLoading(false);
         }
@@ -167,17 +181,22 @@ class CorporateLoginForm {
         });
     }
     
-    showSuccess() {
+    showSuccess(doctorName) {
         this.form.style.display = 'none';
         document.querySelector('.sso-options').style.display = 'none';
         document.querySelector('.footer-links').style.display = 'none';
         this.successMessage.style.display = 'flex';
         this.successMessage.classList.add('show');
         
-        // Simular redirecionamento após 3 segundos (sistemas corporativos são mais lentos)
+        // Simular redirecionamento após 1.5 segundos
         setTimeout(() => {
             // salva sessão
             localStorage.setItem("usuarioLogado", "true");
+
+            // salva o nome do médico
+            if (doctorName) {
+                localStorage.setItem("doctorName", doctorName);
+            }
 
             // redireciona para o dashboard
             window.location.href = "index.html";
