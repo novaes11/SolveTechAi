@@ -75,13 +75,48 @@
             <div class="top-bar-content">
                 <h2 id="pageTitle">Dashboard</h2>
                 <div class="top-bar-actions">
-                    <button class="btn-notification">
+                <!-- Botão de Notificações -->
+                <div class="notifications-container">
+                    <button class="btn-notification" id="notiBtn">
                         <i class="fas fa-bell"></i>
                         <span class="notification-badge">3</span>
                     </button>
+        
+                    <div class="notifications-dropdown" id="notiDropdown">
+                    <div class="dropdown-header">
+                    <h3>Alertas de Pacientes</h3>
+                    </div>
+                    <ul class="notifications-list">
+                        <li class="noti-item critical">
+                            <i class="fas fa-exclamation-circle"></i>
+                                <div class="noti-info">
+                                    <p><strong>Carlos Pinto:</strong> Glicemia crítica detectada (> 220 mg/dL)</p>
+                                    <span>há 5 minutos</span>
+                                </div>
+                        </li>
+                        <li class="noti-item urgent">
+                            <i class="fas fa-clock"></i>
+                            <div class="noti-info">
+                                <p><strong>João Santos:</strong> Aguardando protocolo de urgência</p>
+                                <span>há 20 minutos</span>
+                            </div>
+                        </li>
+                        <li class="noti-item">
+                            <i class="fas fa-calendar-alt"></i>
+                            <div class="noti-info">
+                                <p><strong>Maria Silva:</strong> Retorno agendado para amanhã</p>
+                                <span>há 2 horas</span>
+                            </div>
+                        </li>
+                    </ul>
+                <div class="dropdown-footer">
+                    <a href="#">Ver todas as notificações</a>
                 </div>
             </div>
         </div>
+    </div>
+</div>
+</div>
 
         <!-- Content Area -->
         <div class="content-area">

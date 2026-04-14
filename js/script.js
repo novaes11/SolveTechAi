@@ -1256,4 +1256,50 @@ window.printDiagnosis = function() {
         // força redirecionamento
         window.location.href = "login.html";
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+    const notiBtn = document.getElementById('notiBtn');
+    const notiDropdown = document.getElementById('notiDropdown');
+
+    // Alternar exibição ao clicar no botão
+    notiBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Impede de fechar ao clicar no próprio botão
+        notiDropdown.classList.toggle('active');
+    });
+
+    // Fechar ao clicar em qualquer lugar fora do menu
+    document.addEventListener('click', (e) => {
+        if (!notiDropdown.contains(e.target) && e.target !== notiBtn) {
+            notiDropdown.classList.remove('active');
+        }
+    });
+});
+
+(function() {
+    const setupNotifications = () => {
+        const btn = document.getElementById('notiBtn');
+        const dropdown = document.getElementById('notiDropdown');
+
+        if (!btn || !dropdown) return;
+
+        // Remove qualquer listener antigo e adiciona o novo
+        btn.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropdown.classList.toggle('active');
+            console.log("Status do menu:", dropdown.classList.contains('active'));
+        };
+
+        // Fecha se clicar em qualquer outro lugar da tela
+        document.addEventListener('click', (e) => {
+            if (!dropdown.contains(e.target) && e.target !== btn) {
+                dropdown.classList.remove('active');
+            }
+        });
+    };
+
+    // Tenta rodar imediatamente e também quando a janela carregar totalmente
+    setupNotifications();
+    window.addEventListener('load', setupNotifications);
+})();
 });

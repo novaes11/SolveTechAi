@@ -435,3 +435,93 @@ canvas { max-width: 100%; height: auto !important; }
     .patient-avatar { width: 60px; height: 60px; }
     .complete-diagnosis { page-break-inside: avoid; }
 }
+
+/* Container relativo para posicionar o dropdown */
+.notifications-container {
+    position: relative;
+}
+
+.notifications-dropdown {
+    display: none; /* Escondido por padrão */
+    position: absolute;
+    right: 0;
+    top: 50px;
+    width: 320px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    z-index: 1000;
+    border: 1px solid #eee;
+}
+
+.notifications-dropdown.active {
+    display: block;
+    animation: fadeIn 0.2s ease;
+}
+
+.dropdown-header {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.dropdown-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: #333;
+}
+
+.notifications-list {
+    list-style: none;
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.noti-item {
+    display: flex;
+    padding: 15px;
+    border-bottom: 1px solid #f9f9f9;
+    gap: 12px;
+    transition: background 0.2s;
+    cursor: pointer;
+}
+
+.noti-item:hover {
+    background: #f8f9fa;
+}
+
+.noti-item i {
+    margin-top: 3px;
+    font-size: 1.1rem;
+}
+
+.noti-item.critical i { color: #e74c3c; }
+.noti-item.urgent i { color: #f39c12; }
+
+.noti-info p {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.noti-info span {
+    font-size: 0.75rem;
+    color: #888;
+}
+
+.dropdown-footer {
+    padding: 12px;
+    text-align: center;
+    border-top: 1px solid #eee;
+}
+
+.dropdown-footer a {
+    font-size: 0.85rem;
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
