@@ -512,21 +512,21 @@
     </div>
 
     <!-- Dashboard simulation -->
-    <div class="fade-up dash-surface rounded-3xl overflow-hidden shadow-2xl shadow-brand/10">
+    <div class="fade-up bg-[#f5f5f5] rounded-3xl overflow-hidden shadow-2xl shadow-[#FF4655]/20 border border-white/10">
 
       <!-- Top bar -->
-      <div class="flex items-center gap-3 px-5 py-3.5 border-b border-white/05 bg-[#04091A]">
-        <div class="w-3 h-3 rounded-full bg-red-500/70"></div>
-        <div class="w-3 h-3 rounded-full bg-amber-400/70"></div>
-        <div class="w-3 h-3 rounded-full bg-emerald-400/70"></div>
-        <div class="flex-1 mx-4 h-6 bg-white/04 rounded-md flex items-center px-3">
-          <span class="text-xs text-slate-600 font-mono">app.solvetechai.com/dashboard</span>
+      <div class="flex items-center gap-3 px-5 py-3.5 border-b border-gray-200 bg-white">
+        <div class="w-3 h-3 rounded-full bg-[#D93B3B]/80"></div>
+        <div class="w-3 h-3 rounded-full bg-[#F1C40F]/80"></div>
+        <div class="w-3 h-3 rounded-full bg-[#2ECC71]/80"></div>
+        <div class="flex-1 mx-4 h-6 bg-gray-100 rounded-md flex items-center px-3">
+          <span class="text-xs text-gray-500 font-mono">app.solvetechai.com/dashboard</span>
         </div>
         <div class="flex items-center gap-2">
-          <div class="w-7 h-7 rounded-full bg-brand/30 border border-brand/30 flex items-center justify-center">
-            <span class="text-xs text-brand-light font-bold">Dr</span>
+          <div class="w-7 h-7 rounded-full bg-[#FF4655]/10 border border-[#FF4655]/20 flex items-center justify-center">
+            <span class="text-xs text-[#FF4655] font-bold">Dr</span>
           </div>
-          <span class="text-xs text-slate-400">Dr. Ana Costa</span>
+          <span class="text-xs text-[#0F1923] font-medium">Dr. Silva</span>
         </div>
       </div>
 
@@ -534,58 +534,60 @@
       <div class="flex">
 
         <!-- Sidebar -->
-        <div class="hidden lg:flex flex-col w-16 bg-[#04091A] border-r border-white/04 py-5 items-center gap-5">
-          <div class="w-9 h-9 rounded-xl bg-brand flex items-center justify-center">
-            <i class="fa-solid fa-heart-pulse text-white text-sm"></i>
+        <div class="hidden lg:flex flex-col w-16 bg-[#0F1923] py-5 items-center gap-5 z-10 shadow-lg">
+          <div class="w-9 h-9 flex items-center justify-center mb-2">
+            <i class="fa-solid fa-heartbeat text-[#FF4655] text-xl"></i>
           </div>
-          <div class="space-y-4 mt-3">
-            <div class="w-9 h-9 rounded-xl bg-brand/20 flex items-center justify-center">
-              <i class="fa-solid fa-chart-line text-brand-light text-sm"></i>
+          <div class="w-full flex flex-col items-center">
+            <div class="w-full flex justify-center py-3 border-l-2 border-[#FF4655] bg-[#FF4655]/10">
+              <i class="fa-solid fa-chart-line text-[#FF4655] text-sm"></i>
             </div>
-            <div class="w-9 h-9 rounded-xl hover:bg-white/05 flex items-center justify-center">
-              <i class="fa-solid fa-users text-slate-500 text-sm"></i>
+            <div class="w-full flex justify-center py-3 border-l-2 border-transparent hover:bg-white/5 cursor-pointer">
+              <i class="fa-solid fa-users text-slate-400 text-sm"></i>
             </div>
-            <div class="w-9 h-9 rounded-xl hover:bg-white/05 flex items-center justify-center">
-              <i class="fa-solid fa-file-medical text-slate-500 text-sm"></i>
+            <div class="w-full flex justify-center py-3 border-l-2 border-transparent hover:bg-white/5 cursor-pointer">
+              <i class="fa-solid fa-clipboard-list text-slate-400 text-sm"></i>
             </div>
-            <div class="w-9 h-9 rounded-xl hover:bg-white/05 flex items-center justify-center">
-              <i class="fa-solid fa-bell text-slate-500 text-sm"></i>
+            <div class="w-full flex justify-center py-3 border-l-2 border-transparent hover:bg-white/5 cursor-pointer">
+              <i class="fa-solid fa-bell text-slate-400 text-sm"></i>
             </div>
           </div>
         </div>
 
         <!-- Main content -->
-        <div class="flex-1 p-5 space-y-4 overflow-hidden">
+        <div class="flex-1 p-5 space-y-4 overflow-hidden bg-[#f5f5f5]">
 
           <!-- Row 1: KPI cards -->
           <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
 
-            <div class="dash-inner rounded-xl p-4">
-              <p class="text-xs text-slate-500 mb-1">Pacientes Ativos</p>
-              <p class="text-2xl font-black text-white">248</p>
-              <p class="text-xs text-emerald-400 mt-1 flex items-center gap-1">
-                <i class="fa-solid fa-arrow-up text-xs"></i> +12 esta semana
+            <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+              <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Total de Pacientes</p>
+              <p class="text-2xl font-black text-[#0F1923]">2,156</p>
+              <p class="text-xs text-[#2ECC71] mt-1 flex items-center gap-1 font-medium">
+                <i class="fa-solid fa-arrow-up text-[10px]"></i> +45 este mês
               </p>
             </div>
 
-            <div class="dash-inner rounded-xl p-4">
-              <p class="text-xs text-slate-500 mb-1">Alertas Críticos</p>
-              <p class="text-2xl font-black text-red-400">7</p>
-              <p class="text-xs text-red-400 mt-1 flex items-center gap-1">
-                <i class="fa-solid fa-triangle-exclamation text-xs"></i> Ação imediata
+            <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+              <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Alertas Críticos</p>
+              <p class="text-2xl font-black text-[#D93B3B]">18</p>
+              <p class="text-xs text-[#D93B3B] mt-1 flex items-center gap-1 font-medium">
+                <i class="fa-solid fa-triangle-exclamation text-[10px]"></i> Ação imediata
               </p>
             </div>
 
-            <div class="dash-inner rounded-xl p-4">
-              <p class="text-xs text-slate-500 mb-1">Precisão IA</p>
-              <p class="text-2xl font-black text-white">96<span class="text-sm font-medium">%</span></p>
-              <p class="text-xs text-brand-light mt-1">↑ 2.1% este mês</p>
+            <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+              <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Diagnósticos IA</p>
+              <p class="text-2xl font-black text-[#0F1923]">234</p>
+              <p class="text-xs text-[#2ECC71] mt-1 flex items-center gap-1 font-medium">
+                <i class="fa-solid fa-check text-[10px]"></i> 96% precisão
+              </p>
             </div>
 
-            <div class="dash-inner rounded-xl p-4">
-              <p class="text-xs text-slate-500 mb-1">Laudos Gerados</p>
-              <p class="text-2xl font-black text-white">1.4k</p>
-              <p class="text-xs text-slate-500 mt-1">Hoje: 47</p>
+            <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+              <p class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Laudos Gerados</p>
+              <p class="text-2xl font-black text-[#0F1923]">1.4k</p>
+              <p class="text-xs text-gray-500 mt-1 font-medium">Hoje: 47</p>
             </div>
           </div>
 
@@ -593,14 +595,14 @@
           <div class="grid md:grid-cols-3 gap-3">
 
             <!-- Chart 1: Pressão arterial (SVG line) -->
-            <div class="md:col-span-2 dash-inner rounded-xl p-4">
+            <div class="md:col-span-2 bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
               <div class="flex items-center justify-between mb-4">
                 <div>
-                  <p class="text-xs text-slate-500 font-semibold uppercase tracking-widest">Pressão Arterial — 30 dias</p>
+                  <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Pressão Arterial — 30 dias</p>
                 </div>
-                <div class="flex gap-3 text-xs">
-                  <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-brand inline-block"></span>Sistólica</span>
-                  <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-cyan-400 inline-block"></span>Diastólica</span>
+                <div class="flex gap-3 text-xs font-medium text-gray-600">
+                  <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#FF4655] inline-block"></span>Sistólica</span>
+                  <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#0F1923] inline-block"></span>Diastólica</span>
                 </div>
               </div>
 
@@ -608,86 +610,75 @@
               <div class="relative h-36">
                 <svg viewBox="0 0 440 120" class="w-full h-full" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                   <!-- Grid lines -->
-                  <line x1="0" y1="30" x2="440" y2="30" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
-                  <line x1="0" y1="60" x2="440" y2="60" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
-                  <line x1="0" y1="90" x2="440" y2="90" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+                  <line x1="0" y1="30" x2="440" y2="30" stroke="#f0f0f0" stroke-width="1"/>
+                  <line x1="0" y1="60" x2="440" y2="60" stroke="#f0f0f0" stroke-width="1"/>
+                  <line x1="0" y1="90" x2="440" y2="90" stroke="#f0f0f0" stroke-width="1"/>
                   <!-- Target zone -->
-                  <rect x="0" y="20" width="440" height="25" fill="rgba(0,82,255,0.04)"/>
+                  <rect x="0" y="20" width="440" height="25" fill="#FF4655" opacity="0.05"/>
                   <!-- Systolic path -->
                   <path class="path-draw"
                     d="M0,55 C20,50 40,45 60,48 S100,60 120,52 S160,38 180,42 S220,50 240,45 S280,35 300,40 S340,52 360,48 S400,42 440,44"
-                    fill="none" stroke="#0052FF" stroke-width="2" stroke-linecap="round"/>
+                    fill="none" stroke="#FF4655" stroke-width="2.5" stroke-linecap="round"/>
                   <!-- Diastolic path -->
                   <path class="path-draw-2"
                     d="M0,85 C20,82 40,80 60,83 S100,90 120,84 S160,76 180,79 S220,84 240,80 S280,72 300,75 S340,83 360,78 S400,73 440,75"
-                    fill="none" stroke="#22D3EE" stroke-width="2" stroke-linecap="round"/>
+                    fill="none" stroke="#0F1923" stroke-width="2.5" stroke-linecap="round"/>
                   <!-- Area fill sistolic -->
                   <path
                     d="M0,55 C20,50 40,45 60,48 S100,60 120,52 S160,38 180,42 S220,50 240,45 S280,35 300,40 S340,52 360,48 S400,42 440,44 L440,120 L0,120Z"
                     fill="url(#sysGrad)" opacity="0.15"/>
                   <defs>
                     <linearGradient id="sysGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stop-color="#0052FF"/>
-                      <stop offset="100%" stop-color="#0052FF" stop-opacity="0"/>
+                      <stop offset="0%" stop-color="#FF4655"/>
+                      <stop offset="100%" stop-color="#FF4655" stop-opacity="0"/>
                     </linearGradient>
                   </defs>
                   <!-- Anomaly dot -->
-                  <circle cx="180" cy="42" r="4" fill="#F59E0B" opacity="0.9"/>
+                  <circle cx="180" cy="42" r="4.5" fill="#D93B3B" opacity="1"/>
                 </svg>
 
                 <!-- Y labels -->
                 <div class="absolute left-0 top-0 h-full flex flex-col justify-between pb-1 pointer-events-none">
-                  <span class="text-[9px] text-slate-600">160</span>
-                  <span class="text-[9px] text-slate-600">130</span>
-                  <span class="text-[9px] text-slate-600">100</span>
-                  <span class="text-[9px] text-slate-600">70</span>
+                  <span class="text-[9px] text-gray-400">160</span>
+                  <span class="text-[9px] text-gray-400">130</span>
+                  <span class="text-[9px] text-gray-400">100</span>
+                  <span class="text-[9px] text-gray-400">70</span>
                 </div>
               </div>
             </div>
 
-            <!-- Chart 2: Risk gauge (CSS circles) -->
-            <div class="dash-inner rounded-xl p-4 flex flex-col items-center justify-between">
-              <p class="text-xs text-slate-500 font-semibold uppercase tracking-widest self-start">Score de Risco</p>
+            <!-- Chart 2: Comorbidades -->
+            <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm flex flex-col items-center justify-between">
+              <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest self-start">Comorbidades</p>
 
               <!-- Donut SVG -->
               <div class="relative w-28 h-28 my-2">
                 <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="50" cy="50" r="38" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="10"/>
-                  <circle cx="50" cy="50" r="38" fill="none"
-                    stroke="url(#riskGrad)" stroke-width="10"
-                    stroke-linecap="round"
-                    stroke-dasharray="238.76"
-                    stroke-dashoffset="65"
-                    class="risk-ring"/>
-                  <defs>
-                    <linearGradient id="riskGrad" x1="0" y1="0" x2="1" y2="0">
-                      <stop offset="0%" stop-color="#F59E0B"/>
-                      <stop offset="100%" stop-color="#EF4444"/>
-                    </linearGradient>
-                  </defs>
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="#f0f0f0" stroke-width="10"/>
+                  <!-- Apenas Hipertensão (Red) -->
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="#FF4655" stroke-width="10" stroke-dasharray="238.76" stroke-dashoffset="120" class="risk-ring"/>
+                  <!-- Apenas Diabetes (Purple) -->
+                  <circle cx="50" cy="50" r="38" fill="none" stroke="#7B2CBF" stroke-width="10" stroke-dasharray="238.76" stroke-dashoffset="200" style="transform: rotate(180deg); transform-origin: center;"/>
                 </svg>
                 <div class="absolute inset-0 flex flex-col items-center justify-center">
-                  <span class="text-2xl font-black text-white">72<span class="text-sm">%</span></span>
-                  <span class="text-xs text-amber-400 font-semibold">Alto</span>
+                  <span class="text-xl font-black text-[#0F1923]">89</span>
+                  <span class="text-[9px] text-gray-500 font-semibold leading-tight text-center px-1">HAS + DM2</span>
                 </div>
               </div>
 
-              <div class="w-full space-y-2">
-                <div class="flex justify-between text-xs">
-                  <span class="text-slate-500">Glicemia</span>
-                  <span class="text-amber-400 font-semibold">Alto</span>
+              <div class="w-full space-y-2 mt-2">
+                <div class="flex items-center justify-between text-[10px]">
+                  <div class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-[#FF4655]"></div><span class="text-gray-600">Hipertensão</span></div>
+                  <span class="text-[#0F1923] font-bold">367</span>
                 </div>
-                <div class="h-1.5 bg-white/05 rounded-full"><div class="h-full bg-amber-400 rounded-full" style="width:78%"></div></div>
-                <div class="flex justify-between text-xs">
-                  <span class="text-slate-500">Pressão</span>
-                  <span class="text-red-400 font-semibold">Crítico</span>
+                <div class="flex items-center justify-between text-[10px]">
+                  <div class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-[#7B2CBF]"></div><span class="text-gray-600">Diabetes</span></div>
+                  <span class="text-[#0F1923] font-bold">223</span>
                 </div>
-                <div class="h-1.5 bg-white/05 rounded-full"><div class="h-full bg-red-400 rounded-full" style="width:85%"></div></div>
-                <div class="flex justify-between text-xs">
-                  <span class="text-slate-500">IMC</span>
-                  <span class="text-brand-light font-semibold">Moderado</span>
+                <div class="flex items-center justify-between text-[10px]">
+                  <div class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-[#2ECC71]"></div><span class="text-gray-600">Ambas</span></div>
+                  <span class="text-[#0F1923] font-bold">89</span>
                 </div>
-                <div class="h-1.5 bg-white/05 rounded-full"><div class="h-full bg-brand rounded-full" style="width:55%"></div></div>
               </div>
             </div>
           </div>
@@ -696,90 +687,90 @@
           <div class="grid md:grid-cols-3 gap-3">
 
             <!-- Glicemia bars -->
-            <div class="dash-inner rounded-xl p-4">
-              <p class="text-xs text-slate-500 font-semibold uppercase tracking-widest mb-4">Glicemia — Semanal</p>
+            <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+              <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-4">Glicemia — Semanal</p>
               <div class="flex items-end gap-2 h-24">
                 <div class="flex-1 flex flex-col items-center gap-1">
-                  <div class="bar-fill w-full bg-brand/70" style="height:55%"></div>
-                  <span class="text-[9px] text-slate-600">Seg</span>
+                  <div class="bar-fill w-full bg-[#7B2CBF]/70" style="height:55%"></div>
+                  <span class="text-[9px] text-gray-500">Seg</span>
                 </div>
                 <div class="flex-1 flex flex-col items-center gap-1">
-                  <div class="bar-fill w-full bg-brand/70" style="height:70%"></div>
-                  <span class="text-[9px] text-slate-600">Ter</span>
+                  <div class="bar-fill w-full bg-[#7B2CBF]/70" style="height:70%"></div>
+                  <span class="text-[9px] text-gray-500">Ter</span>
                 </div>
                 <div class="flex-1 flex flex-col items-center gap-1">
-                  <div class="bar-fill w-full bg-amber-500/80" style="height:85%"></div>
-                  <span class="text-[9px] text-slate-600">Qua</span>
+                  <div class="bar-fill w-full bg-[#FF8700]/80" style="height:85%"></div>
+                  <span class="text-[9px] text-gray-500">Qua</span>
                 </div>
                 <div class="flex-1 flex flex-col items-center gap-1">
-                  <div class="bar-fill w-full bg-brand/70" style="height:62%"></div>
-                  <span class="text-[9px] text-slate-600">Qui</span>
+                  <div class="bar-fill w-full bg-[#7B2CBF]/70" style="height:62%"></div>
+                  <span class="text-[9px] text-gray-500">Qui</span>
                 </div>
                 <div class="flex-1 flex flex-col items-center gap-1">
-                  <div class="bar-fill w-full bg-red-500/80" style="height:95%"></div>
-                  <span class="text-[9px] text-slate-600">Sex</span>
+                  <div class="bar-fill w-full bg-[#D93B3B]/80" style="height:95%"></div>
+                  <span class="text-[9px] text-gray-500">Sex</span>
                 </div>
                 <div class="flex-1 flex flex-col items-center gap-1">
-                  <div class="bar-fill w-full bg-brand/50" style="height:48%"></div>
-                  <span class="text-[9px] text-slate-600">Sáb</span>
+                  <div class="bar-fill w-full bg-[#7B2CBF]/50" style="height:48%"></div>
+                  <span class="text-[9px] text-gray-500">Sáb</span>
                 </div>
                 <div class="flex-1 flex flex-col items-center gap-1">
-                  <div class="bar-fill w-full bg-brand/50" style="height:42%"></div>
-                  <span class="text-[9px] text-slate-600">Dom</span>
+                  <div class="bar-fill w-full bg-[#7B2CBF]/50" style="height:42%"></div>
+                  <span class="text-[9px] text-gray-500">Dom</span>
                 </div>
               </div>
             </div>
 
             <!-- Patient list -->
-            <div class="md:col-span-2 dash-inner rounded-xl p-4">
+            <div class="md:col-span-2 bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
               <div class="flex items-center justify-between mb-3">
-                <p class="text-xs text-slate-500 font-semibold uppercase tracking-widest">Pacientes Prioritários</p>
-                <span class="text-xs text-brand-light cursor-pointer hover:underline">Ver todos</span>
+                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Consultas Recentes</p>
+                <span class="text-xs text-[#FF4655] font-medium cursor-pointer hover:underline">Ver todas</span>
               </div>
-              <div class="space-y-2">
-                <div class="flex items-center justify-between py-2 border-b border-white/04">
+              <div class="space-y-1">
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
                   <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-red-500/20 border border-red-500/30 flex items-center justify-center">
-                      <span class="text-xs font-bold text-red-400">CM</span>
+                    <div class="w-8 h-8 rounded-full bg-[#0F1923] flex items-center justify-center">
+                      <span class="text-xs font-bold text-white">JS</span>
                     </div>
                     <div>
-                      <p class="text-sm font-semibold text-white">Carlos M.</p>
-                      <p class="text-xs text-slate-500">58a · HAS + DM2</p>
+                      <p class="text-sm font-semibold text-[#0F1923]">João Santos</p>
+                      <p class="text-[10px] text-gray-500">58a · HAS + DM2</p>
                     </div>
                   </div>
                   <div class="flex items-center gap-2">
-                    <span class="text-xs bg-red-500/15 text-red-400 px-2 py-0.5 rounded-full font-semibold">Crítico 72%</span>
-                    <i class="fa-solid fa-chevron-right text-slate-600 text-xs"></i>
+                    <span class="text-[10px] bg-[#D93B3B]/10 text-[#D93B3B] px-2 py-0.5 rounded-full font-bold uppercase tracking-wide">Crítico</span>
+                    <i class="fa-solid fa-chevron-right text-gray-400 text-xs ml-1"></i>
                   </div>
                 </div>
-                <div class="flex items-center justify-between py-2 border-b border-white/04">
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
                   <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
-                      <span class="text-xs font-bold text-amber-400">LS</span>
+                    <div class="w-8 h-8 rounded-full bg-[#7B2CBF] flex items-center justify-center">
+                      <span class="text-xs font-bold text-white">LS</span>
                     </div>
                     <div>
-                      <p class="text-sm font-semibold text-white">Lúcia S.</p>
-                      <p class="text-xs text-slate-500">63a · HAS + Obesidade</p>
+                      <p class="text-sm font-semibold text-[#0F1923]">Lúcia Souza</p>
+                      <p class="text-[10px] text-gray-500">63a · HAS + Obesidade</p>
                     </div>
                   </div>
                   <div class="flex items-center gap-2">
-                    <span class="text-xs bg-amber-500/15 text-amber-400 px-2 py-0.5 rounded-full font-semibold">Alto 58%</span>
-                    <i class="fa-solid fa-chevron-right text-slate-600 text-xs"></i>
+                    <span class="text-[10px] bg-[#FF8700]/10 text-[#FF8700] px-2 py-0.5 rounded-full font-bold uppercase tracking-wide">Alto Risco</span>
+                    <i class="fa-solid fa-chevron-right text-gray-400 text-xs ml-1"></i>
                   </div>
                 </div>
                 <div class="flex items-center justify-between py-2">
                   <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-brand/20 border border-brand/30 flex items-center justify-center">
-                      <span class="text-xs font-bold text-brand-light">RO</span>
+                    <div class="w-8 h-8 rounded-full bg-[#17a2b8] flex items-center justify-center">
+                      <span class="text-xs font-bold text-white">FC</span>
                     </div>
                     <div>
-                      <p class="text-sm font-semibold text-white">Roberto O.</p>
-                      <p class="text-xs text-slate-500">71a · DM2 + IRC</p>
+                      <p class="text-sm font-semibold text-[#0F1923]">Fernando Costa</p>
+                      <p class="text-[10px] text-gray-500">39a · Check-up</p>
                     </div>
                   </div>
                   <div class="flex items-center gap-2">
-                    <span class="text-xs bg-brand/15 text-brand-light px-2 py-0.5 rounded-full font-semibold">Moderado 41%</span>
-                    <i class="fa-solid fa-chevron-right text-slate-600 text-xs"></i>
+                    <span class="text-[10px] bg-[#2ECC71]/10 text-[#2ECC71] px-2 py-0.5 rounded-full font-bold uppercase tracking-wide">Baixo Risco</span>
+                    <i class="fa-solid fa-chevron-right text-gray-400 text-xs ml-1"></i>
                   </div>
                 </div>
               </div>
