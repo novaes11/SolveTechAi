@@ -1,5 +1,14 @@
 // Espera o DOM carregar
 document.addEventListener('DOMContentLoaded', function() {
+    // Carrega o nome do médico logado
+    const savedDoctorName = localStorage.getItem('doctorName');
+    if (savedDoctorName) {
+        const doctorNameDisplay = document.getElementById('doctorNameDisplay');
+        if (doctorNameDisplay) {
+            doctorNameDisplay.textContent = savedDoctorName;
+        }
+    }
+
     // Elementos do DOM
     const sidebar = document.querySelector('.sidebar');
     const menuToggle = document.getElementById('menuToggle');
@@ -151,6 +160,94 @@ document.addEventListener('DOMContentLoaded', function() {
                 { disease: 'Doença Cardíaca', percentage: 85 },
                 { disease: 'Insuficiência Renal', percentage: 60 }
             ]
+        },
+        {
+            id: 'roberto-oliveira',
+            name: 'Roberto Oliveira',
+            age: '71 anos | Masculino',
+            avatar: 'https://ui-avatars.com/api/?name=Roberto+Oliveira&background=0F1923&color=fff&size=150',
+            status: 'moderado',
+            statusText: 'Moderado',
+            systolic: 145,
+            glucose: 120,
+            riskFactors: ['Idade Avançada', 'Sobrepeso', 'Histórico Familiar'],
+            aiSummary: 'Risco cardiovascular moderado devido à idade e sobrepeso. Pressão arterial levemente alterada. Necessário acompanhamento bimestral e controle dietético preventivo.',
+            aiConfidence: '88%',
+            risks: [
+                { disease: 'Doença Cardíaca', percentage: 55 },
+                { disease: 'Hipertensão', percentage: 70 },
+                { disease: 'Diabetes', percentage: 40 }
+            ]
+        },
+        {
+            id: 'lucia-souza',
+            name: 'Lúcia Souza',
+            age: '63 anos | Feminino',
+            avatar: 'https://ui-avatars.com/api/?name=Lucia+Souza&background=7B2CBF&color=fff&size=150',
+            status: 'alto-risco',
+            statusText: 'Alto Risco',
+            systolic: 155,
+            glucose: 145,
+            riskFactors: ['Obesidade', 'Dislipidemia', 'Sedentarismo'],
+            aiSummary: 'Quadro sugestivo de Síndrome Metabólica em desenvolvimento. Glicemia de jejum e pressão arterial consistentemente altas nas últimas medições. Risco elevado de progressão.',
+            aiConfidence: '92%',
+            risks: [
+                { disease: 'Síndrome Metabólica', percentage: 85 },
+                { disease: 'Diabetes', percentage: 75 },
+                { disease: 'AVC', percentage: 35 }
+            ]
+        },
+        {
+            id: 'fernando-costa',
+            name: 'Fernando Costa',
+            age: '39 anos | Masculino',
+            avatar: 'https://ui-avatars.com/api/?name=Fernando+Costa&background=17a2b8&color=fff&size=150',
+            status: 'baixo-risco',
+            statusText: 'Baixo Risco',
+            systolic: 120,
+            glucose: 90,
+            riskFactors: ['Estresse', 'Tabagismo Leve'],
+            aiSummary: 'Paciente apresenta parâmetros clínicos dentro da normalidade. Fator de estresse e tabagismo representam risco em longo prazo. Recomenda-se acompanhamento anual e MEV.',
+            aiConfidence: '96%',
+            risks: [
+                { disease: 'Doença Pulmonar', percentage: 20 },
+                { disease: 'Hipertensão', percentage: 15 }
+            ]
+        },
+        {
+            id: 'marcia-alves',
+            name: 'Márcia Alves',
+            age: '55 anos | Feminino',
+            avatar: 'https://ui-avatars.com/api/?name=Marcia+Alves&background=FF4655&color=fff&size=150',
+            status: 'critico',
+            statusText: 'Crítico',
+            systolic: 185,
+            glucose: 195,
+            riskFactors: ['Hipertensão Resistente', 'Diabetes Tipo 2', 'Nefropatia Inicial'],
+            aiSummary: 'Descontrole pressórico e glicêmico graves associados a sinais de lesão de órgão-alvo. Indicação de intervenção médica imediata e ajustes contínuos de protocolo medicamentoso.',
+            aiConfidence: '98%',
+            risks: [
+                { disease: 'Insuficiência Renal', percentage: 88 },
+                { disease: 'Infarto', percentage: 80 },
+                { disease: 'AVC', percentage: 75 }
+            ]
+        },
+        {
+            id: 'patricia-gomes',
+            name: 'Patrícia Gomes',
+            age: '28 anos | Feminino',
+            avatar: 'https://ui-avatars.com/api/?name=Patricia+Gomes&background=28a745&color=fff&size=150',
+            status: 'baixo-risco',
+            statusText: 'Baixo Risco',
+            systolic: 115,
+            glucose: 85,
+            riskFactors: ['Sedentarismo Leve'],
+            aiSummary: 'Paciente jovem com exames dentro dos padrões de normalidade. Risco cardiovascular muito baixo. Orientada a manter hábitos saudáveis.',
+            aiConfidence: '99%',
+            risks: [
+                { disease: 'Hipertensão', percentage: 5 },
+                { disease: 'Diabetes', percentage: 8 }
+            ]
         }
     ];
 
@@ -236,7 +333,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const titles = {
             'dashboard': 'Dashboard',
             'pacientes': 'Pacientes',
-            'correlacoes': 'Correlações'
+            'consultas': 'Consultas Realizadas'
         };
 
         if (titles[sectionId]) {
@@ -524,36 +621,6 @@ document.addEventListener('DOMContentLoaded', function() {
         diagnosisObserver.observe(diagnosisSection);
     }
 
-    // Executa animação das barras de progresso quando a seção de correlações estiver visível
-    const correlationsSection = document.querySelector('#correlacoes');
-    if (correlationsSection) {
-        const correlationsObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    animateProgressBars();
-                    correlationsObserver.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.5 });
-
-        correlationsObserver.observe(correlationsSection);
-    }
-
-    // Simulação de correlações em tempo real
-    function simulateCorrelations() {
-        const correlationValues = document.querySelectorAll('#correlacoes .value');
-        correlationValues.forEach(value => {
-            if (value.textContent.includes('0.')) {
-                const currentValue = parseFloat(value.textContent);
-                const newValue = currentValue + (Math.random() * 0.02 - 0.01);
-                value.textContent = newValue.toFixed(2);
-            }
-        });
-    }
-
-    // Simula atualizações de correlações a cada 20 segundos
-    setInterval(simulateCorrelations, 20000);
-
     // US01 - Inicializa dashboard com dados e agenda atualização periódica
     renderDashboardCards();
     setInterval(updateDashboardNumbers, 10000);
@@ -619,8 +686,9 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('pageTitle').textContent = patient.name;
 
         // Cria os gráficos específicos do paciente
-        createPatientChartsWithRetry(patientId, 0);
-
+        // Adiciona um pequeno delay para garantir que o canvas esteja visível antes de desenhar.
+        setTimeout(() => createPatientCharts(patientId), 100);
+        
         // Armazena paciente atual para o modal de exame
         window.currentPatientId = patientId;
     };
@@ -635,66 +703,32 @@ document.addEventListener('DOMContentLoaded', function() {
         const patient = patientsData.find(p => p.id === patientId);
         if (!patient) return;
 
-        const labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago'];
-        function generateSeries(start, trendPerStep, noiseRange, min, max, len = 8) {
-            const series = [];
-            let value = start;
-            for (let i = 0; i < len; i++) {
-                const noise = (Math.random() * 2 - 1) * noiseRange;
-                value = Math.max(min, Math.min(max, value + trendPerStep + noise));
-                series.push(Math.round(value));
+        const labelsLocal = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago'];
+        
+        // Puxa os dados reais registrados no card do paciente para o ponto final (mês atual)
+        const currentSystolic = patient.systolic;
+        const currentDiastolic = Math.round(patient.systolic * 0.6); // Estimativa clínica da diastólica
+        const currentGlucose = patient.glucose;
+        const currentPostGlucose = Math.round(patient.glucose * 1.4); // Estimativa pós-prandial
+        
+        // Função inteligente para gerar um histórico retroativo 
+        function generateHistoricalData(currentValue, volatility) {
+            const data = [currentValue];
+            let val = currentValue;
+            
+            // Simula os 7 meses anteriores (andando de trás para frente)
+            for (let i = 0; i < 7; i++) {
+                val = val + (Math.random() * volatility * 2) - volatility;
+                data.unshift(Math.round(val)); // Adiciona sempre antes do último no array
             }
-            return series;
+            return data;
         }
 
-        // Dados fixos para Maria Silva
-        const fixedData = {
-            'maria-silva': {
-                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago'],
-                systolic:   [138, 140, 142, 145, 147, 150, 152, 155],
-                diastolic:  [ 88,  90,  91,  92,  93,  94,  95,  96],
-                fasting:    [ 92,  95,  98, 100, 104, 107, 110, 112],
-                post:       [135, 140, 145, 150, 155, 160, 165, 170]
-            }
-        };
-
-        // Baselines por paciente (fallback para demais pacientes)
-        const baselines = {
-            'maria-silva': {
-                systolic: 140, diastolic: 90, fasting: 95, post: 140,
-                trends: { sys: 1.5, dia: 1, fast: 2, post: 3 }
-            },
-            'joao-santos': {
-                systolic: 165, diastolic: 100, fasting: 185, post: 230,
-                trends: { sys: 3, dia: 2, fast: 4, post: 5 }
-            },
-            'ana-pereira': {
-                systolic: 135, diastolic: 85, fasting: 110, post: 155,
-                trends: { sys: 1, dia: 0.8, fast: 1.5, post: 2 }
-            },
-            'carlos-pinto': {
-                systolic: 175, diastolic: 110, fasting: 220, post: 265,
-                trends: { sys: 3.5, dia: 2.5, fast: 4.5, post: 5.5 }
-            }
-        };
-
-        const base = baselines[patientId] || baselines['maria-silva'];
-
-        let labelsLocal = labels;
-        let systolicSeries, diastolicSeries, fastingSeries, postSeries;
-
-        if (fixedData[patientId]) {
-            labelsLocal     = fixedData[patientId].labels;
-            systolicSeries  = fixedData[patientId].systolic;
-            diastolicSeries = fixedData[patientId].diastolic;
-            fastingSeries   = fixedData[patientId].fasting;
-            postSeries      = fixedData[patientId].post;
-        } else {
-            systolicSeries  = generateSeries(base.systolic, base.trends.sys, 3, 90, 220, labels.length);
-            diastolicSeries = generateSeries(base.diastolic, base.trends.dia, 2, 60, 140, labels.length);
-            fastingSeries   = generateSeries(base.fasting, base.trends.fast, 5, 70, 260, labels.length);
-            postSeries      = generateSeries(base.post, base.trends.post, 6, 90, 320, labels.length);
-        }
+        // Gera as séries baseadas 100% no paciente selecionado
+        const systolicSeries = generateHistoricalData(currentSystolic, 6);
+        const diastolicSeries = generateHistoricalData(currentDiastolic, 4);
+        const fastingSeries = generateHistoricalData(currentGlucose, 10);
+        const postSeries = generateHistoricalData(currentPostGlucose, 15);
 
         // Gráfico de Pressão Arterial do Paciente
         const patientPressureCtx = document.getElementById('patientPressureChart');
@@ -790,19 +824,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     plugins: { legend: { position: 'top' } }
                 }
             });
-        }
-    }
-
-    // Retry helper para aguardar layout antes de criar gráficos
-    function createPatientChartsWithRetry(patientId, attempt) {
-        const pressureCanvas = document.getElementById('patientPressureChart');
-        const glucoseCanvas = document.getElementById('patientGlucoseChart');
-        const maxAttempts = 10;
-        const ready = pressureCanvas && glucoseCanvas && pressureCanvas.clientHeight > 0 && glucoseCanvas.clientHeight > 0;
-        if (ready) {
-            createPatientCharts(patientId);
-        } else if (attempt < maxAttempts) {
-            setTimeout(() => createPatientChartsWithRetry(patientId, attempt + 1), 60);
         }
     }
 
@@ -1128,23 +1149,105 @@ window.printDiagnosis = function() {
         }
     };
 
-    // Dropdown do Perfil
+    // =============================================
+    // Funções do Modal de Agendamento
+    // =============================================
+    
+    window.openScheduleModal = function() {
+        document.getElementById('scheduleModal').classList.add('open');
+    };
+
+    window.closeScheduleModal = function() {
+        document.getElementById('scheduleModal').classList.remove('open');
+        document.getElementById('scheduleForm').reset();
+    };
+
+    window.handleScheduleBackdropClick = function(event) {
+        if (event.target && event.target.id === 'scheduleModal') {
+            window.closeScheduleModal();
+        }
+    };
+
+    window.handleScheduleSubmit = function(event) {
+        event.preventDefault(); // Evita recarregar a página
+
+        // 1. Pega os valores preenchidos
+        const name = document.getElementById('schedName').value;
+        const dateInput = document.getElementById('schedDate').value;
+        const statusValue = document.getElementById('schedStatus').value;
+        const complaint = document.getElementById('schedComplaint').value;
+
+        // Verifica se o paciente já está cadastrado no sistema
+        const patientExists = patientsData.some(p => p.name.toLowerCase() === name.trim().toLowerCase());
+        
+        if (!patientExists) {
+            alert('Paciente não encontrado no sistema! Verifique o nome digitado ou cadastre o paciente primeiro.');
+            return; // Interrompe o processo de agendamento
+        }
+
+        // 2. Formata a data (Ex: 25/12/2023 às 14:30)
+        const dateObj = new Date(dateInput);
+        const formattedDate = dateObj.toLocaleDateString('pt-BR') + ' às ' + dateObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+
+        // 3. Define textos bonitos dependendo da urgência escolhida
+        let statusText = statusValue === 'baixo-risco' ? 'Agendada (Rotina)' 
+                       : statusValue === 'moderado' ? 'Acompanhamento' 
+                       : 'Urgência';
+        
+        // 4. Puxa o nome do médico da sessão
+        const doctorName = localStorage.getItem('doctorName') || 'Dr(a). Logado';
+
+        // 5. Monta o HTML do novo cartão seguindo o design do site
+        const newCard = document.createElement('div');
+        newCard.className = 'campaign-card';
+        newCard.style.animation = 'fadeIn 0.6s ease-out'; // Pequena animação para mostrar que foi adicionado
+        
+        newCard.innerHTML = `
+            <div class="campaign-header">
+                <h3>${name}</h3>
+                <span class="status ${statusValue}">${statusText}</span>
+            </div>
+            <div class="campaign-content">
+                <div class="diagnosis-content">
+                    <h4>Detalhes do Agendamento:</h4>
+                    <p><strong>Data:</strong> ${formattedDate}</p>
+                    <p><strong>Médico(a):</strong> ${doctorName}</p>
+                    <p><strong>Queixa/Motivo:</strong> ${complaint}</p>
+                    <p><strong>Status Atual:</strong> Consulta marcada. Aguardando paciente.</p>
+                </div>
+            </div>
+        `;
+
+        // 6. Insere o cartão no TOPO da grade de consultas
+        const grid = document.querySelector('#consultas .campaigns-grid');
+        grid.insertBefore(newCard, grid.firstChild);
+
+        // 7. Fecha o modal
+        window.closeScheduleModal();
+    };
+
+    // Dropdown do Perfil na barra lateral
     const profileBtn = document.getElementById("profileBtn");
     const dropdown = document.getElementById("profileDropdown");
 
-    // abrir/fechar ao clicar
-    profileBtn.addEventListener("click", () => {
-       dropdown.classList.toggle("show");
-    });
+    if (profileBtn && dropdown) {
+        // abrir/fechar ao clicar
+        profileBtn.addEventListener("click", () => {
+           dropdown.classList.toggle("show");
+        });
 
-    // fechar se clicar fora
-    document.addEventListener("click", (e) => {
-        if (!profileBtn.contains(e.target) && !dropdown.contains(e.target)) {
-            dropdown.classList.remove("show");
-        }
-    });
+        // fechar se clicar fora
+        document.addEventListener("click", (e) => {
+            if (!profileBtn.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove("show");
+            }
+        });
+    }
 
-    document.getElementById("logoutBtn").addEventListener("click", logout);
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", logout);
+    }
     
     function logout() {
         // limpa sessão
@@ -1153,4 +1256,50 @@ window.printDiagnosis = function() {
         // força redirecionamento
         window.location.href = "login.html";
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+    const notiBtn = document.getElementById('notiBtn');
+    const notiDropdown = document.getElementById('notiDropdown');
+
+    // Alternar exibição ao clicar no botão
+    notiBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Impede de fechar ao clicar no próprio botão
+        notiDropdown.classList.toggle('active');
+    });
+
+    // Fechar ao clicar em qualquer lugar fora do menu
+    document.addEventListener('click', (e) => {
+        if (!notiDropdown.contains(e.target) && e.target !== notiBtn) {
+            notiDropdown.classList.remove('active');
+        }
+    });
+});
+
+(function() {
+    const setupNotifications = () => {
+        const btn = document.getElementById('notiBtn');
+        const dropdown = document.getElementById('notiDropdown');
+
+        if (!btn || !dropdown) return;
+
+        // Remove qualquer listener antigo e adiciona o novo
+        btn.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropdown.classList.toggle('active');
+            console.log("Status do menu:", dropdown.classList.contains('active'));
+        };
+
+        // Fecha se clicar em qualquer outro lugar da tela
+        document.addEventListener('click', (e) => {
+            if (!dropdown.contains(e.target) && e.target !== btn) {
+                dropdown.classList.remove('active');
+            }
+        });
+    };
+
+    // Tenta rodar imediatamente e também quando a janela carregar totalmente
+    setupNotifications();
+    window.addEventListener('load', setupNotifications);
+})();
 });
